@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100" height="126" creationComplete="init()">
+<!-- <mx:Style source="../../assets/FCstyle.css"/> Not needed....  If used in flashcards, this is already inherited -->
+	<mx:Label top="4" bottom="59" id="numText" styleName="cardDataGridNum" text="{data.cid + 1}" textAlign="center" fontWeight="normal" left="4" right="4"/>
+	<!--<mx:Button styleName="FCButtonSmall" label="Expand" click="expandCardButtonPressed()" height="21" bottom="55" horizontalCenter="0" width="92"/>-->
+	<mx:Button styleName="gameButton" label="Delete" click="deleteCardButtonPressed()" height="21" horizontalCenter="0" bottom="5" width="92"/>
+	<mx:Button styleName="gameButton" label="Swap" click="swapCardsButtonPressed()" height="21" horizontalCenter="0" bottom="30" width="92"/>
+<mx:Script>
+	<![CDATA[
+		import mx.events.FlexEvent;
+		import mx.collections.ArrayCollection;
+		private function init():void
+		{
+			//numText.text = data["qid"].toString();
+		}
+		private function deleteCardButtonPressed():void
+		{
+			dispatchEvent(new FlashCardsEvent(FlashCardsEvent.DELETE_BUTTON_PRESSED, {}, true));
+		}
+		private function swapCardsButtonPressed():void
+		{
+			var q:FlashCardsCard = data as FlashCardsCard;
+			var temp:String = data.question;
+			data.question = data.answer;
+			data.answer = temp;
+			// also swap the images
+			q.swapImages();
+			// need to refresh
+			dispatchEvent(new Event(FlashCardsEvent.SWAPCARDS_BUTTON_PRESSED, true));
+		}
+		/*
+		private function expandCardButtonPressed():void {
+			dispatchEvent(new FlashCardsEvent(FlashCardsEvent.EXPAND_BUTTON_PRESSED, {}, true));
+		}
+		/*
+		public function setId(newId:Number):void {
+			numText.text = newId+"";
+		}
+		*/
+		/*public override function set data(value:Object):void {
+			super.data = value;
+			if (data.cid != null) {
+				if (numText.text != null) {
+					numText.text = data.cid;
+				}
+			}
+		}*/
+	]]>
+</mx:Script>
+</mx:Canvas>

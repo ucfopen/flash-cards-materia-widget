@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="326" height="120" creationComplete="init()">
+	<mx:TextArea left="8" top="8" bottom="8" right="8" id="cardText" change="updateArray()" focusIn="{onFocusIn();}" focusOut="{onFocusOut();}" text="{data.answer}" />
+	<!--<mx:HBox left="10" right="10" verticalAlign="bottom" bottom="5">
+		<mx:Button styleName="FCButtonSmall" label="Add Media" height="21" bottom="5"/>
+	</mx:HBox>-->
+<!-- <mx:Style source="../../assets/FCstyle.css"/> Not needed....  If used in flashcards, this is already inherited -->
+<mx:Script>
+	<![CDATA[
+		// NOTE: replacing this class, it is not used, DELETE THIS
+		private function init():void
+		{
+			//if (data.answers[0].text == null) {
+			//	cardText.text = "[Click here to edit]";
+			//}
+			//cardText.text = data["q"];
+			//if (data["qid"] != 1){ selectTextAndFocus(); }
+		}
+		private function onFocusIn():void
+		{
+			//stage.focus = cardText;
+			cardText.setSelection(0,cardText.text.length);
+			dispatchEvent( new Event(FlashCardsEvent.DISABLE_DRAGGING, true));
+		}
+		private function onFocusOut():void
+		{
+			dispatchEvent( new Event(FlashCardsEvent.ENABLE_DRAGGING, true));
+		}
+		private function deselectText():void
+		{
+			//dispatchEvent(new FlashCardsEvent(FlashCardsEvent.CARD_TEXT_OUT, {}, true));
+		}
+		private function updateArray():void
+		{
+			data.answer = cardText.text;
+			//dispatchEvent(new FlashCardsEvent(FlashCardsEvent.CARD_UPDATED, {cid: data.options.cid, qora: "a", text: cardText.text}, true));
+		}
+		/*public override function set data(value:Object):void {
+			super.data = value;
+			cardText.text = data.answers.text;
+		}	*/
+	]]>
+</mx:Script>
+</mx:Canvas>

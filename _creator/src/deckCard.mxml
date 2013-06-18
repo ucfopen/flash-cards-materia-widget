@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="components.*" width="146.0" height="90"
+           creationComplete="{init();}">
+	<mx:SWFLoader id="deckGraphics" source="{new DeckCardsBackground()}"
+	              left="10" right="10" top="10" bottom="10"/>
+	<components:AutoResizeTextArea id="deckText"
+	                               text="{data.name}"
+	                               right="28.199997"
+	                               left="15"
+	                               top="15"
+	                               bottom="36"
+	                               maxChars="24"
+	                               editable="true"
+	                               color="#000000"
+	                               minFontSize="4"
+	                               change="{deckTextChange();}"
+	                               focusIn="{disableDragging();}"
+	                               focusOut="{enableDragging();}"
+			/>
+	<mx:Text id="numCards" text="{data.cards.length + ((data.cards.length == 1) ? ' card': ' cards')}"
+	         bottom="19" textAlign="center" styleName="FCText"
+	         height="18" color="#000000" left="8" right="15" selectable="false" useHandCursor="true"
+	         fontSize="18"/>
+	<!-- styleName="FCText" -->
+	<mx:Script>
+		<![CDATA[
+		import mx.collections.ArrayCollection;
+		public static const DEFAULT_DECK_NAME:String = "Default"
+		private static const TRACE_STRING:String = "deckCard.mxml";
+		private var _isTextSelected:Boolean = false; // true if this text should be selected
+		private function init():void
+		{
+			deckText.refresh();
+		}
+		private function destroy():void
+		{
+		}
+		private function deckTextChange():void
+		{
+			//trace(TRACE_STRING + "::deckTextChange");
+			_isTextSelected = false;
+			data.name = deckText.text;
+		}
+		// the value passed in will have the fields value.cards, value.decks and value.name
+		// .cards is an array of card data, .name is a string name
+		// .decks is a reference to the decks collection
+		public override function set data(value:Object):void
+		{
+			////trace( TRACE_STRING + "::set data");
+			// the data for each card is all the cards data
+			super.data = value;
+			if (deckText != null)
+			{
+				deckText.refresh();
+				// the text we want selected can get un-selected when the list this card is on is re-validated
+				if (_isTextSelected == true)
+				{
+					deckText.selectAllText();
+				}
+			}
+		}
+		private function disableDragging():void
+		{
+			//trace(TRACE_STRING + "::disableDragging");
+			deckText.selectAllText(); // this isnt doing anything?
+			_isTextSelected = true;
+			dispatchEvent(new Event(FlashCardsEvent.DISABLE_DRAGGING, true));
+		}
+		private function enableDragging():void
+		{
+			//trace(TRACE_STRING + "::enableDragging");
+			_isTextSelected = false;
+			dispatchEvent(new Event(FlashCardsEvent.ENABLE_DRAGGING, true));
+		}
+		]]>
+	</mx:Script>
+</mx:Canvas>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="326" height="120" creationComplete="init()">
+	<mx:TextArea left="8" top="8" bottom="8" right="8" id="cardText"
+		change="updateArray()" text="{data.question}" focusIn="onFocusIn()" focusOut="onFocusOut()"/>
+	<!--<mx:HBox left="10" right="10" verticalAlign="bottom" bottom="5">
+		<mx:Button styleName="FCButtonSmall" label="Add Media" height="21" bottom="5"/>
+	</mx:HBox>-->
+<!-- <mx:Style source="../../assets/FCstyle.css"/> Not needed....  If used in flashcards, this is already inherited -->
+<mx:Script>
+	<![CDATA[
+		private function init():void
+		{
+		}
+		private function onFocusIn():void
+		{
+			cardText.setSelection(0,cardText.text.length); // select the text
+			// disable dragging so the user can select text
+			dispatchEvent( new Event(FlashCardsEvent.DISABLE_DRAGGING, true));
+		}
+		private function onFocusOut():void
+		{
+			dispatchEvent( new Event(FlashCardsEvent.ENABLE_DRAGGING, true));
+		}
+		private function deselectText():void
+		{
+		}
+		private function updateArray():void
+		{
+			data.question = cardText.text;
+		}
+	]]>
+</mx:Script>
+</mx:Canvas>
