@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="utf-8"?>
+<materia:CreatorBase xmlns:mx="http://www.adobe.com/2006/mxml"
+					 xmlns:materia="materia.*"
+					 xmlns:components="materia.components.*"
+                     width="100%" height="100%" horizontalScrollPolicy="off" xmlns:local="*">
+	<mx:Style source="assets/FCstyle.css"/>
+	<mx:ArrayCollection id="decks">
+	</mx:ArrayCollection>
+	<mx:DefaultTileListEffect id="myTileListEffect"
+    	fadeOutDuration="50"
+        fadeInDuration="50"
+        moveDuration="150"
+        />
+	<mx:Canvas id="mainCanvas" minHeight="400" left="5" bottom="5" right="5" top="5"
+		backgroundAlpha="1.0" horizontalScrollPolicy="off" >
+		<mx:VBox left="1" top="-1" right="-1" bottom="1" horizontalScrollPolicy="off">
+			<mx:Canvas height="50" width="100%">
+				<mx:HBox left="5" right="5" height="40" verticalAlign="middle" verticalCenter="0">
+					<mx:Label text="Widget Title: " verticalCenter="1"
+						selectable="false" styleName="sectionLabel"/>
+					<mx:TextInput text="{instanceTitle}" maxChars="{CreatorConfig.MAX_TITLE_LENGTH}" change="{instanceTitle=gameTitleEditFeild.text;}" id="gameTitleEditFeild" height="35" width="100%" styleName="titleField"/>
+				</mx:HBox>
+			</mx:Canvas>
+			<mx:HRule width="100%" />
+			<mx:HBox width="100%" height="100%" styleName="creatorSectionMajor">
+				<mx:Canvas id="categoryCanvas" visible="false" width="0" height="100%" styleName="creatorSectionMinor">
+					<mx:VBox top="10" bottom="10" left="10" right="10">
+						<mx:Text text="Decks:" selectable="false" styleName="sectionLabel"/>
+						<local:FlashCardsRoundedSelectionTileList id="deckTileList"
+							click="{deckClicked()}"
+							change="{deckClicked(event);}"
+							dragStart="{deckTileDragStart();}"
+							dragComplete="{deckTileDragComplete();}"
+							backgroundAlpha="0"
+							borderThickness="0"
+							visible="true"
+							horizontalScrollPolicy="off"
+							verticalScrollPolicy="off"
+							verticalCenter="0"
+							itemRenderer="deckCard"
+							selectionColor="#717E95"
+							allowMultipleSelection="false"
+							enabled="true"
+							height="100%"
+							width="100%"
+							itemsChangeEffect="{myTileListEffect}"
+							dragEnter="{deckDragEnter(event);}"
+							dragExit="{deckDragExit(event)}"
+							dragEnabled="true"
+							dropEnabled="true"
+							dragMoveEnabled="true"
+							dataProvider="{decks}"
+							wordWrap="false"
+							direction="vertical"
+							/>
+					</mx:VBox>
+				</mx:Canvas>
+				<mx:Canvas width="100%" height="100%" styleName="creatorSectionMinor">
+					<mx:VBox left="10" right="10" bottom="10" top="10">
+						<mx:HBox width="100%" verticalAlign="middle">
+							<mx:Text text="Cards: " selectable="false" styleName="sectionLabel"/>
+							<mx:Button id="buttonAddCard" styleName="gameButton" enabled="false" label="+ Add Cards" click="{addCard();}" fontWeight="normal" fillAlphas="[0.62, 0.62, 0.62, 0.62]" x="66" y="3.45"/>
+						</mx:HBox>
+						<mx:Canvas width="100%" height="100%">
+							<mx:DataGrid styleName="FCDataGrid"
+								sortableColumns="false"
+								allowMultipleSelection="false"
+								id="cardDataGrid"
+								bottom="0" top="0" left="0" right="0"
+								dragEnabled="true"
+								dropEnabled="true"
+								allowDragSelection="true"
+								dragMoveEnabled="true"
+								dragStart="{cardDragStart(event);}"
+								dragComplete="{dropCardHandler(event);}"
+								dragExit="{cardDragExit();}"
+								dragEnter="{cardDragEnter();}"
+								>
+								<mx:columns>
+									<mx:DataGridColumn headerText="Card"
+										id="cid" dataField="cid"  draggable="false"
+										itemRenderer="EditCardNumSpace" width=".14"/>
+									<mx:DataGridColumn width=".43" headerText="Front"
+										id="q" draggable="false">
+										<mx:itemRenderer>
+											<mx:Component>
+												<local:EditCardText
+													imageEnabledField="isFrontAnImage"
+													imageField="frontImageData"
+													dataField="question"/>
+											</mx:Component>
+										</mx:itemRenderer>
+									</mx:DataGridColumn>
+									<mx:DataGridColumn width=".43" headerText="Back"
+										id="a" draggable="false">
+										<mx:itemRenderer>
+											<mx:Component>
+												<local:EditCardText
+													imageEnabledField="isBackAnImage"
+													imageField="backImageData"
+													dataField="answer"/>
+											</mx:Component>
+										</mx:itemRenderer>
+									</mx:DataGridColumn>
+								</mx:columns>
+							</mx:DataGrid>
+						</mx:Canvas>
+					</mx:VBox>
+				</mx:Canvas>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:Canvas>
+    <mx:Canvas id="newDeckButton" visible="false" click="{addDeck(true,true)}">
+		<mx:SWFLoader source="{new ClickToAddDeck()}"
+			right="10" left="10" top="10" bottom="10" buttonMode="true"/>
+    </mx:Canvas>
+	<mx:Script>
+		<![CDATA[
+		import materia.CreatorConfig;
+		import materia.questionStorage.Question;
+		import materia.questionStorage.QuestionGroup;
+		import materia.utils.ImageCacher;
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.core.IUIComponent;
+		import mx.events.DragEvent;
+		import mx.events.ListEvent;
+		import mx.managers.DragManager;
+		// screen filename used for debug traces
+		private static const TRACE_STRING:String = "FlashCardsKogneatoCreator.mxml";
+		private static const MAX_NUMBER_OF_DECKS:int = 5;
+		private static const DEFAULT_GAME_TITLE:String = "New Flashcards Widget";
+		[Bindable]
+		private var _draggingOverDecks:Boolean = false; // if the decks are is being dragged over
+		private var _qSet:QuestionGroup;
+		protected var _cardWeAreLoadingImageFor:EditCardText;
+		public override function init():void
+		{
+			super.init();
+			instanceTitle = DEFAULT_GAME_TITLE;
+			// NOTE: The QSet will probably always be null here
+			// Things are changed around to where initQSet should not be called before init
+			if (_qSet != null) // we are importing a qSet
+			{
+				populateGameWithQSet(_qSet);
+			}
+			else
+			{
+				// have a card there to start with
+				addDeck(true, false);
+			}
+			deckTileList.selectedIndex = 0;
+			cardDataGrid.dataProvider = decks[0].cards;
+			cardDataGrid.rowHeight = 120;
+			cardDataGrid.addEventListener(FlashCardsEvent.CARD_TEXT_CLICKED, disableCardDragging, false, 0, true);
+			cardDataGrid.addEventListener(FlashCardsEvent.CARD_TEXT_OUT, enableCardDragging, false, 0, true);
+			cardDataGrid.addEventListener(FlashCardsEvent.DELETE_BUTTON_PRESSED, deleteCard, false, 0, true);
+			invalidateLocalLists();
+			deckTileList.selectedIndex = 0;
+			if (buttonAddCard.enabled != true)
+			{
+				buttonAddCard.enabled = true;
+			}
+			deckTileList.validateNow();
+			refreshNewDeckButton();
+			cleanCardOrder();
+			deckTileList.addEventListener(FlashCardsEvent.DISABLE_DRAGGING, disableDragging, false, 0, true);
+			deckTileList.addEventListener(FlashCardsEvent.ENABLE_DRAGGING, enableDragging, false, 0, true);
+			cardDataGrid.addEventListener(FlashCardsEvent.DISABLE_DRAGGING, disableDragging, false, 0, true);
+			cardDataGrid.addEventListener(FlashCardsEvent.ENABLE_DRAGGING, enableDragging, false, 0, true);
+			cardDataGrid.addEventListener(EditCardText.EVENT_GET_AN_IMAGE_FOR_CARD, getImageForCard, false, 0, true);
+			cardDataGrid.addEventListener(FlashCardsEvent.SWAPCARDS_BUTTON_PRESSED, cardsSwapped, false, 0, true);
+			super.init();
+		}
+		protected function getImageForCard(e:Event):void
+		{
+			_cardWeAreLoadingImageFor = e.target as EditCardText;
+			CreatorBase.openMediaScreen(onMediaLoaded);
+		}
+		protected function onMediaLoaded(assets:Array):void
+		{
+			if (assets.length > 0)
+			{
+				var source:* = CreatorConfig.getKogneatoAssetLink(assets[0].id);
+				_cardWeAreLoadingImageFor.setImageForCard(assets[0].id, source);
+			}
+			_cardWeAreLoadingImageFor = null;
+		}
+		protected function cardsSwapped(e:Event):void
+		{
+			// the data will already be swapped
+			// we just need a refresh to show the images correctly swapped
+			cardDataGrid.dataProvider.refresh();
+		}
+		public override function initNewWidget(widget:Object, baseUrl:String):void
+		{
+			super.initNewWidget(widget, baseUrl);
+		}
+		protected override function initExistingWidget(title:String, widget:Object, qset:Object, version:String, baseUrl:String):void
+		{
+			super.initExistingWidget(title, widget, qset, version, baseUrl);
+			populateGameWithQSet(questionSet);
+			deckTileList.validateNow();
+			refreshNewDeckButton();
+			cleanCardOrder();
+			//Enable category interface
+			if (questionSet.items.length > 1)
+			{
+				categoryCanvas.visible = true;
+				newDeckButton.visible = true;
+				categoryCanvas.width = 160;
+			}
+		}
+
+		/**
+		 * Make the game out of this qSet.
+		 */
+		private function populateGameWithQSet(qSet:QuestionGroup):void
+		{
+			decks.removeAll();
+			// the title
+			for (var i:int = 0; i < qSet.items.length; i++)// the decks
+			{
+				if (i >= MAX_NUMBER_OF_DECKS) break;
+				var qg:QuestionGroup = qSet.items[i];
+				addDeck(false, false);
+				decks[i].name = qg.name;
+				var theCards:ArrayCollection = decks[i].cards;
+				for (var j:int = 0; j < qg.items.length; j++) // the cards
+				{
+					var q:Question = qg.items[j];
+					var card:FlashCardsCard = newCard(0, q.question, q.correctAnswer, q.id);
+					var asset1Id:String = "";
+					var asset2Id:String = "";
+					if (q.assets != null && q.assets.length > 0)
+					{
+						asset1Id = q.assets[0];
+						if (q.assets.length > 1)
+						{
+							asset2Id = q.assets[1];
+						}
+					}
+					if (asset1Id != "" && asset1Id != "-1")
+					{
+						card.isFrontAnImage = true;
+						card.frontImageData = { assetId:asset1Id,
+							source:CreatorBase.resolveSource(asset1Id)};
+					}
+					if (asset2Id != "" && asset2Id != "-1")
+					{
+						card.isBackAnImage = true;
+						card.backImageData = { assetId:asset2Id,
+							source:CreatorBase.resolveSource(asset2Id)};
+					}
+					theCards.addItem(card);
+				}
+			}
+			// make sure it starts with a deck selected
+			deckTileList.selectedIndex = 0;
+			deckClicked();
+		}
+		/**
+		 * Adds a new card to the card group currently bein viewd
+		 */
+		private function addCard(questionText:String = "", answerText:String = "", id:int = 0):void
+		{
+			var theCards:ArrayCollection = ArrayCollection(cardDataGrid.dataProvider);
+			var theNewCard:FlashCardsCard = newCard(theCards.length, questionText, answerText, id);
+			theCards.addItem(theNewCard);
+			cardDataGrid.selectedItem = theNewCard;
+			cardDataGrid.scrollToIndex(theCards.length);
+		}
+		private function addDeck(addEmptyCard:Boolean = false, selectNewDeck:Boolean = true):FlashCardsDeck
+		{
+			if (decks.length >= MAX_NUMBER_OF_DECKS) // dont add too many decks
+			{
+				return null; // early return
+			}
+			// add the cards that this deck will use
+			var newCards:ArrayCollection = new ArrayCollection();
+			if (addEmptyCard == true)
+			{
+				newCards.addItem(newCard(0));
+			}
+			// add the deck
+			var d:FlashCardsDeck = new FlashCardsDeck();
+			d.name = deckCard.DEFAULT_DECK_NAME;
+			d.decks = decks;
+			d.cards = newCards;
+			decks.addItem(d);
+			if (selectNewDeck == true)
+			{
+				deckTileList.selectedIndex = decks.length - 1;
+				deckClicked();
+			}
+			refreshNewDeckButton();
+			return d;
+		}
+		private function removeDeck(index:int):void
+		{
+			if (index >= 0) // this should never be needed, but just in case
+			{
+				decks.removeItemAt(index);
+			}
+		}
+		/**
+		 * The newDeckButton stays on the side of the decks, and goes away when we have the max num of them.
+		 * */
+		private function refreshNewDeckButton():void
+		{
+			if (categoryCanvas.visible == true)
+			{
+				// move it past the last deck
+				if (decks.length >= MAX_NUMBER_OF_DECKS)
+				{
+					newDeckButton.visible = false;
+				}
+				else
+				{
+					newDeckButton.visible = true;
+					var pt:Point = deckTileList.contentToGlobal(new Point(0, 0));
+					var pt2:Point = this.globalToLocal(pt);
+					var xPos:Number = pt2.x;
+					var yPos:Number = pt2.y;
+					newDeckButton.x = xPos;
+					newDeckButton.y = yPos + deckTileList.rowHeight * decks.length;
+					newDeckButton.width = deckTileList.columnWidth;
+					newDeckButton.height = deckTileList.rowHeight;
+				}
+			}
+		}
+		/**
+		 * Return an object that represents a card.
+		 * */
+		private function newCard(cardId:int = 0, questionText:String = "", answerText:String = "", id:int = 0):FlashCardsCard
+		{
+			var q:FlashCardsCard = new FlashCardsCard(cardId, questionText, answerText, id);
+			return q;
+		}
+		public override function onSaveClicked(mode:String = 'save'):void
+		{
+			if(!checkForErrors())
+			{
+				updateQSet();
+				validateQIDs(_qSet);
+				ExternalInterface.call("__materia_flash_save", instanceTitle, _qSet.convertToObject(), questionSetVersion);
+			}
+		}
+
+		/**
+		 * Run validation on the FlashCards game
+		 * Returns false if there were errors, true if it is good to go
+		 * */
+		private function checkForErrors():Boolean
+		{
+			// problems with the game title field will be caught by the popup on publishing
+			for (var i:int = 0; i < decks.length; i++)
+			{
+				var theCards:ArrayCollection = decks[i].cards;
+				if (theCards.length <= 0)
+				{
+					Alert.show("There are no cards in your deck", "Deck Error");
+					return true;
+				}
+				for (var j:int = 0; j < theCards.length; j++)
+				{
+					var card:FlashCardsCard = theCards[j];
+					if (card.question == '' && (!card.isFrontAnImage))
+					{
+						Alert.show("One of your cards is missing a question (front)", "Card Error");
+						return true;
+					}
+					if (card.answer == '' && (!card.isBackAnImage))
+					{
+						Alert.show("One of your cards is missing an answer (back).", "Card Error");
+						return true;
+					}
+					if (card.question.length > 500 || card.answer.length > 500)
+					{
+						Alert.show("You can not have a question or answer longer than 500 characters.", "Card Error");
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		/**
+		 * Put the information entered into the game into the qSet.
+		 * Called before saving/publising a game to make the qSet have all the info.
+		 * */
+		private function updateQSet():void
+		{
+			_qSet = new QuestionGroup();
+			for (var i:int = 0; i < decks.length; i++) // put them in the order of the decks
+			{
+				var theCards:ArrayCollection = decks[i].cards;
+				if (theCards.length <= 0)
+				{
+					return; // early return when we hit an empty deck
+					// the decks list will always get populated left to right
+					// there will be no empty decks between full decks
+				}
+				var questionGroup:QuestionGroup = new QuestionGroup();
+				questionGroup.name = decks[i].name;
+				for (var j:int = 0; j < theCards.length; j++)
+				{
+					// flash cards use QA questions
+					var question:Question = new Question(Question.QA_QUESTION);
+					var card:FlashCardsCard = theCards[j];
+					var frontAsset:String = '-1';
+					var backAsset:String = '-1';
+					if(card.isFrontAnImage)
+					{
+						frontAsset = card.frontImageData.assetId;
+						// BUG FIX: the question will not store correctly unless there is text
+						if (card.question == "")
+						{
+							card.question = 'None';
+						}
+					}
+					if(card.isBackAnImage)
+					{
+						backAsset = card.backImageData.assetId;
+						// BUG FIX: the question will not store correctly unless there is text
+						if (card.answer == "")
+						{
+							card.answer = 'None';
+						}
+					}
+					question.addQuestion(card.question);
+					question.addAnswer(card.answer);
+					question.id = card.id;
+					// assets[0] will be front, [1] will be back
+					if (frontAsset != '-1' || backAsset != '-1')
+					{
+						question.assets = [frontAsset, backAsset];
+					}
+					else
+					{
+						// if no assets, set assets to null
+						question.assets = null;
+					}
+					questionGroup.addChild(question);
+				}
+				_qSet.addChild(questionGroup);
+			}
+		}
+		public override function addImportedQuestion(question:Question):Question
+		{
+			var q:Question = super.addImportedQuestion(question);
+			// if the current deck has only 1 card and it is empty, use that one
+			if (decks[deckTileList.selectedIndex].cards.length == 1)
+			{
+				var card:FlashCardsCard = decks[deckTileList.selectedIndex].cards[0];
+				if (card.isEdited() == false)
+				{
+					card.question = q.question;
+					card.answer = q.answer;
+					card.id = q.id;
+					return q;
+				}
+			}
+			this.addCard("" + q.question, "" + q.correctAnswer, q.id);
+			return q;
+		}
+		private function deckTileDragStart():void
+		{
+			// decks cannot drag into the cards
+			disableCardDragging();
+			// the new deck button has to be behind the tile list to not interfere with dragging
+			var newDeckButtonIndex:int = getChildIndex(newDeckButton);
+			var mainCanvasIndex:int = getChildIndex(mainCanvas); // the deckTileList is on this canvas
+			if (newDeckButtonIndex > mainCanvasIndex)
+			{
+				swapChildrenAt(newDeckButtonIndex, mainCanvasIndex);
+			}
+		}
+		private function deckTileDragComplete():void
+		{
+			enableCardDragging();
+			// the new deck button has to be in front of the tile list to be clickable
+			var newDeckButtonIndex:int = getChildIndex(newDeckButton);
+			var mainCanvasIndex:int = getChildIndex(mainCanvas);
+			if (newDeckButtonIndex < mainCanvasIndex)
+			{
+				swapChildrenAt(newDeckButtonIndex, mainCanvasIndex);
+			}
+		}
+		private function disableCardDragging(event:FlashCardsEvent = null):void
+		{
+			cardDataGrid.dragMoveEnabled = false;
+			cardDataGrid.dragEnabled = false;
+			cardDataGrid.dropEnabled = false;
+			cardDataGrid.validateNow();
+		}
+		private function enableCardDragging(event:FlashCardsEvent = null):void
+		{
+			cardDataGrid.dragMoveEnabled = true;
+			cardDataGrid.dragEnabled = true;
+			cardDataGrid.dropEnabled = true;
+			cardDataGrid.validateNow();
+		}
+		private function disableDeckDragging(event:FlashCardsEvent = null):void
+		{
+			deckTileList.dragEnabled = false;
+			deckTileList.dropEnabled = false;
+			deckTileList.dragMoveEnabled = false;
+			deckTileList.validateNow();
+		}
+		private function enableDeckDragging(event:FlashCardsEvent = null):void
+		{
+			deckTileList.dragEnabled = true;
+			deckTileList.dropEnabled = true;
+			deckTileList.dragMoveEnabled = true;
+			deckTileList.validateNow();
+		}
+		protected var _currentlyDeleting:Boolean = false;
+		/**
+		 * Note: This will only work if the card is in the current displayed deck.
+		 * */
+		private function deleteCard(event:FlashCardsEvent):void
+		{
+			deleteCardAtIndex(event.target.data.cid);
+		}
+		/**
+		 * Note: This will only work if the card is in the current displayed deck.
+		 * */
+		private function deleteCardAtIndex(index:int):void
+		{
+			_currentlyDeleting = true;
+			var temp:Number = cardDataGrid.verticalScrollPosition;
+			var theCards:ArrayCollection = ArrayCollection(cardDataGrid.dataProvider);
+			theCards.removeItemAt(index);
+			if (theCards.length <= 0) // if the deck is now empty of cards
+			{
+				var deckIndex:int = getDeckIndexOfCards(theCards);
+				var noCards:Boolean = false;
+				if (deckIndex + 1 < decks.length)
+				{
+					deckTileList.selectedIndex = deckIndex + 1;
+				}
+				else if (deckIndex - 1 >= 0)
+				{
+					deckTileList.selectedIndex = deckIndex - 1;
+				}
+				else // we will be removing the last deck
+				{
+					noCards = true;
+				}
+				//deckTileList.selectedIndex = (deckIndex-1 > 0) ? deckIndex-1 : 0;
+				// move the selection back
+				removeDeck(deckIndex);
+				if (noCards == true)
+				{
+					var myDeck:FlashCardsDeck = addDeck(true, false);
+					deckTileList.selectedIndex = 0;
+				}
+			}
+			cleanCardOrder();
+			deckClicked();
+			cardDataGrid.verticalScrollPosition = temp;
+		}
+		/**
+		 * Find the index in the decks of a given set of cards.
+		 * */
+		private function getDeckIndexOfCards(aDeck:ArrayCollection):int
+		{
+			var index:int = -1;
+			for (var i:int = 0; i < decks.length; i++)
+			{
+				if (decks[i].cards == aDeck)
+				{
+					index = i;
+					break;
+				}
+			}
+			return index;
+		}
+		/**
+		 * True if there are no cards in any of the decks.
+		 * */
+		private function gameHasNoCards():Boolean
+		{
+			for (var i:int = 0; i < decks.length; i++)
+			{
+				if (decks[i].cards.length != 0)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		/**
+		 * Make sure all the cards in all the decks are numbered correctly.
+		 * */
+		private function cleanCardOrder():void
+		{
+			// make sure the cards are numbered correctly
+			var i:int, j:int;
+			for (i = 0; i < decks.length; i++)
+			{
+				for (j = 0; j < decks[i].cards.length; j++)
+				{
+					decks[i].cards[j].cid = j;
+				}
+			}
+		}
+		private function deckClicked(event:ListEvent = null):void
+		{
+			if (deckTileList.selectedIndex < 0) // the index will be -1 if no item is selected
+			{
+				return;// early return
+			}
+			if (deckTileList.selectedIndex > decks.length - 1)
+			{
+				deckTileList.selectedIndex = decks.length - 1;
+			}
+			// Note: deckTileList.selectedItem.cards seemed to not work correctly for this, not sure why
+			if (!(deckTileList.selectedIndex == -1))
+			{
+				cardDataGrid.dataProvider = decks[deckTileList.selectedIndex].cards;
+				cardDataGrid.dataProvider.refresh();
+				if (decks[deckTileList.selectedIndex].cards.length == 0)
+				{
+					deckTileList.selectedItem.name = deckCard.DEFAULT_DECK_NAME;
+					addCard();
+				}
+			}
+			invalidateLocalLists();
+			refreshNewDeckButton(); // just for testing not needed here
+		}
+		private function dropCardHandler(event:DragEvent):void
+		{
+			// check if we dropped a card onto a deck
+			if (_draggingOverDecks == true)
+			{
+				// this might not be doing anything here
+				// we dont want cards to be removed on their own (it was buggy)
+				// we will remove the dragged cards manually
+				cardDataGrid.dragMoveEnabled = false; // dragging-dropping makes new cards?
+				cardDataGrid.validateNow();
+				// the deck
+				var deckIndex:int = getMouseoverDeckIndex();
+				if (deckIndex != -1) // -1 is returned when no deck is hit
+				{
+					// the card
+					var cardData:FlashCardsCard = cardDataGrid.selectedItem as FlashCardsCard;
+					// add it
+					decks[deckIndex].cards.addItem(cardData.copy());
+					deleteCardAtIndex(cardDataGrid.selectedIndex);
+					decks.refresh();
+				}
+			}
+			cleanCardOrder();
+			enableDeckDragging();
+			_draggingOverDecks = false;
+		}
+		/**
+		 * Get the deck index of the deck that the mouse is currently over (-1 if it is none).
+		 * I wanted to just have each deck store wether they are dragged over, but the dragExit wasnt firing.
+		 * */
+		private function getMouseoverDeckIndex():int
+		{
+			for (var i:int = 0; i < decks.length; i++)
+			{
+				var deck:deckCard = deckTileList.indexToItemRenderer(i) as deckCard;
+				if (deck.hitTestPoint(stage.mouseX, stage.mouseY))
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+		private function deckDragEnter(event:DragEvent):void
+		{
+			// we want the deckTileList to look like you can drag items to it
+			// it would look like you cannot because we are handleing the dropping ourselves
+			DragManager.acceptDragDrop(event.target as IUIComponent);
+			_draggingOverDecks = true;
+		}
+		private function deckDragExit(event:DragEvent):void
+		{
+			_draggingOverDecks = false;
+		}
+		private function cardDragStart(event:DragEvent):void
+		{
+			disableDeckDragging();// we want to drag cards onto decks, but we need to handle it ourselves
+			cardDataGrid.dragMoveEnabled = true;
+			cardDataGrid.validateNow();
+		}
+		private function cardDragEnter():void
+		{
+			cardDataGrid.dragMoveEnabled = true;
+			cardDataGrid.validateNow();
+		}
+		private function cardDragExit():void
+		{
+			cardDataGrid.dragMoveEnabled = false;
+			cardDataGrid.validateNow();
+		}
+		private function invalidateLocalLists():void
+		{
+			// NOTE: this function is nuts
+			deckTileList.invalidateList();
+			deckTileList.invalidateDisplayList();
+			cardDataGrid.invalidateList();
+			cardDataGrid.invalidateDisplayList();
+			if (cardDataGrid.dataProvider != null)
+			{
+				cardDataGrid.dataProvider.refresh();
+			}
+			cardDataGrid.invalidateList();
+			deckTileList.invalidateList();
+		}
+		// the cards and decks will dispatch events that will disable/enable the dragging
+		private function disableDragging(e:Event):void
+		{
+			e.stopPropagation();
+			cardDataGrid.dragMoveEnabled = false;
+			cardDataGrid.dragEnabled = false;
+			cardDataGrid.dropEnabled = false;
+			deckTileList.dragEnabled = false;
+			deckTileList.dropEnabled = false;
+			deckTileList.dragMoveEnabled = false;
+			deckTileList.validateNow(); // need to validate for changes to come into effect
+		}
+		// the cards and decks will dispatch events that will disable/enable the dragging
+		private function enableDragging(e:Event):void
+		{
+			e.stopPropagation();
+			cardDataGrid.dragMoveEnabled = true;
+			cardDataGrid.dragEnabled = true;
+			cardDataGrid.dropEnabled = true;
+			deckTileList.dragEnabled = true;
+			deckTileList.dropEnabled = true;
+			deckTileList.dragMoveEnabled = true;
+			deckTileList.validateNow(); // need to validate for changes to come into effect
+		}
+
+		]]>
+	</mx:Script>
+</materia:CreatorBase>

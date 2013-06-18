@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+           xmlns:components="materia.components.*"
+           xmlns:components2="components.*" xmlns:media="materia.media.*"
+           height="140">
+	<mx:ViewStack id="cardTypeViewStack"
+		left="8"
+		top="24"
+		bottom="8"
+		right="8"
+		creationPolicy="all">
+		<mx:Canvas width="100%" height="100%">
+			<components2:HelpTextTextArea
+				helpText="Enter Card Text Here..."
+				width="100%"
+				height="100%"
+				id="cardText"
+				change="{updateArray()}"
+				focusIn="{onFocusIn();}"
+				focusOut="{onFocusOut();}"/>
+		</mx:Canvas>
+		<mx:Canvas width="100%" height="100%">
+			<media:ImageCacherImage id="cardImage"
+				width="100%"
+				height="100%"
+				maintainAspectRatio="true"/>
+			<mx:Button id="addImageButton"
+				label="Set Image"
+				click="{setImageClick();}"
+				bottom="0"
+				horizontalCenter="0" fontWeight="normal"/>
+		</mx:Canvas>
+	</mx:ViewStack>
+	<mx:HBox y="0">
+		<mx:Label text="Content:"/>
+		<mx:RadioButton id="textCardTypeChoiceRadioButton"
+			color="0x000000"
+			label="Text"
+			click="{textCardRadioButtonChoice()}" height="21"/>
+		<mx:RadioButton id="imageCardTypeChoiceRadioButton"
+			color="0x000000"
+			label="Image"
+			click="{imageCardRadioButtonChoice()}" height="21"/>
+	</mx:HBox>
+<mx:Script>
+	<![CDATA[
+		protected static const TRACE_STRING:String = "EditCardText.mxml";
+		// this will dispatch this event when the user clicks the set image button
+		public static const EVENT_GET_AN_IMAGE_FOR_CARD:String = "EVENT_GET_AN_IMAGE_FOR_CARD";
+		public var dataField:String = ""; // the field on the data to put the text in
+		public var imageEnabledField:String = ""; // the field on the data that says if this card side is an image
+		public var imageField:String = ""; // the field on the data that says where to store the imageid used on this card
+		protected function textCardRadioButtonChoice():void
+		{
+			data[imageEnabledField] = false;
+			cardTypeViewStack.selectedIndex = 0;
+		}
+		protected function imageCardRadioButtonChoice():void
+		{
+			data[imageEnabledField] = true;
+			cardTypeViewStack.selectedIndex = 1;
+		}
+		protected function onFocusIn():void
+		{
+			//stage.focus = cardText;
+			//cardText.setSelection(0,cardText.text.length);
+			dispatchEvent( new Event(FlashCardsEvent.DISABLE_DRAGGING, true));
+		}
+		protected function onFocusOut():void
+		{
+			dispatchEvent( new Event(FlashCardsEvent.ENABLE_DRAGGING, true));
+		}
+		protected function deselectText():void
+		{
+			//dispatchEvent(new FlashCardsEvent(FlashCardsEvent.CARD_TEXT_OUT, {}, true));
+		}
+		protected function updateArray():void
+		{
+			if(isReady())
+			{
+				data[dataField] = cardText.text;
+			}
+		}
+		public override function set data(value:Object):void
+		{
+			super.data = value;
+			if(isReady())
+			{
+				cardText.text = data[dataField];
+				if( data[imageEnabledField] )
+				{
+					textCardTypeChoiceRadioButton.selected = false;
+					imageCardTypeChoiceRadioButton.selected = true;
+					imageCardRadioButtonChoice();
+				}
+				else
+				{
+					textCardTypeChoiceRadioButton.selected = true;
+					imageCardTypeChoiceRadioButton.selected = false;
+					textCardRadioButtonChoice();
+				}
+				showImage(data[imageField]);
+			}
+			else
+			{
+				// nothing to do?
+			}
+		}
+		// imageData will have {assetId: , source: }
+		// source will be the bitmap data that can be plugged into the image
+		// assetId will be -1 if no image is chosen yet
+		protected function showImage(imageData:Object):void
+		{
+			////trace(TRACE_STRING + "::showImage");
+			if( imageData.assetId != -1)
+			{
+				//trace("image time!  imageData.source = " +  imageData.source);
+				cardImage.setImageSource(imageData.source);
+				//this.validateDisplayList();
+			}
+			else
+			{
+				// blank the image
+				cardImage.source = ""; // need this or else re-used item renderes may not show as blank
+			}
+		}
+		protected function isReady():Boolean
+		{
+			// NOTE: not sure why cardText is null sometimes. WTF?
+			if(data != null && dataField != "" && cardText != null)
+			{
+				return true;
+			}
+			return false;
+		}
+		protected function setImageClick():void
+		{
+			dispatchEvent(new Event(EVENT_GET_AN_IMAGE_FOR_CARD, true));
+		}
+		// the code that hears the EVENT_GET_AN_IMAGE_FOR_CARD event will call this function to give it an image
+		public function setImageForCard(assetId:String, bitmapData:*):void
+		{
+			data[imageField] = {assetId:assetId, source:bitmapData};
+			showImage(data[imageField]);
+		}
+	]]>
+</mx:Script>
+</mx:Canvas>
