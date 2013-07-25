@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="448" height="348" backgroundColor="#FFFFFF" borderStyle="none" borderThickness="1" borderColor="#000000">
-	<mx:TextArea fontFamily="Courier New" fontSize="20" textAlign="center" width="400" height="300" horizontalCenter="0" verticalCenter="0"/>
-</mx:Canvas>

@@ -1,33 +1,48 @@
 <?php
 /**
- * Materia
- * It's a thing
+ * {ADD YOUR DOCUMENTATION HERE}
+ *
+ * 
+ *
+ * The widget score module
  *
  * @package	    Materia
- * @version    1.0
- * @author     UCF New Media
- * @copyright  2011 New Media
- * @link       http://kogneato.com
- */
-
-
-/**
- * NEEDS DOCUMENTATION
- *
- * The widget managers for the Materia package.
- *
- * @package	    Main
  * @subpackage  scoring
  * @category    Modules
-  * @author      ADD NAME HERE
+ * @author      ADD NAME HERE
+ *
+ * @group App
+ * @group Materia
+ * @group Score
+ * @group test
  */
 
 namespace Materia;
 
-class Score_Modules_FlashCards extends Score_Module
+class Score_Modules_test extends Score_Module
 {
 
-	public function check_answer($log)
-	{
-	}
+	/**
+	 * A basic example of what methods this class should override.
+	 * @param  object $log Any data saved to the server by your widget (usually question or performance data).
+	 * @return [type]      [description]
+	 */
+	// public function check_answer($log)
+	// {
+	// 	if (isset($this->questions[$log->item_id]))
+	// 	{
+	// 		$question = $this->questions[$log->item_id];
+	// 		foreach ($question->answers as $answer)
+	// 		{
+	// 			if ($log->text == $answer['text'])
+	// 			{
+	// 				return $answer['value'];
+	// 				break;
+	// 			}
+	// 		}
+	// 	}
+	// 	
+	// 	return 0;
+	// }
+
 }
