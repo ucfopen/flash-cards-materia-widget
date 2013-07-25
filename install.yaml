@@ -1,8 +1,8 @@
 ---
 general:
-  name: The Safety Dance
+  name: Flash Cards
   group: Materia
-  height: 600
+  height: 516
   width: 800
   in_catalog: Yes
   is_editable: Yes
@@ -13,22 +13,22 @@ general:
   api_version: 2
 files:
   creator: creator.html
-  player: widget.html
-  flash_version: 0
+  player: swf/flash-cards-engine.swf
+  flash_version: 10
 score:
-  is_scorable: Yes
+  is_scorable: No
   score_module: FlashCards
   score_type: SERVER
 meta_data:
   features:
-    - EVERYBODY
-    - LOOK
-    - AT
-    - YOUR
-    - HANDS
+    - Customizable
+    - Media
   supported_data:
     - Question/Answer
   about: >
-    WE CAN LEAVE YOUR FRIENDS BEHIND.
+    Flash Cards is a study tool in which a
+    virtual tutor shows students a deck of
+    flash cards
   excerpt: >
-    WE CAN DANCE IF YOU WANT TO.
+    A study tool in which a virtual tutor
+    shows students a deck of flash cards.

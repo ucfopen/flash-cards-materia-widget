@@ -1,6 +1,80 @@
 ---
-name: The Safety Dance
+name: Psychology
 qset:
   version: 1
   data:
     items:
+      - 
+        name: Chapter I
+        items:
+          - 
+            id: null
+            type: QA
+            questions:
+              - 
+                text: 'A Swiss psychiatrist and author of "Psychological Types."  Practiced analytical psychology.'
+            answers:
+              - 
+                value: 100
+                text: Carl Jung
+          - 
+            id: null
+            type: QA
+            questions:
+              - 
+                text: 'Austrian physician who developed psychoanalysis.  Proposed the concepts of the id, Ego and Super-ego.'
+            answers:
+              - 
+                value: 100
+                text: Sigmund Freud
+          - 
+            id: null
+            type: QA
+            questions:
+              - 
+                text: >
+                  An impulsive portion of the human psyche
+                  proposed by Freud that operates on the
+                  "pleasure principle."
+            answers:
+              - 
+                value: 100
+                text: id
+          - 
+            id: null
+            type: QA
+            questions:
+              - 
+                text: >
+                  The conscious portion of the human
+                  psyche proposed by Freud.
+            answers:
+              - 
+                value: 100
+                text: Ego
+          - 
+            id: null
+            type: QA
+            questions:
+              - 
+                text: >
+                  The unconscious portion of the human
+                  psyche proposed by Freud.
+            answers:
+              - 
+                value: 100
+                text: Super-Ego
+          - 
+            id: null
+            type: QA
+            questions:
+              - 
+                text: >
+                  Russian physiologist who demonstrated
+                  the concept of classical conditioning
+                  with a famous experiment that measured
+                  the saliva of dogs.
+            answers:
+              - 
+                value: 100
+                text: Ivan Pavlov
