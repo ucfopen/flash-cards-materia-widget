@@ -106,7 +106,7 @@ Namespace('test').Creator = do ->
 			Materia.CreatorCore.showMediaImporter()
 
 		#default these to true, change them later if needed
-		$clone.find('.text_radio').attr('checked', true)
+		$clone.find('.text_radio').prop('checked', true)
 
 		#fill the table with any relevant information from the qset
 		if card? and card.id?
@@ -117,7 +117,7 @@ Namespace('test').Creator = do ->
 			if card.assets? and card.assets.length > 0
 				#first asset, front face
 				if card.assets[0] isnt '-1'
-					$(front).find('.image_radio').attr('checked', true)
+					$(front).find('.image_radio').prop('checked', true)
 					$(front).find('.card_text').hide()
 					$(front).find('.card_image').css('display', 'block')
 					url = Materia.CreatorCore.getMediaUrl(card.assets[0])
@@ -126,7 +126,7 @@ Namespace('test').Creator = do ->
 					$(front).find('textarea').val card.questions[0].text
 				#second asset, back face
 				if card.assets[1] isnt '-1'
-					$(back).find('.image_radio').attr('checked', true)
+					$(back).find('.image_radio').prop('checked', true)
 					$(back).find('.card_text').hide()
 					$(back).find('.card_image').css('display', 'block')
 					url = Materia.CreatorCore.getMediaUrl(card.assets[1])
@@ -143,6 +143,7 @@ Namespace('test').Creator = do ->
 
 	#scrape all relevant qset info out of each row
 	_process = (card) ->
+		console.log $(card).children()
 		front = $(card).find('td')[1]
 		back = $(card).find('td')[2]
 
