@@ -1,4 +1,4 @@
-Namespace('test').Creator = do ->
+Namespace('Flashcards').Creator = do ->
 	_widget  = null # holds widget data
 	_qset    = null # Keep tack of the current qset
 	_title   = null # hold on to this instance's title
