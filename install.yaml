@@ -1,6 +1,6 @@
 ---
 general:
-  name: Flash Cards
+  name: flash-cards
   group: Materia
   height: 516
   width: 800
@@ -13,7 +13,7 @@ general:
   api_version: 2
 files:
   creator: creator.html
-  player: swf/flash-cards-engine.swf
+  player: widget.html
   flash_version: 10
 score:
   is_scorable: No
