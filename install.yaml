@@ -18,7 +18,6 @@ files:
 score:
   is_scorable: No
   score_module: FlashCards
-  score_type: SERVER
 meta_data:
   features:
     - Customizable
