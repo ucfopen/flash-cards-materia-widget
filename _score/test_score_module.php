@@ -108,8 +108,8 @@ class Test_Score_Modules_test extends \Basetest
 	{
 		$this->_asAuthor();
 
-		$title = "ENIGMA SCORE MODULE TEST";
-		$widget_id = $this->_find_widget_id('Enigma');
+		$title = "FLASH CARDS SCORE MODULE TEST";
+		$widget_id = $this->_find_widget_id('Flash Cards');
 		$qset = (object) ['version' => 1, 'data' => $this->_get_qset()];
 		return \Materia\Api::widget_instance_save($widget_id, $title, $qset, false);
 	}
