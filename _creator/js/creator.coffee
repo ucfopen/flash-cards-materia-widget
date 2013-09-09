@@ -143,7 +143,6 @@ Namespace('Flashcards').Creator = do ->
 
 	#scrape all relevant qset info out of each row
 	_process = (card) ->
-		console.log $(card).children()
 		front = $(card).find('td')[1]
 		back = $(card).find('td')[2]
 
