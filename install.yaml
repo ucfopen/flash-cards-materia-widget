@@ -17,7 +17,7 @@ files:
   flash_version: 10
 score:
   is_scorable: No
-  score_module: None
+  score_module: FlashCards
 meta_data:
   features:
     - Customizable
