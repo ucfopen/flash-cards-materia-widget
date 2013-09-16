@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>flashcards Engine</title>
+		<title>Flashcards Engine</title>
 		<meta charset="utf-8" />
 		<style type="text/css"></style>
 		<script type="text/javascript" src="/js/materia.require.js"></script>
 		<link rel="stylesheet/less" type="text/css" href="css/widget.less">
+		<link rel="stylesheet/less" type="text/css" href="css/IE.less">
 		<script type="text/javascript">
-			require(['enginecore', 'score', 'less', 'underscore', 'js/hammer.min', 'cs!js/widget'], function(util) {
-				Materia.Engine.start(flashcards.Engine);
+			require([
+				'enginecore', 'score', 'less', // Materia libraries.
+				'js/hammer.min',               // Specific dependencies.
+				'cs!js/ie', 'cs!js/widget',    // Widget fields.
+				], function(util) {
+					Materia.Engine.start(Flashcards.Engine);
 			});
 		</script>
 	</head>
-	<body>
+	<body id="main">
 		<section id="overlay" class="overlay">
 			<div class="arr box" id="left-arr">previous card</div>
 			<svg class="arr" id="left-arr">
@@ -50,6 +55,17 @@
 				<circle cx="10" cy="25" r="7"></circle>
 			</svg>
 
+			<div id="restore-one" class="box">restore last discard</div>
+			<svg class="arr" id="bottom-horiz-arr">
+				<path d="M5 20 L40 20 Z"></path>
+				<circle cx="40" cy="20" r="7"></circle>
+			</svg>
+
+			<div id="restore-all" class="box">restore deck</div>
+			<svg class="arr" id="bottom-vert-arr">
+				<path d="M20 0 L20 30 Z"></path>
+				<circle cx="20" cy="30" r="7"></circle>
+			</svg>
 		</section>
 
 		<section id="mobile-overlay" class="overlay">
@@ -79,7 +95,7 @@
 
 			<div id="arrow-right" class="arrow shown">
 				<svg id="right-button" xmlns="http://www.w3.org/2000/svg" version="1.1">
-					<path id="right-button" d="M20 40 L60 40 Z"></path> 
+					<path id="right-button" d="M20 40 L60 40 Z"></path>
 					<path id="right-button" d="M60 41 L40 21 Z"></path>
 					<path id="right-button" d="M60 39 L40 59 Z"></path>
 				</svg>
@@ -92,8 +108,15 @@
 			</div>
 
 			<div id="rotate-icon" class="icon">
-				<svg id="rotate-icon" xmlns="http://www.w3.org/2000/svg" version="1.1"> 
+				<svg id="rotate-icon" xmlns="http://www.w3.org/2000/svg" version="1.1">
 					<path id="rotate-icon" d="M24.249,15.499c-0.009,4.832-3.918,8.741-8.75,8.75c-2.515,0-4.768-1.064-6.365-2.763l2.068-1.442l-7.901-3.703l0.744,8.694l2.193-1.529c2.244,2.594,5.562,4.242,9.26,4.242c6.767,0,12.249-5.482,12.249-12.249H24.249zM15.499,6.75c2.516,0,4.769,1.065,6.367,2.764l-2.068,1.443l7.901,3.701l-0.746-8.693l-2.192,1.529c-2.245-2.594-5.562-4.245-9.262-4.245C8.734,3.25,3.25,8.734,3.249,15.499H6.75C6.758,10.668,10.668,6.758,15.499,6.75z" />
+				</svg>
+			</div>
+
+			<div id="discard-options" class='restore'>
+				<p id="restore-button" class="restore">Restore Deck</p>
+				<svg id="restore-icon">
+					<path id="restore-icon" d="M12.981,9.073V6.817l-12.106,6.99l12.106,6.99v-2.422c3.285-0.002,9.052,0.28,9.052,2.269c0,2.78-6.023,4.263-6.023,4.263v2.132c0,0,13.53,0.463,13.53-9.823C29.54,9.134,17.952,8.831,12.981,9.073z" />
 				</svg>
 			</div>
 		</section>
@@ -103,20 +126,25 @@
 				<path id="help-button" d="M16,1.466C7.973,1.466,1.466,7.973,1.466,16c0,8.027,6.507,14.534,14.534,14.534c8.027,0,14.534-6.507,14.534-14.534C30.534,7.973,24.027,1.466,16,1.466z M17.328,24.371h-2.707v-2.596h2.707V24.371zM17.328,19.003v0.858h-2.707v-1.057c0-3.19,3.63-3.696,3.63-5.963c0-1.034-0.924-1.826-2.134-1.826c-1.254,0-2.354,0.924-2.354,0.924l-1.541-1.915c0,0,1.519-1.584,4.137-1.584c2.487,0,4.796,1.54,4.796,4.136C21.156,16.208,17.328,16.627,17.328,19.003z" />
 			</svg>
 		</div>
-
-		<div id="discard-options" class='restore'>
-			<p class="restore">Restore Deck</p>
-		</div>
 	</body>
 
 <script type="text/template" id="t-flashcard"><div class="flashcard">
 	<div class="front">
-		<div class="title"></div>
+		<div class="content"></div>
 		<div class="remove">&#215;</div>
 	</div>
 	<div class="back">
-		<div class="description"></div>
+		<div class="content"></div>
 		<div class="remove">&#215;</div>
 	</div>
 </div></script>
+
+<script type="text/template" id="t-IE-back"><div id="IE-back">
+	<div class="description"></div>
+	<div class="remove">&#215;</div>
+</div></script>
+
+<script type="text/template" id="t-restore-icon"><svg id="restore-single">
+	<path id="restore-icon" d="M12.981,9.073V6.817l-12.106,6.99l12.106,6.99v-2.422c3.285-0.002,9.052,0.28,9.052,2.269c0,2.78-6.023,4.263-6.023,4.263v2.132c0,0,13.53,0.463,13.53-9.823C29.54,9.134,17.952,8.831,12.981,9.073z" />
+</svg></script>
 </html>
