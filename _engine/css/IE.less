@@ -1,0 +1,53 @@
+// This class is added to the body if browsing with IE.
+.IE {
+	#container {
+		#IE-back {
+			color            : #222;
+			z-index          : 10;
+			display          : none;
+			position         : absolute;
+			top              : 0;
+			left             : 0;
+			height           : 100%;
+			width            : 100%;
+			background-color : #EEE;
+			&.shown {
+				display : block !important;
+			}
+			.description {
+				margin-top : 10px;
+				padding    : 30px;
+			}
+			.remove {
+				position    : absolute;
+				right       : 0;
+				top         : 0;
+				height      : 30px;
+				width       : 30px;
+				line-height : 30px;
+				font-size   : 20px;
+				-webkit-transition : 200ms all;
+				   -moz-transition : 200ms all;
+				    -ms-transition : 200ms all;
+				        transition : 200ms all;
+				&:hover {
+					color            : #FFF;
+					background-color : rgba(0,0,0,0.8);
+					-webkit-transition : 200ms all;
+					   -moz-transition : 200ms all;
+					    -ms-transition : 200ms all;
+					        transition : 200ms all;
+				}
+			}
+		}
+		.flashcard {
+			-ms-transition : none;
+			&.rotated {
+				opacity: 0;
+			}
+			.back {
+				display: none;
+			}
+		}
+	}
+}
