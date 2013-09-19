@@ -11,7 +11,7 @@
 			require([
 				'enginecore', 'score', 'less', // Materia libraries.
 				'js/hammer.min',               // Specific dependencies.
-				'cs!js/ie', 'cs!js/widget',    // Widget fields.
+				'cs!js/widget',                // Widget files.
 				], function(util) {
 					Materia.Engine.start(Flashcards.Engine);
 			});
@@ -114,10 +114,7 @@
 			</div>
 
 			<div id="discard-options" class='restore'>
-				<p id="restore-button" class="restore">Restore Deck</p>
-				<svg id="restore-icon">
-					<path id="restore-icon" d="M12.981,9.073V6.817l-12.106,6.99l12.106,6.99v-2.422c3.285-0.002,9.052,0.28,9.052,2.269c0,2.78-6.023,4.263-6.023,4.263v2.132c0,0,13.53,0.463,13.53-9.823C29.54,9.134,17.952,8.831,12.981,9.073z" />
-				</svg>
+				<p id="restore-text" class='restore hidden'>Restore Deck</p>
 			</div>
 		</section>
 
@@ -143,8 +140,4 @@
 	<div class="description"></div>
 	<div class="remove">&#215;</div>
 </div></script>
-
-<script type="text/template" id="t-restore-icon"><svg id="restore-single">
-	<path id="restore-icon" d="M12.981,9.073V6.817l-12.106,6.99l12.106,6.99v-2.422c3.285-0.002,9.052,0.28,9.052,2.269c0,2.78-6.023,4.263-6.023,4.263v2.132c0,0,13.53,0.463,13.53-9.823C29.54,9.134,17.952,8.831,12.981,9.073z" />
-</svg></script>
 </html>
