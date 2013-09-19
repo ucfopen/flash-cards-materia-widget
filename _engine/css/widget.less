@@ -171,6 +171,7 @@ body {
 				stroke   : #FFF;
 			}
 			.flashcard {
+				z-index  : 15;
 				position : absolute;
 				height   : 100%;
 				width    : 100%;
@@ -190,54 +191,67 @@ body {
 					        transform : rotateY(180deg);
 				}
 				&.shuffled {
-					-webkit-transform-origin : 64% 127%;
-					   -moz-transform-origin : 64% 127%;
-					    -ms-transform-origin : 64% 127%;
-					        transform-origin : 64% 127%;
-					-webkit-transform : rotateX(360deg) scale(0.1) translate(170px, 100px);
-					   -moz-transform : rotateX(360deg) scale(0.1) translate(170px, 100px);
-					    -ms-transform : rotateX(360deg) scale(0.1) translate(170px, 100px);
-					        transform : rotateX(360deg) scale(0.1) translate(170px, 100px);
+					-webkit-transform-origin : 64% 127% !important;
+					   -moz-transform-origin : 64% 127% !important;
+					    -ms-transform-origin : 64% 127% !important;
+					        transform-origin : 64% 127% !important;
+					-webkit-transform : rotateX(360deg) scale(0.1) translate(170px, 100px) !important;
+					   -moz-transform : rotateX(360deg) scale(0.1) translate(170px, 100px) !important;
+					    -ms-transform : rotateX(360deg) scale(0.1) translate(170px, 100px) !important;
+					        transform : rotateX(360deg) scale(0.1) translate(170px, 100px) !important;
+				}
+				&.glow {
+					box-shadow : 0 0 20px yellow;
 				}
 				&.shuffled-rotated {
 					-webkit-transform-origin : 64% 127%;
 					   -moz-transform-origin : 64% 127%;
 						-ms-transform-origin : 64% 127%;
 						    transform-origin : 64% 127%;
-					-webkit-transform : scale(0.1) translate(170px, 100px);
-					   -moz-transform : scale(0.1) translate(170px, 100px);
-					    -ms-transform : scale(0.1) translate(170px, 100px);
-					        transform : scale(0.1) translate(170px, 100px);
+					-webkit-transform : scale(0.1) translate(170px, 100px) rotateY(-360deg);
+					   -moz-transform : scale(0.1) translate(170px, 100px) rotateY(-360deg);
+					    -ms-transform : scale(0.1) translate(170px, 100px) rotateY(-360deg);
+					        transform : scale(0.1) translate(170px, 100px) rotateY(-360deg);
 				}
-				&.discarded {
-					-webkit-transform : rotate(15deg) scale(0.3) translate(1400px, 400px);
-					   -moz-transform : rotate(15deg) scale(0.3) translate(1400px, 400px);
-					    -ms-transform : rotate(15deg) scale(0.3) translate(1400px, 400px);
-					        transform : rotate(15deg) scale(0.3) translate(1400px, 400px);
-				}
-				&.discarded-moved-0 {
+				&.discarded-pos-0 {
+					z-index : 5;
 					-webkit-transform : rotate(15deg) scale(0.3) translate(1380px, 420px);
 					   -moz-transform : rotate(15deg) scale(0.3) translate(1380px, 420px);
 					    -ms-transform : rotate(15deg) scale(0.3) translate(1380px, 420px);
 					        transform : rotate(15deg) scale(0.3) translate(1380px, 420px);
+					.front, .back {
+						background-color : #BBB;
+					}
 				}
-				&.discarded-moved-1 {
+				&.discarded-pos-1 {
+					z-index : 6;
 					-webkit-transform : rotate(15deg) scale(0.3) translate(1360px, 440px);
 					   -moz-transform : rotate(15deg) scale(0.3) translate(1360px, 440px);
 					    -ms-transform : rotate(15deg) scale(0.3) translate(1360px, 440px);
 					        transform : rotate(15deg) scale(0.3) translate(1360px, 440px);
+					.front, .back {
+						background-color : #CCC;
+					}
 				}
-				&.discarded-moved-2 {
+				&.discarded-pos-2 {
+					z-index : 7;
 					-webkit-transform : rotate(15deg) scale(0.3) translate(1340px, 460px);
 					   -moz-transform : rotate(15deg) scale(0.3) translate(1340px, 460px);
 					    -ms-transform : rotate(15deg) scale(0.3) translate(1340px, 460px);
 					        transform : rotate(15deg) scale(0.3) translate(1340px, 460px);
+					.front, .back {
+						background-color : #DDD;
+					}
 				}
-				&.discarded-moved-3 {
+				&.discarded-pos-3 {
+					z-index : 8;
 					-webkit-transform : rotate(15deg) scale(0.3) translate(1320px, 480px);
 					   -moz-transform : rotate(15deg) scale(0.3) translate(1320px, 480px);
 					    -ms-transform : rotate(15deg) scale(0.3) translate(1320px, 480px);
 					        transform : rotate(15deg) scale(0.3) translate(1320px, 480px);
+					.front, .back {
+						background-color : #EEE;
+					}
 				}
 				&.stage-0 {
 					-webkit-transform : scale(0.25) translateX(-1400px) translateY(-500px);
@@ -421,8 +435,8 @@ body {
 				margin-left   : -21px;
 				fill          : #FFF;
 				stroke        : #FFF;
-				max-width     : 32px;
-				max-height    : 32px;
+				width         : 31px;
+				height        : 31px;
 				padding       : 5px;
 				border-radius : 100%;
 				-webkit-transition : 300ms all;
@@ -521,8 +535,8 @@ body {
 		}
 		svg {
 			margin : 8.5px;
-			height : 35px;
-			width  : 35px;
+			height : 31px;
+			width  : 31px;
 			fill   : #222;
 			stroke : rgba(0,0,0,0);
 		}
@@ -532,42 +546,25 @@ body {
 		right     : 10px;
 		bottom    : 80px;
 		font-size : 13px;
-		opacity   : 0;
-		display   : none;
-		-webkit-transform  : rotate(15deg);
-		   -moz-transform  : rotate(15deg);
-		    -ms-transform  : rotate(15deg);
-		        transform  : rotate(15deg);
+		-webkit-transform : rotate(15deg);
+		   -moz-transform : rotate(15deg);
+		    -ms-transform : rotate(15deg);
+		        transform : rotate(15deg);
 		-webkit-transition : 300ms all;
 		   -moz-transition : 300ms all;
 		    -ms-transition : 300ms all;
 		        transition : 300ms all;
-		&:hover {
-			svg {
-				-webkit-transform : translateX(-60px);
-				   -moz-transform : translateX(-60px);
-				    -ms-transform : translateX(-60px);
-				        transform : translateX(-60px);
+		#restore-text {
+			opacity : 1;
+			-webkit-transition : 300ms all;
+			   -moz-transition : 300ms all;
+			    -ms-transition : 300ms all;
+			        transition : 300ms all;
+			&.hidden {
+				display: none;
 			}
-		}
-		&.shown {
-			display : block;
-		}
-		&.faded-in {
-			opacity: 1;
-		}
-		svg {
-			position : absolute;
-			left     : 10px;
-			height   : 35px;
-			width    : 35px;
-			-webkit-transition : 200ms;
-			   -moz-transition : 200ms;
-			    -ms-transition : 200ms;
-			        transition : 200ms;
-			path {
-				fill   : #FFF;
-				stroke : #FFF;
+			&.faded-in {
+				opacity : 1;
 			}
 		}
 	}
