@@ -38,8 +38,7 @@ package {
 		}
 		public function addItem(title:String, numOfCards:Number):void {
 			if (itemArray.length <5) {
-				////trace("adding item");
-				////trace(title);
+				title = !title ? '' : title; // set default title (if title is null)
 				////trace(numOfCards);
 				var newDeck:DeckAsset = new DeckAsset();
 				this.addChildAt(newDeck, 0);
