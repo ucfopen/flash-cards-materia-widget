@@ -24,4 +24,14 @@
 
 namespace Materia;
 
-class Score_Modules_FlashCards extends Score_Module{}
+class Score_Modules_FlashCards extends Score_Module{
+
+	/*
+	TODO: place scaffolding of what a score module can define
+	along with instructions in this file
+	 */
+	public function check_answer($log)
+	{
+	}
+
+}
