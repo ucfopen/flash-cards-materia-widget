@@ -4,21 +4,25 @@
 		#IE-back {
 			color            : #222;
 			z-index          : 10;
-			display          : none;
 			position         : absolute;
 			top              : 0;
 			left             : 0;
 			height           : 100%;
 			width            : 100%;
 			background-color : #EEE;
-			&.shown {
-				display : block !important;
+			transform  : rotateY(-90deg);
+			transition : none !important;
+			&.rotated {
+				transform : rotateY(0deg) !important;
+			}
+			&.hidden {
+				display: none;
 			}
 			.description {
 				margin-top : 10px;
 				padding    : 30px;
 			}
-			.remove {
+			.remove-button {
 				position    : absolute;
 				right       : 0;
 				top         : 0;
@@ -26,28 +30,30 @@
 				width       : 30px;
 				line-height : 30px;
 				font-size   : 20px;
-				-webkit-transition : 200ms all;
-				   -moz-transition : 200ms all;
-				    -ms-transition : 200ms all;
-				        transition : 200ms all;
+				-ms-transition : 200ms all;
 				&:hover {
 					color            : #FFF;
 					background-color : rgba(0,0,0,0.8);
-					-webkit-transition : 200ms all;
-					   -moz-transition : 200ms all;
-					    -ms-transition : 200ms all;
-					        transition : 200ms all;
+					transition       : 200ms all;
 				}
 			}
 		}
 		.flashcard {
-			-ms-transition : none;
-			&.rotated {
-				opacity: 0;
-			}
-			.back {
-				display: none;
-			}
+			transition : none !important;
+
+			&.rotated     { transform : rotateY(90deg) !important; }
+			.front, .back { backface-visibility : hidden !important; }
+			.back         { display: none !important; }
 		}
+	}
+	#clarification {
+		display: block !important;
+		position: absolute;
+		height : 100px;
+		width : 200px;
+		left : 50%;
+		top : 50%;
+		margin : -50px 0 0 -100px;
+		font-size: 20px;
 	}
 }
