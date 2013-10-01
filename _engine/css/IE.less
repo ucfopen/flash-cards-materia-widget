@@ -2,22 +2,21 @@
 .IE {
 	#container {
 		#IE-back {
+			display          : block;
 			color            : #222;
-			z-index          : 10;
+			z-index          : 200;
 			position         : absolute;
 			top              : 0;
 			left             : 0;
 			height           : 100%;
 			width            : 100%;
-			background-color : #EEE;
-			transform  : rotateY(-90deg);
+			background-color : #DDD;
+			-ms-transform : rotateY(-90deg);
+			    transform : rotateY(-90deg);
 			transition : none !important;
 			&.rotated {
-				transform : rotateY(0deg) !important;
-			}
-			&.hidden {
 				display: none;
-			}
+			} 
 			.description {
 				margin-top : 10px;
 				padding    : 30px;
@@ -31,18 +30,26 @@
 				line-height : 30px;
 				font-size   : 20px;
 				-ms-transition : 200ms all;
+				    transition : 200ms all;
 				&:hover {
-					color            : #FFF;
-					background-color : rgba(0,0,0,0.8);
-					transition       : 200ms all;
+					color              : #FFF;
+					background-color   : rgba(0,0,0,0.8);
+					-webkit-transition : 200ms all;
+					        transition : 200ms all;
 				}
 			}
 		}
 		.flashcard {
 			transition : none !important;
 
-			&.rotated     { transform : rotateY(90deg) !important; }
-			.front, .back { backface-visibility : hidden !important; }
+			&.rotated     { 
+				-ms-transform : rotateY(90deg) !important; 
+				    transform : rotateY(90deg) !important;
+			}
+			.front, .back {
+				-ms-backface-visibility : hidden !important;
+				    backface-visibility : hidden !important; 
+			}
 			.back         { display: none !important; }
 		}
 	}

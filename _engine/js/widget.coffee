@@ -519,4 +519,5 @@ Namespace('Flashcards').Engine = do ->
 		getCurrentCardId : () -> currentCardId
 		getRotation      : () -> rotation
 		getNumCards      : () -> numCards
+		flipCard         : _flipCard
 	}
