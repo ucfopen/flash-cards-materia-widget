@@ -40,6 +40,9 @@ Namespace('Flashcards').IE = do ->
 		Hammer(document).on 'swipeleft',  -> _handleCardShift()
 
 	_handleUpEvent = (event) ->
+		console.log event.target.id
+		console.log event.target.className
+
 		switch event.target.id
 			when "left-button", "right-button" then _handleCardShift()
 
@@ -47,12 +50,12 @@ Namespace('Flashcards').IE = do ->
 			when 'restore-icon' then _handleRestore()
 			when 'rotate-icon'  then _handleRotate()
 
-			when "IE-back" then _flipCard()
+			when "IE-back" 
+				Flashcards.Engine.flipCard()
+				_handleCardFlip()
 
 		switch event.target.className
-			when "front", "back", "title", "description", "container", "content"
-
-				_handleCardFlip()
+			when "front", "back", "title", "description", "container", "content" then _handleCardFlip()
 			when 'remove-button' then _handleDiscard()
 
 	_handleCardShift = () ->
@@ -91,7 +94,8 @@ Namespace('Flashcards').IE = do ->
 	_handleRotate = () ->
 		_showClarification 'Rotating...'
 		_fadeIEBack 1200
-		if rotation isnt '' then _showIEBack()
+		_rotation = Flashcards.Engine.getRotation()
+		if _rotation isnt '' then _showIEBack()
 
 		setTimeout ->
 			_rotation = Flashcards.Engine.getRotation()
