@@ -87,7 +87,33 @@
 		transition-duration : 500ms !important;
 		.remove-button { transition : none !important; }
 	} }
-	#finished { transition : none !important; }
+	#finished { 
+		transition : none !important; 
+		svg { display : none !important; }
+		table {
+			position : absolute;
+			left     : 46%;
+			margin   : 7px 0 0 7px;
+			display  : block !important;
+			width    : inherit;
+			height   : inherit;
+			td {
+				height : 5px;
+				width  : 5px;
+			}
+		}
+		.restart-table {
+			tr {
+				&.tr1 { td:nth-child(3), td:nth-child(4), td:nth-child(5) { background-color: #FFF; } }
+				&.tr2 { td:nth-child(2), td:nth-child(3), td:nth-child(6) { background-color: #FFF; } }
+				&.tr3 { td:nth-child(0), td:nth-child(1), td:nth-child(0), td:nth-child(5), td:nth-child(6), td:nth-child(7) { background-color: #FFF; } }
+				&.tr4 { td:nth-child(1), td:nth-child(6) { background-color: #FFF; } }
+				&.tr5 { td:nth-child(1) { background-color: #FFF; } }
+				&.tr6 { td:nth-child(2), td:nth-child(7) { background-color: #FFF; } }
+				&.tr7 { td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) { background-color: #FFF; } }
+			}
+		}
+	}
 	.icon {
 		background-color: rgba(0,0,0,0) !important;
 		border-radius : 0 !important;
@@ -105,13 +131,13 @@
 		}
 		.restore-table {
 			tr {
-				&.tr1, &.tr7 { td:nth-child(3), td:nth-child(4), td:nth-child(5) { background-color: #FFF; } }
-				&.tr2        { td:nth-child(2), td:nth-child(3), td:nth-child(6) { background-color: #FFF; } }
-				&.tr3        { td:nth-child(0), td:nth-child(1), td:nth-child(0), td:nth-child(5), td:nth-child(6), td:nth-child(7) { background-color: #FFF; } }
-				&.tr4        { td:nth-child(1), td:nth-child(6) { background-color: #FFF; } }
-				&.tr5        { td:nth-child(1) { background-color: #FFF; } }
-				&.tr6        { td:nth-child(2), td:nth-child(7) { background-color: #FFF; } }
-				&.tr7        { td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) { background-color: #FFF; } }
+				&.tr1 { td:nth-child(3), td:nth-child(4), td:nth-child(5) { background-color: #FFF; } }
+				&.tr2 { td:nth-child(2), td:nth-child(3), td:nth-child(6) { background-color: #FFF; } }
+				&.tr3 { td:nth-child(0), td:nth-child(1), td:nth-child(0), td:nth-child(5), td:nth-child(6), td:nth-child(7) { background-color: #FFF; } }
+				&.tr4 { td:nth-child(1), td:nth-child(6) { background-color: #FFF; } }
+				&.tr5 { td:nth-child(1) { background-color: #FFF; } }
+				&.tr6 { td:nth-child(2), td:nth-child(7) { background-color: #FFF; } }
+				&.tr7 { td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) { background-color: #FFF; } }
 			}
 		}
 		.rotate-table {

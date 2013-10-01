@@ -27,7 +27,7 @@ Namespace('Flashcards').Engine = do ->
 	# Environmental conditions.
 	isMobile = navigator.userAgent.match /(iPhone|iPod|iPad|Android|BlackBerry)/
 
-	isFF     = navigator.userAgent.toLowerCase().indexOf('firefox') > -1
+	isFF     = typeof InstallTrigger isnt 'undefined'
 	isIE     = /MSIE (\d+\.\d+);/.test(navigator.userAgent)
 	pointer  = window.navigator.msPointerEnabled
 
@@ -35,7 +35,7 @@ Namespace('Flashcards').Engine = do ->
 	# Setting the opacity to 0.9999 is the best solution we've found that (enigmatically)
 	# solves this issue. However, it causes other issues in webkit browsers (surprise!),
 	# so we must inject it conditionally.
-	if isFF then document.getElementByID('board').style.opacity = 0.9999
+	if isFF then document.getElementById('board').style.opacity = 0.9999
 
 	# If a user has touch and mouse capabilities, make sure we don't
 	# restrict them to a mobile environment.

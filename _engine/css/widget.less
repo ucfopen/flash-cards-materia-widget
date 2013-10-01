@@ -11,7 +11,7 @@
 body {
 	position         : absolute;
 	color            : #FFF;
-	background-color : @a;
+	background-color : @a !important;
 	padding          : 0;
 	margin           : 0;
 	width            : 800px;
@@ -22,6 +22,7 @@ body {
 	cursor           : default;
 
 	user-select : none;
+	table { display: none; }
 	#game {
 		height : inherit;
 		width  : inherit;
@@ -127,9 +128,11 @@ body {
 		height     : inherit;
 		transition : 300ms all;
 		&.blurred {
-			opacity : 0.6;
+			opacity : 0.5;
 
 			-webkit-filter : blur(2px);
+			   -moz-filter : blur(2px);
+			    -ms-filter : blur(2px);
 			        filter : blur(2px);
 		}
 		#instance-title {
@@ -303,6 +306,8 @@ body {
 
 					backface-visibility : hidden;
 					.content {
+						height : inherit;
+						width  : inherit;
 						p {
 							&.description {
 								margin-top : 10px;
@@ -376,7 +381,6 @@ body {
 				stroke        : #FFF;
 				border-radius : 3px;
 			}
-			table {display: none;}
 			&#arrow-left  { left  : 20px; }
 			&#arrow-right { right : 20px; }
 			&.shown { transform : scale(1); }
@@ -408,7 +412,6 @@ body {
 			fill   : #222;
 			stroke : rgba(0,0,0,0);
 		}
-		table {display: none;}
 	}
 	#discard-options {
 		position  : absolute;
