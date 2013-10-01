@@ -1,6 +1,6 @@
 ---
 general:
-  name: flash-cards
+  name: Flash Cards
   group: Materia
   height: 516
   width: 800
@@ -26,9 +26,9 @@ meta_data:
   supported_data:
     - Question/Answer
   about: >
-    Flash Cards is a study tool in which a
-    virtual tutor shows students a deck of
-    flash cards
+    Flash Cards is a study tool that allows
+    students to use a virtual deck of cards
+    to study concepts paired with definitions
+    or images.
   excerpt: >
-    A study tool in which a virtual tutor
-    shows students a deck of flash cards.
+    A study tool featuring a deck of flash cards.
