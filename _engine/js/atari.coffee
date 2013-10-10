@@ -5,6 +5,7 @@ Namespace("Flashcards").Atari =
 		document.getElementById('main').className += "atari"
 
 		@cacheNodes()
+		@pixelateIcons()
 		@initializeSounds()
 
 		@showLoadingElem(@Nodes.loadingElem[i], i) for i in [0..@Nodes.loadingElem.length-1]
@@ -16,6 +17,16 @@ Namespace("Flashcards").Atari =
 
 	cacheNodes : () ->
 		@Nodes.loadingElem = document.getElementsByClassName('load')
+
+	pixelateIcons : () ->
+		$('#arrow-left').append($($('#t-arrow').html()).clone().addClass('left'))
+		$('#arrow-right').append($($('#t-arrow').html()).clone().addClass('right'))
+
+		$('#finished').append($($('#t-icon').html()).clone().addClass('restore-table'))
+		$('#icon-restore').append($($('#t-icon').html()).clone().addClass('restore-table'))
+		$('#icon-rotate').append($($('#t-icon').html()).clone().addClass('rotate-table'))
+		$('#icon-shuffle').append($($('#t-icon').html()).clone().addClass('shuffle-table'))
+
 
 	initializeSounds : () ->
 		@Sound.saw0 = T("saw", {freq:110, mul:0.1})
@@ -31,10 +42,6 @@ Namespace("Flashcards").Atari =
 		setTimeout ->
 			elem.className = 'shown'
 		, i*150+(Math.random()*400)
-
-	addEventListeners : (isMobile) ->
-		if isMobile then Hammer(document).on 'release', @handleAtariEvents
-		else document.addEventListener 'mouseup', @handleAtariEvents
 
 	playIcon : (type) ->
 		table = [1760, [110, "200ms"]]

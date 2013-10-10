@@ -3,7 +3,7 @@
 Materia
 It's a thing
 
-Widget  : Flashcards
+Widget  : Flashcards, Engine
 Authors : Micheal Parks
 
 ###
@@ -26,7 +26,6 @@ Namespace('Flashcards').Engine = do ->
 
 	# Environmental conditions.
 	isMobile = navigator.userAgent.match /(iPhone|iPod|iPad|Android|BlackBerry)/
-
 	isFF     = typeof InstallTrigger isnt 'undefined'
 	isIE     = /MSIE (\d+\.\d+);/.test(navigator.userAgent)
 	pointer  = window.navigator.msPointerEnabled
@@ -44,30 +43,28 @@ Namespace('Flashcards').Engine = do ->
 
 	# Called by Materia.Engine when widget Engine should start the UI.
 	start = (instance, qset, version = '1') ->
+		if not _browserSupportsSvg()
+			$('.error-notice-container').show()
+			return
+
 		_qset = qset
 		_cacheNodes()
 		_drawBoard(instance.name, qset.items[0].items.length)
 		_storeCards(qset.items[0].items)
 		_setCardPositions()
 		_addEventListeners()
+		_setArrowState()
 
-		if isIE
-			yepnope({
-				load : [
-					'js/IE.js',
-					'css/IE.css'
-				]
-				complete : () ->
-					Flashcards.IE.start Nodes.$container
-			})
-		else
-			# TODO
+		if isIE then yepnope(load:['css/IE.css'], complete : () -> document.getElementById('main').className+="IE")
 
 		# If a user unlocks the easter egg, load the atari files and fire her up!
 		easterEgg = new Konami _easterEggStart
 
 		# If the user has stumbled upon the meaning of life, give them atari mode.
 		if Math.floor(Math.random()*100) is 42 then _easterEggStart()
+
+	_browserSupportsSvg = ->
+		document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.0") || document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.1")
 			
 	_easterEggStart = () ->
 		yepnope(
@@ -75,7 +72,7 @@ Namespace('Flashcards').Engine = do ->
 				'css!//fonts.googleapis.com/css?family=Press+Start+2P',
 				'js/atari.js',
 				'js/timbre.js',
-				'css/atari.css',
+				'css/atari.css'
 			]
 			complete : () ->
 				atari = true
@@ -118,23 +115,23 @@ Namespace('Flashcards').Engine = do ->
 
 			# Single flashcard specific data.
 			Flashcards.Card[i].node      = _cardNodes[i]
-			Flashcards.Card[i].FrontText = data[i].answers[0].text
-			Flashcards.Card[i].BackText  = data[i].questions[0].text
+			Flashcards.Card[i].FrontText = data[i].questions[0].text
+			Flashcards.Card[i].BackText  = data[i].answers[0].text
 			
 			# Handle image assets if they are used. Otherwise, populate HTML with text.
 			_cardFront = Flashcards.Card[i].node.children[0].children[0]
 			_cardBack  = Flashcards.Card[i].node.children[1].children[0]
 			if data[i].answers[0].text is 'None'
 				_ansUrl = Materia.Engine.getMediaUrl(data[i].assets[0])
-				_cardFront.innerHTML = '<img class="'+_ansClass+'" src="'+_ansUrl+'">'
+				_cardBack.innerHTML = '<img class="'+_ansClass+'" src="'+_ansUrl+'">'
 			else
-				_cardFront.innerHTML = '<p class="'+_ansClass+'">'+data[i].answers[0].text+'</p>'
+				_cardBack.innerHTML = '<p class="'+_ansClass+'">'+data[i].answers[0].text+'</p>'
 
-			if data[i].answers[0].text is 'None'
+			if data[i].questions[0].text is 'None'
 				_queUrl = Materia.Engine.getMediaUrl(data[i].assets[1])
-				_cardBack.innerHTML = '<img class="'+_queClass+'" src="'+_queUrl+'">'
+				_cardFront.innerHTML = '<img class="'+_queClass+'" src="'+_queUrl+'">'
 			else
-				_cardBack.innerHTML = '<p class="'+_queClass+'">'+data[i].questions[0].text+'</p>'
+				_cardFront.innerHTML = '<p class="'+_queClass+'">'+data[i].questions[0].text+'</p>'
 
 	# Places cards in their correct positions within the gameboard and gives them a specific rotation.
 	# @face : Specifies whether or not to rotate the card when placing them in their positions.
@@ -163,55 +160,69 @@ Namespace('Flashcards').Engine = do ->
 			document.addEventListener 'touchstart', (e) -> e.preventDefault()
 
 			# Hammer.js events for mobile devices.
-			Hammer(document).on 'swiperight', -> if _canMove 'left'  then _shiftCards 'right'
-			Hammer(document).on 'swipeleft', ->  if _canMove 'right' then _shiftCards 'left'
-			Hammer(document).on 'release', _handleUpEvent
+			Hammer(document).on 'swiperight', (e) -> 
+				if _canMove 'left'  then _shiftCards 'right'
+				e.stopPropagation()
+			Hammer(document).on 'swipeleft', (e) ->
+				if _canMove 'right' then _shiftCards 'left'
+				e.stopPropagation()
+			Hammer(document).on 'swipedown', _discard
+			Hammer(document).on 'tap', -> if overlay then _toggleOverlay()
+
+			Hammer(document.getElementById('left-button')).on 'tap', ->  if _canMove 'left' then _shiftCards 'right'
+			Hammer(document.getElementById('right-button')).on 'tap', -> if _canMove 'right' then _shiftCards 'left'
+
+			Hammer(document.getElementById('icon-help')).on 'tap', _toggleOverlay
+			Hammer(document.getElementById('icon-restore')).on 'tap', _unDiscardAll
+			Hammer(document.getElementById('icon-finish')).on 'tap', _unDiscardAll
+			Hammer(document.getElementById('icon-rotate')).on 'tap', -> _rotateCards(if rotation is '' then 'back')
+			Hammer(document.getElementById('icon-shuffle')).on 'tap', -> _shuffleCards
+
+			_flashcardNodes = document.getElementsByClassName('flashcard')
+			for i in [0.._flashcardNodes.length-1]
+				Hammer(_flashcardNodes[i]).on 'tap', ->
+					if _isDiscarded(this) then _unDiscard()
+					else _flipCard()
+
+			_removeNodes = document.getElementsByClassName('remove-button')
+			for i in [0.._removeNodes.length-1]
+				Hammer(_removeNodes[i]).on 'tap', (e) ->
+					_discard()
+					e.stopPropagation()
+
 		else
-			document.addEventListener upEventType, _handleUpEvent
+			document.addEventListener upEventType, -> if overlay then _toggleOverlay()
+
+			$('#arrow-left').on 'mouseup', ->  if _canMove 'left' then _shiftCards 'right'
+			$('#arrow-right').on 'mouseup', -> if _canMove 'right' then _shiftCards 'left'
+
+			$('#icon-help').on 'mouseup',  _toggleOverlay
+			$('#icon-restore').on 'mouseup', _unDiscardAll
+			$('#icon-finish').on 'mouseup', -> _unDiscardAll()
+			$('#icon-rotate').on 'mouseup', ->   _rotateCards(if rotation is '' then 'back')
+			$('#icon-shuffle').on 'mouseup', _shuffleCards
+
+			$('.flashcard').on 'mouseup', ->
+				if _isDiscarded(this) then _unDiscard()
+				else _flipCard()
+
+			$('.remove-button').on 'mouseup', (e) ->
+				_discard()
+				e.stopPropagation()
 
 		# Key events for keyboardz.
 		window.addEventListener 'keydown', (e) ->
 			switch e.keyCode
-				when 37 then if  _canMove 'left'  then _shiftCards 'right'   # Left arrow key.
-				when 38 then     _unDiscard()                                # Up arrow key.
-				when 39 then if  _canMove 'right' then _shiftCards 'left'    # Right arrow key.
-				when 40 then     _discard()                                  # Down arrow key.
-				when 32, 70 then if not isIE then _flipCard()                # F key and space bar.
-				when 72 then     _toggleOverlay()                            # H key.
-				when 82 then     _rotateCards(if rotation is '' then 'back') # R key.
-				when 83 then     _shuffleCards()                             # S key.
-				when 85 then     _unDiscardAll()                             # U key.
+				when 37     then if _canMove 'left'  then _shiftCards 'right'   # Left arrow key.
+				when 38     then    _unDiscard()                                # Up arrow key.
+				when 39     then if _canMove 'right' then _shiftCards 'left'    # Right arrow key.
+				when 40     then    _discard()                                  # Down arrow key.
+				when 32, 70 then if numCards > 0 then _flipCard()               # F key and space bar.
+				when 72     then    _toggleOverlay()                            # H key.
+				when 82     then    _rotateCards(if rotation is '' then 'back') # R key.
+				when 83     then    _shuffleCards()                             # S key.
+				when 85     then    _unDiscardAll()                             # U key.
 			e.preventDefault()
-
-	_handleUpEvent = (event) ->
-		# If the overlay is 
-		if overlay then _toggleOverlay(); return
-
-		element = event.target
-
-		# Button event handler.
-		switch element.id
-			# Nav buttons.
-			when "left-button"  then if _canMove 'left'  then _shiftCards 'right'
-			when "right-button" then if _canMove 'right' then _shiftCards 'left'
-
-			# Options buttons.
-			when "help-button"  then _toggleOverlay()
-			when "restart"      then _unDiscardAll()
-			when "shuffle-icon" then _shuffleCards()
-			when "restore-icon" then _unDiscardAll()
-			when "rotate-icon"
-				if rotation is '' then _rotateCards 'back' else _rotateCards()
-
-		# Events triggered by an element on a flashcard.
-		switch element.className
-			# A face of the current card has been clicked/touched
-			when "front", "back", "title", "description", "container", "content"
-				if      _isDiscarded(element.parentNode) then _unDiscard()
-				else if _isDiscarded(element.parentNode.parentNode.parentNode) then _unDiscard()
-				else if not isIE then _flipCard()
-			when 'flashcard rotated' then if not isIE then _flipCard()
-			when "remove-button"     then _discard()
 
 	# Asseses which direction has accessable cards.
 	# @direction : The direction we wish to inquire about.
@@ -280,18 +291,17 @@ Namespace('Flashcards').Engine = do ->
 						if Flashcards.Card[currentCardId+i]?
 							_stageShufflePt1(Flashcards.Card[currentCardId+i].node, i+2)
 							_stageShufflePt2(Flashcards.Card[currentCardId+i].node, i+2, _posArr[i+2])
-						
 				, 600
 
 				setTimeout ->
 				
-				Nodes.icons[2].className = 'icon focused' # Focus the shuffle icon.
+				Nodes.icons[3].className = 'icon focused' # Focus the shuffle icon.
 
 				# Shuffle and reset the card data, then conclude the animation.
 				setTimeout ->
 					Flashcards.Card = _shuffle(Flashcards.Card)
 					_setCardPositions(if rotation is '' then null else 'reverse')
-					Nodes.icons[2].className = 'icon'
+					Nodes.icons[3].className = 'icon'
 				, 1500
 
 	_stageShufflePt1 = (card, i) ->
@@ -321,7 +331,7 @@ Namespace('Flashcards').Engine = do ->
 
 				if atari then Flashcards.Atari.playIcon 'rotate'
 
-				Nodes.icons[1].className = 'icon focused' # Focus the rotate icon.
+				Nodes.icons[2].className = 'icon focused' # Focus the rotate icon.
 
 				_rotation        = if rotation is '' then '' else '-rotated'
 				_reverseRotation = if rotation is '' then '-rotated' else ''
@@ -347,10 +357,9 @@ Namespace('Flashcards').Engine = do ->
 					animating = false
 					clearInterval(timer)
 
-					if face is 'back' then _setCardPositions 'reverse'
-					else                   _setCardPositions()
+					_setCardPositions(if face is 'back' then 'reverse' else '')
 
-					Nodes.icons[1].className = 'icon'
+					Nodes.icons[2].className = 'icon'
 				, 1400
 
 	# Decides if a flashcard node has any of the discard position classes.
@@ -365,6 +374,8 @@ Namespace('Flashcards').Engine = do ->
 			if numCards > 0
 				numDiscard++
 				numCards--
+
+				Nodes.icons[1].className = "icon"
 
 				if atari then Flashcards.Atari.playDiscard()
 
@@ -414,6 +425,8 @@ Namespace('Flashcards').Engine = do ->
 				numDiscard--
 				numCards++
 
+				if numDiscard is 0 then Nodes.icons[1].className = "icon unselectable"
+
 				# Move last discarded from discard to active pile.
 				_moveCardObject(Flashcards.DiscardPile, Flashcards.Card, Flashcards.DiscardPile.length-1)
 
@@ -429,13 +442,16 @@ Namespace('Flashcards').Engine = do ->
 
 		_showIcons()
 		Nodes.icons[0].className = 'icon focused'
+		Nodes.icons[1].className = 'icon focused'
 
 		setTimeout ->
 			Nodes.icons[0].className = 'icon'
+			Nodes.icons[1].className = 'icon'
 		, 1000
 
 	# Moves all discarded cards into the active deck.
 	_unDiscardAll = () ->
+		console.log numDiscard
 		if not animating
 			if numDiscard > 0
 
@@ -466,6 +482,10 @@ Namespace('Flashcards').Engine = do ->
 					_setArrowState()
 				, 800
 
+				setTimeout ->
+					Nodes.icons[1].className = "icon unselectable"
+				, 1200
+
 	# Opens or closes the help overlay.
 	_toggleOverlay = () ->
 		if not animating
@@ -474,17 +494,19 @@ Namespace('Flashcards').Engine = do ->
 				animating = false
 			, 300
 
+			console.log Nodes.icons
+
 			if overlay is true then overlay = false else overlay = true
 
 			if Nodes.helpOverlay.className is 'overlay shown'
 				_setArrowState()
-				Nodes.icons[3].className    = 'icon'
+				Nodes.icons[4].className    = 'icon'
 				Nodes.gameboard.className   = ''
 				Nodes.helpOverlay.className = 'overlay'
 			else 
 				Nodes.rightArrow.className  = 'arrow shown'
 				Nodes.leftArrow.className   = 'arrow shown'
-				Nodes.icons[3].className    = 'icon focused'
+				Nodes.icons[4].className    = 'icon focused'
 				Nodes.gameboard.className   = 'blurred'
 				Nodes.helpOverlay.className = 'overlay shown'
 
@@ -506,18 +528,14 @@ Namespace('Flashcards').Engine = do ->
 		, 205
 
 	_hideIcons = () ->
-		for i in [0..Nodes.icons.length-1]
+		for i in [1..Nodes.icons.length-1]
 			Nodes.icons[i].className = 'icon faded-out'
 
 	_showIcons = () ->
-		for i in [0..Nodes.icons.length-1]
+		for i in [1..Nodes.icons.length-1]
 			Nodes.icons[i].className = 'icon'
 
 	# Public.
-	return {
-		start            : start
-		getCurrentCardId : () -> currentCardId
-		getRotation      : () -> rotation
-		getNumCards      : () -> numCards
-		flipCard         : _flipCard
-	}
+	start : start
+	Nodes : Nodes
+
