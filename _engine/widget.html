@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html>
+<!--[if IE 8 ]>    <html class="IE8"> <![endif]-->
+<!--[if IE 9 ]>    <html class="IE9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class=""> <!--<![endif]-->
 	<head>
 		<title>Flashcards Engine</title>
 		<meta charset="utf-8" />
 		<style type="text/css"></style>
+		<script type="text/javascript" src="js/modernizr.js"></script>
 		<script type="text/javascript" src="/js/materia.require.js"></script>
 		<link rel="stylesheet/less" type="text/css" href="css/widget.less">
 		<script type="text/javascript">
 			require([
 				'enginecore', 'score', 'less',           // Materia libraries.
-				'js/hammer.min', 'js/prefixfree.min.js', // Specific dependencies.
+				'js/hammer.min',                         // Specific dependencies.
 				'js/yepnope.min',                        // Library for conditional loading.
 				'js/konami.js',                          // For ATARI MODE
 				'cs!js/widget',                          // Widget files.
@@ -18,7 +21,7 @@
 			});
 		</script>
 	</head>
-	<body id="main">
+	<body id="main" ng-controller="flashcardsEngineCtrl">
 		<section id="fake-loading-screen">
 			<p class="load">NEWDOS/91</p>
 			<span  class="load"id="info"><p>MATERIA, INC.</p><p>VERSION 2.1</p><p>KogDos 2.5b</p></span>
@@ -99,16 +102,10 @@
 						<path id="left-button" d="M20 41 L40 21 Z"></path>
 						<path id="left-button" d="M20 39 L40 59 Z"></path>
 					</svg>
-					<table border="0" cellpadding="0" cellspacing="0" id="left-button" class="arrow-table" id="left-button">
-						<tr class="tr1"><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td></tr>
-						<tr class="tr2"><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td></tr>
-						<tr class="tr3"><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td></tr>
-						<tr class="tr4"><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td></tr>
-						<tr class="tr5"><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td><td id="left-button"></td></tr>
-					</table>
+					
 				</div>
 
-				<div id="container"><!-- flashcards will be injected here --></div>
+				<div id="container"></div>
 
 				<!-- FOR IE -->
 				<div id="clarification" style="display : none;">
@@ -117,18 +114,7 @@
 
 				<div id="finished" class="hidden">
 					<p>No cards remaining.</p>
-					<svg class="restart" id="restart">
-						<path id="restart" d="M24.083,15.5c-0.009,4.739-3.844,8.574-8.583,8.583c-4.741-0.009-8.577-3.844-8.585-8.583c0.008-4.741,3.844-8.577,8.585-8.585c1.913,0,3.665,0.629,5.09,1.686l-1.782,1.783l8.429,2.256l-2.26-8.427l-1.89,1.89c-2.072-1.677-4.717-2.688-7.587-2.688C8.826,3.418,3.418,8.826,3.416,15.5C3.418,22.175,8.826,27.583,15.5,27.583S27.583,22.175,27.583,15.5H24.083z"></path>
-					</svg>
-					<table border="0" cellpadding="0" cellspacing="0" id="restart" class="restart-table">
-						<tr class="tr1"><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td></tr>
-						<tr class="tr2"><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td></tr>
-						<tr class="tr3"><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td></tr>
-						<tr class="tr4"><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td></tr>
-						<tr class="tr5"><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td></tr>
-						<tr class="tr6"><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td></tr>
-						<tr class="tr7"><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td><td id="restart"></td></tr>
-					</table>
+					<div id="icon-finish" class="icon"></div>
 				</div>
 
 				<div id="arrow-right" class="arrow shown">
@@ -137,69 +123,28 @@
 						<path id="right-button" d="M60 41 L40 21 Z"></path>
 						<path id="right-button" d="M60 39 L40 59 Z"></path>
 					</svg>
-					<table border="0" cellpadding="0" cellspacing="0" id="right-button" class="arrow-table" id="right-button">
-						<tr class="tr1"><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td></tr>
-						<tr class="tr2"><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td></tr>
-						<tr class="tr3"><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td></tr>
-						<tr class="tr4"><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td></tr>
-						<tr class="tr5"><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td><td id="right-button"></td></tr>
-					</table>
+					
 				</div>
 
-				<div id="restore-icon" class="icon">
-					<svg id="restore-icon" xmlns="http://www.w3.org/2000/svg" version="1.1">
-						<path id="restore-icon" d="M24.083,15.5c-0.009,4.739-3.844,8.574-8.583,8.583c-4.741-0.009-8.577-3.844-8.585-8.583c0.008-4.741,3.844-8.577,8.585-8.585c1.913,0,3.665,0.629,5.09,1.686l-1.782,1.783l8.429,2.256l-2.26-8.427l-1.89,1.89c-2.072-1.677-4.717-2.688-7.587-2.688C8.826,3.418,3.418,8.826,3.416,15.5C3.418,22.175,8.826,27.583,15.5,27.583S27.583,22.175,27.583,15.5H24.083z" />
-					</svg>
-					<table border="0" cellpadding="0" cellspacing="0" id="restore-icon" class="restore-table">
-						<tr class="tr1"><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td></tr>
-						<tr class="tr2"><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td></tr>
-						<tr class="tr3"><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td></tr>
-						<tr class="tr4"><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td></tr>
-						<tr class="tr5"><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td></tr>
-						<tr class="tr6"><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td></tr>
-						<tr class="tr7"><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td><td id="restore-icon"></td></tr>
-					</table>
-				</div>
+				<div id="icon-restore" class="icon unselectable"></div>
+				<div id="icon-rotate" class="icon"></div>
+				<div id="icon-shuffle" class="icon"></div>
 
-				<div id="rotate-icon" class="icon">
-					<svg id="rotate-icon" xmlns="http://www.w3.org/2000/svg" version="1.1">
-						<path id="rotate-icon" d="M15.5,5.27c1.914,0,3.666,0.629,5.089,1.686l-1.781,1.783l8.428,2.256l-2.26-8.427l-1.889,1.89C21.016,2.781,18.371,1.77,15.5,1.77C8.827,1.773,3.418,7.181,3.417,13.855c0.001,4.063,2.012,7.647,5.084,9.838v-4.887c-0.993-1.4-1.583-3.105-1.585-4.952C6.923,9.114,10.759,5.278,15.5,5.27zM9.5,29.23h12V12.355h-12V29.23z" />
-					</svg>
-					<table border="0" cellpadding="0" cellspacing="0" id="shuffle-icon" class="rotate-table">
-						<tr class="tr1"><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td></tr>
-						<tr class="tr2"><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td></tr>
-						<tr class="tr3"><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td></tr>
-						<tr class="tr4"><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td></tr>
-						<tr class="tr5"><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td></tr>
-						<tr class="tr6"><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td></tr>
-						<tr class="tr7"><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td><td id="rotate-icon"></td></tr>
-					</table>
-				</div>
-
-				<div id="shuffle-icon" class="icon">
-					<svg id="shuffle-icon" xmlns="http://www.w3.org/2000/svg" version="1.1">
-						<path id="shuffle-icon" d="M21.786,20.654c-0.618-0.195-1.407-0.703-2.291-1.587c-0.757-0.742-1.539-1.698-2.34-2.741c-0.191,0.256-0.382,0.51-0.574,0.77c-0.524,0.709-1.059,1.424-1.604,2.127c1.904,2.31,3.88,4.578,6.809,4.952v2.701l7.556-4.362l-7.556-4.362V20.654zM9.192,11.933c0.756,0.741,1.538,1.697,2.339,2.739c0.195-0.262,0.39-0.521,0.587-0.788c0.52-0.703,1.051-1.412,1.592-2.11c-2.032-2.463-4.133-4.907-7.396-5.025h-3.5v3.5h3.5C6.969,10.223,7.996,10.735,9.192,11.933zM21.786,10.341v2.535l7.556-4.363l-7.556-4.363v2.647c-1.904,0.219-3.425,1.348-4.751,2.644c-2.196,2.183-4.116,5.167-6.011,7.538c-1.867,2.438-3.741,3.888-4.712,3.771h-3.5v3.5h3.5c2.185-0.029,3.879-1.266,5.34-2.693c2.194-2.184,4.116-5.167,6.009-7.538C19.205,12.003,20.746,10.679,21.786,10.341z" />
-					</svg>
-					<table border="0" cellpadding="0" cellspacing="0" id="shuffle-icon" class="shuffle-table">
-						<tr class="tr1"><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td></tr>
-						<tr class="tr2"><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td></tr>
-						<tr class="tr3"><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td></tr>
-						<tr class="tr4"><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td></tr>
-						<tr class="tr5"><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td></tr>
-						<tr class="tr6"><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td></tr>
-						<tr class="tr7"><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td><td id="shuffle-icon"></td></tr>
-					</table>
-				</div>
 			</section>
 
-			<div id="help-icon" class="icon">
-				<svg id="help-button" xmlns="http://www.w3.org/2000/svg" version="1.1">
-					<path id="help-button" d="M16,1.466C7.973,1.466,1.466,7.973,1.466,16c0,8.027,6.507,14.534,14.534,14.534c8.027,0,14.534-6.507,14.534-14.534C30.534,7.973,24.027,1.466,16,1.466z M17.328,24.371h-2.707v-2.596h2.707V24.371zM17.328,19.003v0.858h-2.707v-1.057c0-3.19,3.63-3.696,3.63-5.963c0-1.034-0.924-1.826-2.134-1.826c-1.254,0-2.354,0.924-2.354,0.924l-1.541-1.915c0,0,1.519-1.584,4.137-1.584c2.487,0,4.796,1.54,4.796,4.136C21.156,16.208,17.328,16.627,17.328,19.003z" />
-				</svg>
-			</div>
+			<div id="icon-help" class="icon"></div>
 		</section>
+
+		<div class="error-notice-container">
+			<div class="error-notice">
+				<h1>This widget uses features that your browser doesn't support</h1>
+				<h2>Upgrade your browser to use this widget</h2>
+			</div>
+		</div>
+
 	</body>
 
+<!-- Flashcard Template -->
 <script type="text/template" id="t-flashcard"><div class="flashcard">
 	<div class="front">
 		<div class="content"></div>
@@ -211,8 +156,23 @@
 	</div>
 </div></script>
 
-<script type="text/template" id="t-IE-back"><div id="IE-back" class="rotated">
-	<div class="description"></div>
-	<div class="remove-button">&#215;</div>
-</div></script>
+<!-- Templates for atari mode -->
+<script type="text/template" id="t-arrow"><table border="0" cellpadding="0" cellspacing="0" class="arrow-table">
+	<tr class="tr1"><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr class="tr2"><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr class="tr3"><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr class="tr4"><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr class="tr5"><td></td><td></td><td></td><td></td><td></td></tr>
+</table></script>
+
+<script type="text/template" id="t-icon"><table border="0" cellpadding="0" cellspacing="0">
+	<tr class="tr1"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr class="tr2"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr class="tr3"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr class="tr4"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr class="tr5"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr class="tr6"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr class="tr7"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+</table></script>
+
 </html>
