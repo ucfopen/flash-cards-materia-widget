@@ -13,7 +13,7 @@
 			require([
 				'enginecore', 'score', 'less',           // Materia libraries.
 				'js/hammer.min',                         // Specific dependencies.
-				'js/yepnope.min',                        // Library for conditional loading.
+				'js/yepnope.min',                        // Conditional loading.
 				'js/konami.js',                          // For ATARI MODE
 				'cs!js/widget',                          // Widget files.
 				], function(util) {
@@ -96,34 +96,20 @@
 
 				<div id="instance-title"></div>
 
-				<div id="arrow-left" class="arrow">
-					<svg id="left-button" xmlns="http://www.w3.org/2000/svg" version="1.1">
-						<path id="left-button" d="M20 40 L60 40 Z"></path>
-						<path id="left-button" d="M20 41 L40 21 Z"></path>
-						<path id="left-button" d="M20 39 L40 59 Z"></path>
-					</svg>
-					
-				</div>
+				<!-- arrows -->
+				<div id="icon-left" class="arrow"></div>
+				<div id="icon-right" class="arrow shown"></div>
 
+				<!-- Holds flashcards -->
 				<div id="container"></div>
 
 				<!-- FOR IE -->
-				<div id="clarification" style="display : none;">
+				<div id="clarification" style="display : none;"></div>
 
-				</div>
-
+				<!-- Finish message -->
 				<div id="finished" class="hidden">
 					<p>No cards remaining.</p>
 					<div id="icon-finish" class="icon"></div>
-				</div>
-
-				<div id="arrow-right" class="arrow shown">
-					<svg id="right-button" xmlns="http://www.w3.org/2000/svg" version="1.1">
-						<path id="right-button" d="M20 40 L60 40 Z"></path>
-						<path id="right-button" d="M60 41 L40 21 Z"></path>
-						<path id="right-button" d="M60 39 L40 59 Z"></path>
-					</svg>
-					
 				</div>
 
 				<div id="icon-restore" class="icon unselectable"></div>

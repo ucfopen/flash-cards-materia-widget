@@ -83,8 +83,8 @@ Namespace('Flashcards').Engine = do ->
 	_cacheNodes = () ->
 		Nodes.container    = document.getElementById 'container'
 		Nodes.gameboard    = document.getElementById 'board'
-		Nodes.leftArrow    = document.getElementById 'arrow-left'
-		Nodes.rightArrow   = document.getElementById 'arrow-right'
+		Nodes.leftArrow    = document.getElementById 'icon-left'
+		Nodes.rightArrow   = document.getElementById 'icon-right'
 		Nodes.helpOverlay  = document.getElementById 'overlay'
 		Nodes.icons        = document.getElementsByClassName 'icon'
 		Nodes.finishMssg   = document.getElementById 'finished'
@@ -169,14 +169,14 @@ Namespace('Flashcards').Engine = do ->
 			Hammer(document).on 'swipedown', _discard
 			Hammer(document).on 'tap', -> if overlay then _toggleOverlay()
 
-			Hammer(document.getElementById('left-button')).on 'tap', ->  if _canMove 'left' then _shiftCards 'right'
+			Hammer(document.getElementById('left-button')).on  'tap', ->  if _canMove 'left' then _shiftCards 'right'
 			Hammer(document.getElementById('right-button')).on 'tap', -> if _canMove 'right' then _shiftCards 'left'
 
-			Hammer(document.getElementById('icon-help')).on 'tap', _toggleOverlay
+			Hammer(document.getElementById('icon-help')).on    'tap', _toggleOverlay
 			Hammer(document.getElementById('icon-restore')).on 'tap', _unDiscardAll
-			Hammer(document.getElementById('icon-finish')).on 'tap', _unDiscardAll
-			Hammer(document.getElementById('icon-rotate')).on 'tap', -> _rotateCards(if rotation is '' then 'back')
-			Hammer(document.getElementById('icon-shuffle')).on 'tap', -> _shuffleCards
+			Hammer(document.getElementById('icon-finish')).on  'tap', _unDiscardAll
+			Hammer(document.getElementById('icon-rotate')).on  'tap', -> _rotateCards(if rotation is '' then 'back')
+			Hammer(document.getElementById('icon-shuffle')).on 'tap', _shuffleCards
 
 			_flashcardNodes = document.getElementsByClassName('flashcard')
 			for i in [0.._flashcardNodes.length-1]
@@ -193,16 +193,16 @@ Namespace('Flashcards').Engine = do ->
 		else
 			document.addEventListener upEventType, -> if overlay then _toggleOverlay()
 
-			$('#arrow-left').on 'mouseup', ->  if _canMove 'left' then _shiftCards 'right'
-			$('#arrow-right').on 'mouseup', -> if _canMove 'right' then _shiftCards 'left'
+			$('#icon-left').on    'mouseup', _leftSelected
+			$('#icon-right').on   'mouseup', _rightSelected
 
-			$('#icon-help').on 'mouseup',  _toggleOverlay
+			$('#icon-help').on    'mouseup', _toggleOverlay
 			$('#icon-restore').on 'mouseup', _unDiscardAll
-			$('#icon-finish').on 'mouseup', -> _unDiscardAll()
-			$('#icon-rotate').on 'mouseup', ->   _rotateCards(if rotation is '' then 'back')
+			$('#icon-finish').on  'mouseup', _unDiscardAll
+			$('#icon-rotate').on  'mouseup', -> _rotateCards(if rotation is '' then 'back')
 			$('#icon-shuffle').on 'mouseup', _shuffleCards
 
-			$('.flashcard').on 'mouseup', ->
+			$('.flashcard').on    'mouseup', ->
 				if _isDiscarded(this) then _unDiscard()
 				else _flipCard()
 
@@ -213,16 +213,24 @@ Namespace('Flashcards').Engine = do ->
 		# Key events for keyboardz.
 		window.addEventListener 'keydown', (e) ->
 			switch e.keyCode
-				when 37     then if _canMove 'left'  then _shiftCards 'right'   # Left arrow key.
-				when 38     then    _unDiscard()                                # Up arrow key.
-				when 39     then if _canMove 'right' then _shiftCards 'left'    # Right arrow key.
-				when 40     then    _discard()                                  # Down arrow key.
-				when 32, 70 then if numCards > 0 then _flipCard()               # F key and space bar.
-				when 72     then    _toggleOverlay()                            # H key.
-				when 82     then    _rotateCards(if rotation is '' then 'back') # R key.
-				when 83     then    _shuffleCards()                             # S key.
-				when 85     then    _unDiscardAll()                             # U key.
+				when 37     then _leftSelected()                             # Left arrow key.
+				when 38     then _unDiscard()                                # Up arrow key.
+				when 39     then _rightSelected()                            # Right arrow key.
+				when 40     then _discard()                                  # Down arrow key.
+				when 32, 70 then _flipCard()                                 # F key and space bar.
+				when 72     then _toggleOverlay()                            # H key.
+				when 82     then _rotateCards(if rotation is '' then 'back') # R key.
+				when 83     then _shuffleCards()                             # S key.
+				when 85     then _unDiscardAll()                             # U key.
 			e.preventDefault()
+
+	_leftSelected = () ->
+		if _canMove 'left'
+			_shiftCards 'right'
+
+	_rightSelected = () ->
+		if _canMove 'right'
+			_shiftCards 'left'
 
 	# Asseses which direction has accessable cards.
 	# @direction : The direction we wish to inquire about.
@@ -252,18 +260,19 @@ Namespace('Flashcards').Engine = do ->
 
 	# Shows or hides directional arrows depending on what cards are viewable.
 	_setArrowState = () ->
-		if _canMove 'right' then Nodes.rightArrow.className = 'arrow shown' else Nodes.rightArrow.className = 'arrow'
-		if _canMove 'left'  then Nodes.leftArrow.className  = 'arrow shown' else Nodes.leftArrow.className  = 'arrow'
+			if _canMove 'right' then Nodes.rightArrow.className = 'arrow shown' else Nodes.rightArrow.className = 'arrow'
+			if _canMove 'left'  then Nodes.leftArrow.className  = 'arrow shown' else Nodes.leftArrow.className  = 'arrow'
 
 	# Rotates the current card 180 degrees.
 	_flipCard = () ->
-		if atari then Flashcards.Atari.playFlip()
-		# The back is currently showing.
-		if Flashcards.Card[currentCardId].node.className is 'flashcard rotated'
-			Flashcards.Card[currentCardId].node.className = 'flashcard'
-		# The front is currently showing.
-		else
-			Flashcards.Card[currentCardId].node.className = 'flashcard rotated'
+		if numCards > 0
+			if atari then Flashcards.Atari.playFlip()
+			# The back is currently showing.
+			if Flashcards.Card[currentCardId].node.className is 'flashcard rotated'
+				Flashcards.Card[currentCardId].node.className = 'flashcard'
+			# The front is currently showing.
+			else
+				Flashcards.Card[currentCardId].node.className = 'flashcard rotated'
 
 	# Shuffles the entire deck.
 	_shuffleCards = () ->
@@ -451,7 +460,6 @@ Namespace('Flashcards').Engine = do ->
 
 	# Moves all discarded cards into the active deck.
 	_unDiscardAll = () ->
-		console.log numDiscard
 		if not animating
 			if numDiscard > 0
 
@@ -493,8 +501,6 @@ Namespace('Flashcards').Engine = do ->
 			setTimeout ->
 				animating = false
 			, 300
-
-			console.log Nodes.icons
 
 			if overlay is true then overlay = false else overlay = true
 
