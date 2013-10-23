@@ -5,7 +5,7 @@
 		<meta charset='utf-8' />
 		<style type='text/css'></style>
 		<script src="js/modernizr.js"></script>
-		<script src="js/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular.min.js"></script>
 		<script src="js/angular-animate.min.js"></script>
 		<script type='text/javascript' src='/js/materia.require.js'></script>
 		<link rel='stylesheet' type='text/css' href='css/creator.css'>
@@ -40,8 +40,7 @@
 					placeholder='Enter a picture header here.'
 					value="{{card.front}}"
 					ng-hide=" card.URLs[0] == '' "
-					ng-model="card.front"
-					my-maxlength/>
+					ng-model="card.front"/>
 					<textarea
 					placeholder='Enter text here.'
 					value="{{card.front}}"
@@ -80,8 +79,7 @@
 					placeholder='Enter a picture header here.'
 					value="{{card.back}}"
 					ng-hide=" card.URLs[1] == '' "
-					ng-model="card.back"
-					my-maxlength/>
+					ng-model="card.back"/>
 					<textarea
 					placeholder='Enter text here.'
 					value="{{card.back}}"
