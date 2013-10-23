@@ -13,7 +13,7 @@ Updated : 10/13
 FlashcardsCreator = angular.module 'FlashcardsCreator', ['ngAnimate']
 
 # Set the controller for the scope of the document body.
-FlashcardsCreator.controller 'FlashcardsCreatorCtrl', ($scope) ->
+FlashcardsCreator.controller 'FlashcardsCreatorCtrl', ['$scope', ($scope) ->
 	$scope.title = ""
 	$scope.cards = []
 
@@ -31,6 +31,7 @@ FlashcardsCreator.controller 'FlashcardsCreatorCtrl', ($scope) ->
 		$scope.cards[_imgRef[0]].URLs[_imgRef[1]] = URL
 	$scope.deleteImage = (index, face) ->
 		$scope.cards[index].URLs[face] = ""
+]
 
 Namespace('Flashcards').Creator = do ->
 	_title = _qset = _scope = null
