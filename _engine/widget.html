@@ -34,9 +34,9 @@
 		</section>
 
 		<section id="game">
-			<section id="atari-bg"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></section>
+			<section id="atari-bg" aria-hidden="true"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></section>
 
-			<section id="overlay" class="overlay">
+			<section id="overlay" class="overlay" aria-hidden="true">
 				<div class="arr box" id="left-arr">previous card</div>
 				<svg class="arr" id="left-arr">
 					<path d="M40 0 L20 65 Z"></path>
@@ -88,10 +88,6 @@
 				<div id="dummy-card"></div>
 			</section>
 
-			<section id="mobile-overlay" class="overlay">
-
-			</section>
-
 			<section id="board">
 
 				<div id="instance-title"></div>
@@ -112,13 +108,13 @@
 					<div id="icon-finish" class="icon"></div>
 				</div>
 
-				<div id="icon-restore" class="icon unselectable"></div>
-				<div id="icon-rotate" class="icon"></div>
-				<div id="icon-shuffle" class="icon"></div>
+				<div aria-label="Restore cards." id="icon-restore" class="icon unselectable"></div>
+				<div aria-label="Rotate cards." id="icon-rotate" class="icon"></div>
+				<div aria-label="Shuffle cards." id="icon-shuffle" class="icon"></div>
 
 			</section>
 
-			<div id="icon-help" class="icon"></div>
+			<div id="icon-help" class="icon" aria-hidden="true"></div>
 		</section>
 
 		<div class="error-notice-container">
@@ -131,14 +127,16 @@
 	</body>
 
 <!-- Flashcard Template -->
-<script type="text/template" id="t-flashcard"><div class="flashcard">
-	<div class="front">
+<script type="text/template" id="t-flashcard"><div aria-label="flashcard" class="flashcard">
+	<div aria-label="front" class="front">
 		<div class="content"></div>
-		<div class="remove-button">&#215;</div>
+		<center><div class="image"></div></center>
+		<div aria-label="discard" class="remove-button">&#215;</div>
 	</div>
-	<div class="back">
+	<div aria-label="back" class="back">
 		<div class="content"></div>
-		<div class="remove-button">&#215;</div>
+		<center><div class="image"></div></center>
+		<div aria-label="discard" class="remove-button">&#215;</div>
 	</div>
 </div></script>
 

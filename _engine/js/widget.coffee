@@ -108,30 +108,29 @@ Namespace('Flashcards').Engine = do ->
 
 		for i in [0..numCards-1]
 			Flashcards.Card.push {}
-
-			# Decide if the text will be presented as a term or description based upon length.
-			_ansClass = if data[i].answers[0].text.split(' ').length < 8   then "title" else "description"
-			_queClass = if data[i].questions[0].text.split(' ').length < 8 then "title" else "description"
+			_card = Flashcards.Card[i]
 
 			# Single flashcard specific data.
-			Flashcards.Card[i].node      = _cardNodes[i]
-			Flashcards.Card[i].FrontText = data[i].questions[0].text
-			Flashcards.Card[i].BackText  = data[i].answers[0].text
-			
-			# Handle image assets if they are used. Otherwise, populate HTML with text.
-			_cardFront = Flashcards.Card[i].node.children[0].children[0]
-			_cardBack  = Flashcards.Card[i].node.children[1].children[0]
-			if data[i].answers[0].text is 'None'
-				_ansUrl = Materia.Engine.getMediaUrl(data[i].assets[0])
-				_cardBack.innerHTML = '<img class="'+_ansClass+'" src="'+_ansUrl+'">'
-			else
-				_cardBack.innerHTML = '<p class="'+_ansClass+'">'+data[i].answers[0].text+'</p>'
+			_card.node      = _cardNodes[i]
+			_card.FrontText = data[i].answers[0].text
+			_card.BackText  = data[i].questions[0].text
+			_card.FrontURL  = data[i].assets[1]
+			_card.BackURL   = data[i].assets[0]
 
-			if data[i].questions[0].text is 'None'
-				_queUrl = Materia.Engine.getMediaUrl(data[i].assets[1])
-				_cardFront.innerHTML = '<img class="'+_queClass+'" src="'+_queUrl+'">'
+			if _card.FrontURL? && _card.FrontURL != '-1'
+				if _card.FrontText is '' then _frontClass = "no-text" else _frontClass = "mixed"                  
 			else
-				_cardFront.innerHTML = '<p class="'+_queClass+'">'+data[i].questions[0].text+'</p>'
+				if _card.FrontText.split(' ').length < 8 then _frontClass = "title" else _frontClass = "description"
+
+			if _card.BackURL? && _card.BackURL != '-1'
+				if _card.BackText is '' then _backClass = "no-text" else _backClass = "mixed"
+			else if _card.BackText.split(' ').length < 8 then _backClass = "title" else _backClass = "description"
+
+			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'">'+_card.FrontText+'</p>'
+			_card.node.children[0].children[1].children[0].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
+
+			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'">'+_card.BackText+'</p>'
+			_card.node.children[1].children[1].children[0].innerHTML  = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
 
 	# Places cards in their correct positions within the gameboard and gives them a specific rotation.
 	# @face : Specifies whether or not to rotate the card when placing them in their positions.
@@ -189,7 +188,6 @@ Namespace('Flashcards').Engine = do ->
 				Hammer(_removeNodes[i]).on 'tap', (e) ->
 					_discard()
 					e.stopPropagation()
-
 		else
 			document.addEventListener upEventType, -> if overlay then _toggleOverlay()
 
@@ -224,13 +222,8 @@ Namespace('Flashcards').Engine = do ->
 				when 85     then _unDiscardAll()                             # U key.
 			e.preventDefault()
 
-	_leftSelected = () ->
-		if _canMove 'left'
-			_shiftCards 'right'
-
-	_rightSelected = () ->
-		if _canMove 'right'
-			_shiftCards 'left'
+	_leftSelected = ()  -> if _canMove 'left'  then _shiftCards 'right'
+	_rightSelected = () -> if _canMove 'right' then _shiftCards 'left'
 
 	# Asseses which direction has accessable cards.
 	# @direction : The direction we wish to inquire about.
@@ -396,6 +389,10 @@ Namespace('Flashcards').Engine = do ->
 				if _len > 3 then Flashcards.DiscardPile[_len-1].node.className = 'flashcard discarded-pos-3'
 				else Flashcards.DiscardPile[_len-1].node.className = 'flashcard discarded-pos-'+(_len-1)
 
+				if _len > 4 then setTimeout ->
+					Flashcards.DiscardPile[_len-1].node.className = 'flashcard hidden'
+				, 710
+
 				# If the user has discarded the entire deck, prompt them to restore it.
 				if numCards is 0
 					_hideIcons()
@@ -440,11 +437,16 @@ Namespace('Flashcards').Engine = do ->
 				_moveCardObject(Flashcards.DiscardPile, Flashcards.Card, Flashcards.DiscardPile.length-1)
 
 				# Animate the card from one pile to another, then shift to its position.
-				Flashcards.Card[Flashcards.Card.length-1].node.className = 'flashcard ' + rotation
+				_len = Flashcards.DiscardPile.length
+				if _len > 2 then Flashcards.Card[Flashcards.Card.length-1].node.className = 'flashcard discarded-pos-3'
+				else Flashcards.Card[Flashcards.Card.length-1].node.className = 'flashcard discarded-pos-'+(_len-1)
 
-				_dif = Flashcards.Card.length-2-currentCardId
-				_shiftCards 'left' for i in [0.._dif]
-				_setArrowState()
+				setTimeout ->
+					Flashcards.Card[Flashcards.Card.length-1].node.className = 'flashcard ' + rotation
+					_dif = Flashcards.Card.length-2-currentCardId
+					_shiftCards 'left' for i in [0.._dif]
+					_setArrowState()
+				, 20
 
 	_restoreTriggered = () ->
 		if atari then Flashcards.Atari.playIcon 'restore'
@@ -474,25 +476,30 @@ Namespace('Flashcards').Engine = do ->
 				numDiscard = 0
 				numCards = Flashcards.Card.length
 				for i in [0..numCards-1]
-					Flashcards.Card[i].node.className = "flashcard right"+rotation
-
-				# Stage the cards.
-				for i in [-2..2]
-					if Flashcards.Card[currentCardId+i]?
-						Flashcards.Card[currentCardId+i].node.className = 'flashcard stage-'+(i+2)+rotation
-
-				_hideElement(Nodes.finishMssg, true) # Hide the finish message.
-				Nodes.container.className = ''       # Make sure the card container is shown.
-
-				# Return cards to default positions.
-				setTimeout ->
-					_setCardPositions(if rotation is '' then null else 'reverse')
-					_setArrowState()
-				, 800
+					Flashcards.Card[i].node.className = 'flashcard discarded-pos-3'
 
 				setTimeout ->
-					Nodes.icons[1].className = "icon unselectable"
-				, 1200
+					for i in [0..numCards-1]
+						Flashcards.Card[i].node.className = "flashcard right"+rotation
+
+					# Stage the cards.
+					for i in [-2..2]
+						if Flashcards.Card[currentCardId+i]?
+							Flashcards.Card[currentCardId+i].node.className = 'flashcard stage-'+(i+2)+rotation
+
+					_hideElement(Nodes.finishMssg, true) # Hide the finish message.
+					Nodes.container.className = ''       # Make sure the card container is shown.
+
+					# Return cards to default positions.
+					setTimeout ->
+						_setCardPositions(if rotation is '' then null else 'reverse')
+						_setArrowState()
+					, 800
+
+					setTimeout ->
+						Nodes.icons[1].className = "icon unselectable"
+					, 1200
+				, 20
 
 	# Opens or closes the help overlay.
 	_toggleOverlay = () ->

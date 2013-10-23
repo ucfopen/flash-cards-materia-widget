@@ -22,7 +22,7 @@ Namespace("Flashcards").Atari =
 		$('#icon-left').append($($('#t-arrow').html()).clone().addClass('left'))
 		$('#icon-right').append($($('#t-arrow').html()).clone().addClass('right'))
 
-		$('#finished').append($($('#t-icon').html()).clone().addClass('restore-table'))
+		$('#icon-finish').append($($('#t-icon').html()).clone().addClass('restore-table'))
 		$('#icon-restore').append($($('#t-icon').html()).clone().addClass('restore-table'))
 		$('#icon-rotate').append($($('#t-icon').html()).clone().addClass('rotate-table'))
 		$('#icon-shuffle').append($($('#t-icon').html()).clone().addClass('shuffle-table'))
