@@ -4,73 +4,131 @@
 		<title>test Creator</title>
 		<meta charset='utf-8' />
 		<style type='text/css'></style>
+		<script src="js/modernizr.js"></script>
+		<script src="js/angular.min.js"></script>
+		<script src="js/angular-animate.min.js"></script>
 		<script type='text/javascript' src='/js/materia.require.js'></script>
 		<link rel='stylesheet' type='text/css' href='css/creator.css'>
 		<script type='text/javascript'>
 			require(['creatorcore', 'js/creator'], function(util) {
-				Materia.CreatorCore.start(test.Creator);
+				Materia.CreatorCore.start(Flashcards.Creator);
 			});
 		</script>
 	</head>
-	<body>
+	<body ng-cloak ng-controller="FlashcardsCreatorCtrl">
+		<div id="modal"></div>
 		<header>
-			<label>Widget Title:</label>
-			<div>
-				<input type='text' id='title'/>
-			</div>
+				<input
+				type='text' 
+				role="title"
+				placeholder="Enter a title here."
+				ng-model="title"
+				value="{{title}}"/>
 		</header>
-		<section class='container'>
-			<div class='main'>
-				<label>Cards:</label>
-				<button class='add_button'>+ Add Card</button>
-				<div id='cards_grid' class='inner_container'>
-					<table>
-						<thead>
-							<tr>
-								<th>Card</th>
-								<th>Front</th>
-								<th>Back</th>
-							</tr>
-						</thead>
-						<tbody id='cards'>
-							<tr class='template'>
-								<td>
-									<button class='swap_button'>Swap</button>
-									<button class='delete_button'>Delete</button>
-								</td>
-								<td>
-									Content:
-									<form>
-										<input type='radio' name='face_type' class='text_radio'>Text
-										<input type='radio' name='face_type' class='image_radio'>Image
-									</form>
-									<span class='card_text'>
-										<textarea placeholder='Enter card text here...'></textarea>
-									</span>
-									<span class='card_image'>
-										<button class='image_button'>Set Image</button>
-									</span>
-								</td>
-								<td>
-									Content:
-									<form>
-										<input type='radio' name='face_type' class='text_radio'>Text
-										<input type='radio' name='face_type' class='image_radio'>Image
-									</form>
-									<span class='card_text'>
-										<textarea placeholder='Enter card text here...'></textarea>
-									</span>
-									<span class='card_image'>
-										<button class='image_button'>Set Image</button>
-									</span>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<label>Cards:</label>
-				<button class='add_button'>+ Add Card</button>
-			</div>
-		</section>
+		<ul aria-label="cards">
+			<li class="titles" aria-hidden="true">
+				<h3>Front</h3><h3>Back</h3>
+			</li>
+			<li
+			class="card"
+			role="flashcard"
+			ng-repeat="card in cards">
+				<span class="num">{{$index+1}}</span>
+				<span class="face" aria-label="Card front.">
+					<center>
+					<input
+					placeholder='Enter a picture header here.'
+					value="{{card.front}}"
+					ng-hide=" card.URLs[0] == '' "
+					ng-model="card.front"
+					my-maxlength/>
+					<textarea
+					placeholder='Enter text here.'
+					value="{{card.front}}"
+					ng-class="{title : card.URLs[0] != ''}"
+					ng-hide=" card.URLs[0] != '' "
+					ng-model="card.front"></textarea>
+					<img
+					ng-hide=" card.URLs[0] == '' "
+					ng-src="{{card.URLs[0]}}"/>
+					<button
+					class="del-img"
+					aria-label="Delete image."
+					ng-hide=" card.URLs[0] == '' "
+					ng-click="deleteImage($index, 0)">
+						<span class="icon-close"></span>
+						<span class="descript del">remove image</span>
+					</button>
+					</center>
+					<div
+					class="alert"
+					ng-class="{hide : card.front.length < 51 || card.URLs[0] == '' }">
+						<span class="icon-alert"></span> 
+						Reduce your text to fit the card.
+					</div>
+					<button
+					aria-label="Add Image."
+					ng-hide=" card.URLs[0] != '' "
+					ng-click="requestImage($index, 0)">
+						<span class="icon-image"></span>
+						<span class="descript add">add image</span>
+					</button>
+				</span>
+				<span class="face" aria-label="Card back.">
+					<center>
+					<input
+					placeholder='Enter a picture header here.'
+					value="{{card.back}}"
+					ng-hide=" card.URLs[1] == '' "
+					ng-model="card.back"
+					my-maxlength/>
+					<textarea
+					placeholder='Enter text here.'
+					value="{{card.back}}"
+					ng-class="{title : card.URLs[1] != ''}"
+					ng-hide=" card.URLs[1] != '' "
+					ng-model="card.back"></textarea>
+					<img
+					ng-hide=" card.URLs[1] == '' "
+					ng-src="{{card.URLs[1]}}"/>
+					<button
+					class="del-img"
+					aria-label="Delete image."
+					ng-hide=" card.URLs[1] == '' "
+					ng-click="deleteImage($index, 1)">
+						<span class="icon-close"></span>
+						<span class="descript del">remove image</span>
+					</button>
+					</center>
+					<div
+					class="alert"
+					ng-class="{hide : card.back.length < 51 || card.URLs[1] == '' }">
+						<span class="icon-alert"></span> 
+						Reduce your text to fit the card.
+					</div>
+					<button
+					aria-label="Add Image."
+					ng-hide=" card.URLs[1] != '' "
+					ng-click="requestImage($index, 1)">
+						<span class="icon-image"></span>
+						<span class="descript add">add image</span>
+					</button>
+				</span>
+				<button
+				class="delete"
+				aria-label="Delete card."
+				ng-click="removeCard($index)">
+					<span class="icon-close"></span>
+					<span class="descript">remove card</span>
+				</button>
+			</li>
+			<li><button
+				id="add-card"
+				class="add"
+				aria-label="Add Card."
+				ng-click="addCard()">
+				<span class="icon-plus"></span> Add Card</button>
+			</li>
+		</ul>
 	</body>
 </html>

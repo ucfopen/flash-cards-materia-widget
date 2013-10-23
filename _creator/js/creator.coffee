@@ -1,202 +1,151 @@
-Namespace('test').Creator = do ->
-	_widget  = null # holds widget data
-	_qset    = null # Keep tack of the current qset
-	_title   = null # hold on to this instance's title
-	_version = null # holds the qset version, allows you to change your widget to support old versions of your own code
-	_cardTemplate = null # contains a template for a new card's table row, for cloning
-	_waitingOnImage = null # contains the span that will hold any selected media
+###
+
+Materia
+It's a thing
+
+Widget  : Flashcards, Creator
+Authors : Brandon Stull, Micheal Parks
+Updated : 10/13
+
+###
+
+# Create an angular module to import the animation module and house our controller.
+FlashcardsCreator = angular.module 'FlashcardsCreator', ['ngAnimate']
+
+# Set the controller for the scope of the document body.
+FlashcardsCreator.controller 'FlashcardsCreatorCtrl', ($scope) ->
+	$scope.title = ""
+	$scope.cards = []
+
+	_imgRef = []
+
+	$scope.addCard = (front="", back="", URLs=["", ""]) -> 
+		$scope.cards.push { front:front, back:back, URLs:URLs }
+	$scope.removeCard = (index) -> 
+		$scope.cards.splice(index, 1)
+	$scope.requestImage = (index, face) -> 
+		Materia.CreatorCore.showMediaImporter()
+		_imgRef[0] = index
+		_imgRef[1] = face
+	$scope.setURL = (URL) ->
+		$scope.cards[_imgRef[0]].URLs[_imgRef[1]] = URL
+	$scope.deleteImage = (index, face) ->
+		$scope.cards[index].URLs[face] = ""
+
+Namespace('Flashcards').Creator = do ->
+	_title = _qset = _scope = null
 
 	initNewWidget = (widget, baseUrl) ->
-		_buildDisplay 'New Flashcards Widget', widget
+		_scope = angular.element($('body')).scope()
+		_scope.$apply -> _scope.addCard()
+
+		if not Modernizr.input.placeholder then _polyfill()
 
 	initExistingWidget = (title, widget, qset, version, baseUrl) ->
-		_buildDisplay title, widget, qset, version
+		_items = qset.items[0].items
+		_scope = angular.element($('body')).scope()
+		_scope.$apply -> _scope.title = title
+		onQuestionImportComplete _items
+
+		if not Modernizr.input.placeholder then _polyfill()
 
 	onSaveClicked = (mode = 'save') ->
-		if _buildSaveData()
-			Materia.CreatorCore.save _title, _qset
-		else
-			Materia.CreatorCore.cancelSave 'Widget not ready to save.'
+		if _buildSaveData() then Materia.CreatorCore.save _title, _qset
 
 	onSaveComplete = (title, widget, qset, version) -> true
 
-	onQuestionImportComplete = (questions) ->
-		_addCard card for card in questions
+	onQuestionImportComplete = (items) ->
+		_scope.$apply ->
+			for i in [0..items.length-1]
+				_scope.addCard(items[i].questions[0].text, items[i].answers[0].text)
+				if items[i].assets[0] != '-1' then _scope.cards[i].URLs[0] = items[i].assets[0]
+				if items[i].assets[1] != '-1' then _scope.cards[i].URLs[1] = items[i].assets[1]
 
 	onMediaImportComplete = (media) ->
-		url = Materia.CreatorCore.getMediaUrl(media[0].id)
-		# place the selected image inside the targeted container
-		_waitingOnImage.css("background-image", "url("+url+")");
-		_waitingOnImage = null
-
-	_buildDisplay = (title = 'Default test Title', widget, qset, version) ->
-		_version = version
-		_qset    = qset
-		_widget  = widget
-		_title   = title
-
-		$('#title').val _title
-
-		#fill the card template object if it's null
-		unless _cardTemplate
-			_cardTemplate = $('tr.template')
-			$('tr.template').remove()
-			_cardTemplate.removeClass('template')
-
-		#add an empty row when the 'Add Cards' button is clicked
-		$('.add_button').click _addCard
-
-		#populate the table with information from the qset
-		_addCard card for card in _qset.items[0].items
+		URL = Materia.CreatorCore.getMediaUrl(media[0].id)
+		_scope.$apply -> _scope.setURL(URL)
 
 	_buildSaveData = ->
-		okToSave = false
-		_title = $('#title').val()
-		okToSave = _title isnt ''
+		_title = _escapeHTML _scope.title
+		_cards = _scope.cards
 
-		#reset the qset
-		_qset = {}
+		# Decide if it is ok to save.
+		if _title is ''
+			Materia.CreatorCore.cancelSave 'Please enter a title.'
+			return false
+		else
+			for i in [0.._cards.length-1]
+				if _cards[i].front.length > 50 && _cards[i].URLs[0] != ''
+					Materia.CreatorCore.cancelSave 'Please reduce the text of the front of card #'+(i+1)+' to fit the card.'
+					return false
+				if _cards[i].back.length > 50 && _cards[i].URLs[1] != ''
+					Materia.CreatorCore.cancelSave 'Please reduce the text of the back of card #'+(i+1)+' to fit the card.'
+					return false
 
-		#various values that should only ever be one thing
-		_qset['assets'] = []
-		_qset['rand'] = false
-		_qset['options'] = []
-		_qset['name'] = ''
+		if !_qset? then _qset = {}
+		_qset.options = {}
+		_qset.assets  = []
+		_qset.rand    = false
+		_qset.name    = ''
 
-		#questionably necessary middle layer
-		items = {}
-		items['assets'] = []
-		items['options'] = []
-		items['rand'] = false
+		_items      = []
+		_items.push( _process _cards[i] ) for i in [0.._cards.length-1]
+		_qset.items = [{ items: _items }]
 
-		#pull all relevant information out of the table
-		cards = $('#cards').children()
-		#actual container for the question items
-		real_items = []
-		for card in cards
-			item = _process card
-			real_items.push item
+		true
 
-		#do the necessary substitutions
-		items['items'] = real_items
-		items = [items]
-		_qset['items'] = items
-
-		okToSave
-
-	_addCard = (card) ->
-		#set up all the listeners for this row
-		$clone = _cardTemplate.clone()
-		$clone.find('.delete_button').click () ->
-			$clone.remove()
-			Materia.CreatorCore.setHeight()
-		$clone.find('.swap_button').click () ->
-			$clone.append($clone.find('td')[1])
-		$clone.find('.text_radio').click () ->
-			td = $(this).closest('td')
-			td.find('.card_text').show()
-			td.find('.card_image').hide()
-		$clone.find('.image_radio').click () ->
-			td = $(this).closest('td')
-			td.find('.card_text').hide()
-			#for some reason, '.show()' sets 'display' to 'inline' instead of 'block'
-			td.find('.card_image').css('display', 'block')
-		$clone.find('.image_button').click () ->
-			_waitingOnImage = $(this).parent()
-			Materia.CreatorCore.showMediaImporter()
-
-		#default these to true, change them later if needed
-		$clone.find('.text_radio').prop('checked', true)
-
-		#fill the table with any relevant information from the qset
-		if card? and card.id?
-			front = $clone.find('td')[1]
-			back = $clone.find('td')[2]
-
-			#if there are images anywhere on the card, get them
-			if card.assets? and card.assets.length > 0
-				#first asset, front face
-				if card.assets[0] isnt '-1'
-					$(front).find('.image_radio').prop('checked', true)
-					$(front).find('.card_text').hide()
-					$(front).find('.card_image').css('display', 'block')
-					url = Materia.CreatorCore.getMediaUrl(card.assets[0])
-					$(front).find('.card_image').css("background-image", "url("+url+")");
-				else
-					$(front).find('textarea').val card.questions[0].text
-				#second asset, back face
-				if card.assets[1] isnt '-1'
-					$(back).find('.image_radio').prop('checked', true)
-					$(back).find('.card_text').hide()
-					$(back).find('.card_image').css('display', 'block')
-					url = Materia.CreatorCore.getMediaUrl(card.assets[1])
-					$(back).find('.card_image').css("background-image", "url("+url+")");
-				else
-					$(back).find('textarea').val card.answers[0].text
-			else
-				$(front).find('textarea').val card.questions[0].text
-				$(back).find('textarea').val card.answers[0].text
-
-		#new row is built, put it in the table
-		$('#cards').append($clone)
-		Materia.CreatorCore.setHeight()
-
-	#scrape all relevant qset info out of each row
+	# Get each card's data from the controller and organize it into Qset form.
 	_process = (card) ->
-		console.log $(card).children()
-		front = $(card).find('td')[1]
-		back = $(card).find('td')[2]
+		card.front = _escapeHTML card.front
+		card.back  = _escapeHTML card.back
 
-		#various values that should only ever be one thing
-		item = {'assets': null, 'type': 'QA', 'id': ''}
-		q = {}
-		a = {'id': '', 'value': 100, 'options': []}
+		qsetItem        = {}
+		qsetItem.assets = []
 
-		#determine whether each face holds text or image
-		is_f_text = $(front).find(':checked').hasClass 'text_radio'
-		is_b_text = $(back).find(':checked').hasClass 'text_radio'
+		qsetItem.assets[0] = if card.URLs[0] isnt "" then card.URLs[0] else '-1'
+		qsetItem.assets[1] = if card.URLs[1] isnt "" then card.URLs[1] else '-1'
 
-		#front face, question
-		if is_f_text
-			q['text'] = $(front).find('textarea').val()
-		else
-			bg_url = _scrapeImage front
-			#assume back face has no asset for now
-			item['assets'] = [bg_url, '-1']
-			q['text'] = 'None'
+		qsetItem.questions = [{text : card.front}]
+		qsetItem.answers   = [{text : card.back, value : '100', options : [], id : ''}]
+		qsetItem.type      = 'QA'
+		qsetItem.id        = ''
 
-		#back face, answer
-		if is_b_text
-			a['text'] = $(back).find('textarea').val()
-		else
-			bg_url = _scrapeImage back
-			#initialize the assets array if it's still null
-			item['assets'] = ['-1','-1'] unless item['assets']?
-			item['assets'][1] = bg_url
-			a['text'] = 'None'
+		qsetItem
 
-		#pack everything together as necessary and send the item back
-		item['questions'] = [q]
-		item['answers'] = [a]
-		item
+	_escapeHTML = (string) -> 
+		string.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot').replace(/'/g,'&#x27').replace(/\//g,'&#x2F')
 
-	#given element with background image, pull out the url and regex it to get the asset id
-	_scrapeImage = (target) ->
-		url = $(target).find('.card_image').css('background-image')
-		url = /^url\((['"]?)(.*)\1\)$/.exec(url)
-		url = url[2]
-		url = url.substr(url.lastIndexOf('/')+1)
-		url
+	# Adds input placeholder functionality in browsers that are more aged like fine wines.
+	_polyfill = () ->
+		$('[placeholder]')
+		.focus ->
+			input = $(this)
+			if input.val() is input.attr 'placeholder'
+				input.val ''
+				input.removeClass 'placeholder'
+		.blur ->
+			input = $(this)
+			if input.val() is '' or input.val() is input.attr 'placeholder'
+				input.addClass 'placeholder'
+				input.val input.attr 'placeholder'
+		.blur()
 
-	_trace = ->
-		if console? && console.log?
-			console.log.apply console, arguments
+		$('[placeholder]').parents('form').submit ->
+			$(this).find('[placeholder]').each ->
+				input = $(this)
+				if input.val() is input.attr 'placeholder' then input.val ''
 
-	#public
-	manualResize: true
-	initNewWidget: initNewWidget
-	initExistingWidget: initExistingWidget
-	onSaveClicked:onSaveClicked
-	onMediaImportComplete:onMediaImportComplete
-	onQuestionImportComplete:onQuestionImportComplete
-	onSaveComplete:onSaveComplete
+	_trace = -> if console? && console.log? then console.log.apply console, arguments
+
+	# Public.
+	manualResize             : true
+	initNewWidget            : initNewWidget
+	initExistingWidget       : initExistingWidget
+	onSaveClicked            : onSaveClicked
+	onMediaImportComplete    : onMediaImportComplete
+	onQuestionImportComplete : onQuestionImportComplete
+	onSaveComplete           : onSaveComplete
+
+# Bootstrap the document and define it as the creator module.
+# This will allow angular to add directives to every "ng" HTML attribute.
+angular.bootstrap document, ["FlashcardsCreator"]

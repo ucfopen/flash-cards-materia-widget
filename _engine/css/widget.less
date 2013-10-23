@@ -1,10 +1,10 @@
 @font-face {
 	font-family : 'icomoon';
-	src : url('fonts/icomoon.eot');
-	src : url('fonts/icomoon.eot?#iefix') format('embedded-opentype'),
-		  url('fonts/icomoon.woff') format('woff'),
-		  url('fonts/icomoon.ttf') format('truetype'),
-		  url('fonts/icomoon.svg#icomoon') format('svg');
+	src : url('engine-fonts/icomoon.eot');
+	src : url('engine-fonts/icomoon.eot?#iefix') format('embedded-opentype'),
+		  url('engine-fonts/icomoon.woff') format('woff'),
+		  url('engine-fonts/icomoon.ttf') format('truetype'),
+		  url('engine-fonts/icomoon.svg#icomoon') format('svg');
 	font-weight : normal;
 	font-style  : normal;
 }
@@ -49,13 +49,13 @@
 
 .icon.unselectable:hover {background-color : rgba(255,255,255,0) !important;}
 
-#icon-help:before    { content : "\e000"; }
-#icon-shuffle:before { content : "\e002"; }
-#icon-rotate:before  { content : "\e001"; }
-#icon-restore:before { content : "\e003"; }
-#icon-finish:before  { content : "\e003"; }
-#icon-left:before    { content : "\e004"; }
-#icon-right:before   { content : "\e005"; }
+#icon-help:before    { content : "\e005"; }
+#icon-shuffle:before { content : "\e004"; }
+#icon-rotate:before  { content : "\e003"; }
+#icon-restore:before { content : "\e002"; }
+#icon-finish:before  { content : "\e002"; }
+#icon-left:before    { content : "\e001"; }
+#icon-right:before   { content : "\e000"; }
 #icon-alert          { content : "\e006"; }
 
 // Color palette.
@@ -207,6 +207,7 @@ body {
 		   -moz-transition : 300ms all;
 		    -ms-transition : 300ms all;
 		        transition : 300ms all;
+		-moz-perspective : 800px; /* Mozilla, what were you thinking??? */
 		&.blurred {
 			opacity : 0.5;
 
@@ -227,7 +228,7 @@ body {
 			left     : 50%;
 			margin   : -150px 0 0 -250px;
 			z-index  : 1;
-
+			-moz-transform-style : preserve-3d; /* NOOOOO */
 			&.hidden { z-index: -1; }
 			#restore-single {
 				position : absolute;
@@ -392,7 +393,6 @@ body {
 					        transform : scale(0.25) rotateY(180deg) translate(-1400px, -500px);
 				}
 
-
 				// States for shuffling animation.
 				&.shuffle         {
 					-webkit-transform : scale(0.25) translate(0, 0);
@@ -513,7 +513,6 @@ body {
 					    -ms-transform : translate( 300%) rotateY(180deg);
 					        transform : translate( 300%) rotateY(180deg);
 				}
-
 				.remove-button {
 					position    : absolute;
 					right       : 0;
@@ -570,10 +569,21 @@ body {
 								font-size  : 25px;
 								margin-top : 130px;
 							}
+							&.mixed {
+								margin-top: 10px;
+							}
 						}
+					}
+					.image {
+						margin-top : -300px;
 						img {
-							max-width  : 100%;
-							max-height : 100%;
+							max-width : 500px;
+							&.title, &.description { display : none; }
+							&.no-text { max-height : 300px; }
+							&.mixed {
+								margin-top : 40px;
+								max-height: 250px;
+							}
 						}
 					}
 				}
@@ -685,7 +695,6 @@ body {
 		}
 	}
 }
-
 .error-notice-container {
 	position   : absolute;
 	left       : 0;
@@ -694,7 +703,6 @@ body {
 	bottom     : 0;
 	background : #2f3944;
 	display    : none;
-
 	.error-notice {
 		background : #fceead url('../img/error-icon.png') center 26px no-repeat;
 		width      : 625px;
