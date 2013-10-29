@@ -165,11 +165,11 @@ Namespace('Flashcards').Engine = do ->
 			Hammer(document).on 'swipeleft', (e) ->
 				if _canMove 'right' then _shiftCards 'left'
 				e.stopPropagation()
-			Hammer(document).on 'swipedown', _discard
+			Hammer(document).on 'swipedown', -> _discard()
 			Hammer(document).on 'tap', -> if overlay then _toggleOverlay()
 
-			Hammer(document.getElementById('left-button')).on  'tap', ->  if _canMove 'left' then _shiftCards 'right'
-			Hammer(document.getElementById('right-button')).on 'tap', -> if _canMove 'right' then _shiftCards 'left'
+			Hammer(document.getElementById('icon-left')).on  'tap', -> if _canMove 'left'  then _shiftCards 'right'
+			Hammer(document.getElementById('icon-right')).on 'tap', -> if _canMove 'right' then _shiftCards 'left'
 
 			Hammer(document.getElementById('icon-help')).on    'tap', _toggleOverlay
 			Hammer(document.getElementById('icon-restore')).on 'tap', _unDiscardAll
