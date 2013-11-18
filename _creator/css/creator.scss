@@ -68,7 +68,6 @@ button {
 		margin    : -5px;
 		-webkit-transition : all 200ms;
 		   -moz-transition : all 200ms;
-		    -ms-transition : all 200ms;
 		        transition : all 200ms;
 	}
 }
@@ -200,7 +199,6 @@ body {
 						width      : 30px;
 						-webkit-transition : all 200ms;
 						   -moz-transition : all 200ms;
-						    -ms-transition : all 200ms;
 						        transition : all 200ms;
 						&:hover { 
 							color : #47303C; 
@@ -221,7 +219,6 @@ body {
 						opacity   : 1;
 						-webkit-transition : all 200ms;
 						   -moz-transition : all 200ms;
-						    -ms-transition : all 200ms;
 						        transition : all 200ms;
 						&.hide { opacity : 0; }
 						span {
