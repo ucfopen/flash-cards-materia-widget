@@ -6,22 +6,19 @@
 		<title>Flashcards Engine</title>
 		<meta charset="utf-8" />
 		<style type="text/css"></style>
-		<script type="text/javascript" src="js/modernizr.js"></script>
-		<script type="text/javascript" src="/js/materia.require.js"></script>
-		<link rel="stylesheet/less" type="text/css" href="css/widget.less">
-		<script type="text/javascript">
-			require([
-				'enginecore', 'score', 'less',           // Materia libraries.
-				'js/hammer.min',                         // Specific dependencies.
-				'js/yepnope.min',                        // Conditional loading.
-				'js/konami.js',                          // For ATARI MODE
-				'cs!js/widget',                          // Widget files.
-				], function(util) {
+
+		<script defer src="//localhost:35729/livereload.js"></script>
+		<script src="/js/materia.require.js" data-embed="false"></script>
+		<script src="widget.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="widget.css">
+		<script>
+			require(['enginecore', 'score'], function(util) {
 					Materia.Engine.start(Flashcards.Engine);
 			});
 		</script>
 	</head>
-	<body id="main" ng-controller="flashcardsEngineCtrl">
+	<body id="main">
 		<section id="fake-loading-screen">
 			<p class="load">NEWDOS/91</p>
 			<span  class="load"id="info"><p>MATERIA, INC.</p><p>VERSION 2.1</p><p>KogDos 2.5b</p></span>

@@ -1,16 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="FlashcardsCreator">
 	<head>
 		<title>test Creator</title>
 		<meta charset='utf-8' />
-		<style type='text/css'></style>
-		<script src="js/modernizr.js"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular-animate.min.js"></script>
-		<script type='text/javascript' src='/js/materia.require.js'></script>
-		<link rel='stylesheet' type='text/css' href='css/creator.css'>
+
+		<link rel='stylesheet' type='text/css' href='creator.css'>
+
+		<script src="modernizr.js"></script>
+
+		<!-- Development scripts -->
+		<script defer src="//localhost:35729/livereload.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-animate.js"></script>
+
+		<!-- Production scripts -->
+		<!--
+		<script defer src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+		<script defer src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-animate.min.js"></script>
+		-->
+
+		<script src='/js/materia.require.js' data-embed="false"></script>
+		<script src="creator.js"></script>
 		<script type='text/javascript'>
-			require(['creatorcore', 'js/creator'], function(util) {
+			require(['creatorcore'], function(util) {
 				Materia.CreatorCore.start(Flashcards.Creator);
 			});
 		</script>
