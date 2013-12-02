@@ -19,7 +19,7 @@ FlashcardsCreator.controller 'FlashcardsCreatorCtrl', ['$scope', ($scope) ->
 
 	_imgRef = []
 
-	$scope.addCard = (front="", back="", URLs=["", ""]) -> 
+	$scope.addCard = (front = "", back = "", URLs = ["", ""]) -> 
 		$scope.cards.push { front:front, back:back, URLs:URLs }
 	$scope.removeCard = (index) -> 
 		$scope.cards.splice(index, 1)
@@ -40,7 +40,7 @@ Namespace('Flashcards').Creator = do ->
 		_scope = angular.element($('body')).scope()
 		_scope.$apply -> _scope.addCard()
 
-		if not Modernizr.input.placeholder then _polyfill()
+		# if not Modernizr.input.placeholder then _polyfill()
 
 	initExistingWidget = (title, widget, qset, version, baseUrl) ->
 		_items = qset.items[0].items
@@ -48,7 +48,7 @@ Namespace('Flashcards').Creator = do ->
 		_scope.$apply -> _scope.title = title
 		onQuestionImportComplete _items
 
-		if not Modernizr.input.placeholder then _polyfill()
+		# if not Modernizr.input.placeholder then _polyfill()
 
 	onSaveClicked = (mode = 'save') ->
 		if _buildSaveData() then Materia.CreatorCore.save _title, _qset
@@ -149,4 +149,4 @@ Namespace('Flashcards').Creator = do ->
 
 # Bootstrap the document and define it as the creator module.
 # This will allow angular to add directives to every "ng" HTML attribute.
-angular.bootstrap document, ["FlashcardsCreator"]
+# angular.bootstrap document, ["FlashcardsCreator"]
