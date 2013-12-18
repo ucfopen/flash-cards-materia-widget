@@ -9,15 +9,16 @@ Updated : 10/13
 
 ###
 
-# Create an angular module to import the animation module and house our controller.
+# Create an angular module to import the animation module and house our controller
 Flashcards = angular.module 'FlashcardsCreator', ['ngAnimate', 'ngSanitize']
 
+# The 'Resource' service contains all app logic that does pertain to DOM manipulation
 Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 	buildQset: (title, items) ->
 		qsetItems = []
 		qset = {}
 
-		# Decide if it is ok to save.
+		# Decide if it is ok to save
 		if title is ''
 			Materia.CreatorCore.cancelSave 'Please enter a title.'
 			return false
@@ -40,7 +41,8 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 
 		qset
 
-	processQsetItem: () ->
+	processQsetItem: (item) ->
+		# Remove any dangerous content
 		item.ques = $sanitize item.ques
 		item.ans = $sanitize item.ans
 
@@ -55,6 +57,7 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 
 		qsetItem
 
+	# IE8/IE9 are super special and need this
 	placeholderPolyfill: () ->
 		$('[placeholder]')
 		.focus ->
@@ -87,12 +90,14 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 		if not Modernizr.input.placeholder then _polyfill()
 
 	$scope.onSaveClicked = (mode = 'save') ->
-		qset = Resource.buildQset $sanitize($scope.title), $scope.items
+		# Create a qset to save
+		qset = Resource.buildQset $sanitize($scope.title), $scope.cards
 		if qset then Materia.CreatorCore.save $sanitize($scope.title), qset
 
 	$scope.onSaveComplete = () -> true
 
 	$scope.onQuestionImportComplete = (items) ->
+		# Add each imported question to the DOM
 		for i in [0..items.length-1]
 			$scope.addCard items[i].questions[0].text, items[i].answers[0].text
 			if items[i].assets[0] != '-1' then $scope.cards[i].URLs[0] = items[i].assets[0]
@@ -109,10 +114,12 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 
 	$scope.requestImage = (index, face) -> 
 		Materia.CreatorCore.showMediaImporter()
+		# Save the card/face that requested the image
 		_imgRef[0] = index
 		_imgRef[1] = face
 
 	$scope.setURL = (URL) ->
+		# Bind the image URL to the DOM
 		$scope.cards[_imgRef[0]].URLs[_imgRef[1]] = URL
 
 	$scope.deleteImage = (index, face) ->
