@@ -67,7 +67,6 @@ Namespace('Flashcards').Engine = do ->
 		document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.0") || document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.1")
 			
 	_easterEggStart = () ->
-		console.log 'GOGOG'
 		yepnope(
 			load : [
 				'css!//fonts.googleapis.com/css?family=Press+Start+2P',
