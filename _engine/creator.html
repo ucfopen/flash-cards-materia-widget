@@ -6,13 +6,20 @@
 
 		<link rel='stylesheet' type='text/css' href='creator.css'>
 
-		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-		<script type="text/javascript" src="/js/materia.creatorcore.js"></script>
-
-		<!-- Development scripts -->
+		<!-- DEVELOPMENT -->
 		<script defer src="//localhost:35729/livereload.js"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.js"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-animate.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-animate.js"></script>
+		<script src='//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-sanitize.js'></script>
+
+		<!-- DEPLOYMENT -->
+		<!--
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-animate.min.js"></script>
+		<script src='//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-sanitize.min.js'></script>
+		-->
+
+		<script src='/js/materia.require.js'></script>
 		<script src="assets/js/modernizr.js"></script>
 		<script src="creator.js"></script>
 	</head>
@@ -130,7 +137,4 @@
 			</li>
 		</ul>
 	</body>
-	<script type="text/javascript">
-		Materia.CreatorCore.start(Flashcards.Creator);
-	</script>
 </html>
