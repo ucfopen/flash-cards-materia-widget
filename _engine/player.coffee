@@ -114,11 +114,11 @@ Namespace('Flashcards').Engine = do ->
 			_card.node      = _cardNodes[i]
 			_card.FrontText = data[i].answers[0].text
 			_card.BackText  = data[i].questions[0].text
-			_card.FrontURL  = data[i].assets[1]
-			_card.BackURL   = data[i].assets[0]
+			_card.FrontURL  = if data[i].assets[1] then Materia.Engine.getImageAssetUrl(data[i].assets[1]) else '-1'
+			_card.BackURL  = if data[i].assets[0] then Materia.Engine.getImageAssetUrl(data[i].assets[0]) else '-1'
 
 			if _card.FrontURL? && _card.FrontURL != '-1'
-				if _card.FrontText is '' then _frontClass = "no-text" else _frontClass = "mixed"                  
+				if _card.FrontText is '' then _frontClass = "no-text" else _frontClass = "mixed"
 			else
 				if _card.FrontText.split(' ').length < 8 then _frontClass = "title" else _frontClass = "description"
 
