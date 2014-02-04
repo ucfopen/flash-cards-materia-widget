@@ -47,7 +47,7 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 		item.ans = $sanitize item.ans
 
 		qsetItem = {}
-		qsetItem.assets = []
+		qsetItem.assets = item.assets
 
 		qsetItem.materiaType = "question"
 		qsetItem.id = ""
@@ -99,15 +99,15 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 	$scope.onQuestionImportComplete = (items) ->
 		# Add each imported question to the DOM
 		for i in [0..items.length-1]
-			$scope.addCard items[i].questions[0].text, items[i].answers[0].text
-			if items[i].assets[0] != '-1' then $scope.cards[i].URLs[0] = items[i].assets[0]
-			if items[i].assets[1] != '-1' then $scope.cards[i].URLs[1] = items[i].assets[1]
+			$scope.addCard items[i].questions[0].text, items[i].answers[0].text, items[i].assets
+			if items[i].assets[0] != '-1' then $scope.cards[i].URLs[0] = Materia.CreatorCore.getMediaUrl items[i].assets[0]
+			if items[i].assets[1] != '-1' then $scope.cards[i].URLs[1] = Materia.CreatorCore.getMediaUrl items[i].assets[1]
 
 	$scope.onMediaImportComplete = (media) ->
-		$scope.setURL Materia.CreatorCore.getMediaUrl media[0].id
+		$scope.setURL Materia.CreatorCore.getMediaUrl(media[0].id), media[0].id
 
-	$scope.addCard = (front = "", back = "", URLs = ["", ""]) -> 
-		$scope.cards.push { front:front, back:back, URLs:URLs }
+	$scope.addCard = (front = "", back = "", assets = ["",""]) ->
+		$scope.cards.push { front:front, back:back, URLs:["",""], assets: assets }
 
 	$scope.removeCard = (index) -> 
 		$scope.cards.splice index, 1
@@ -118,9 +118,10 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 		_imgRef[0] = index
 		_imgRef[1] = face
 
-	$scope.setURL = (URL) ->
+	$scope.setURL = (URL,id) ->
 		# Bind the image URL to the DOM
 		$scope.cards[_imgRef[0]].URLs[_imgRef[1]] = URL
+		$scope.cards[_imgRef[0]].assets[_imgRef[1]] = id
 
 	$scope.deleteImage = (index, face) ->
 		$scope.cards[index].URLs[face] = ""
