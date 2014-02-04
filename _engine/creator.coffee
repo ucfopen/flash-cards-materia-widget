@@ -43,8 +43,8 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 
 	processQsetItem: (item) ->
 		# Remove any dangerous content
-		item.ques = $sanitize item.ques
-		item.ans = $sanitize item.ans
+		item.ques = $sanitize item.front
+		item.ans = $sanitize item.back
 
 		qsetItem = {}
 		qsetItem.assets = item.assets
