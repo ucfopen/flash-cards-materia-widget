@@ -129,7 +129,3 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 		$scope.cards[index].URLs[face] = ""
 ]
 
-# Load Materia Dependencies
-require ['creatorcore'], (util) ->
-	# Pass Materia the scope of our start method
-	Materia.CreatorCore.start angular.element($('body')).scope()
