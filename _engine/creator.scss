@@ -36,7 +36,7 @@ html, body {
 	cursor           : default;
 	background-color : #584B4B;
 	color            : #fff;
-	font-family      : "Lato", "Arial", sans-serif;
+	font-family      : verdana, sans-serif;
 	margin           : 0;
 	padding          : 0;
 	-webkit-user-select : none;
@@ -73,8 +73,9 @@ button {
 header {
 	margin  : 0 0 5px;
 	padding : 10px;
+	background: inherit;
 	input {
-		background : inherit;
+		background : #584B4B;
 		color      : #FFF;
 		border     : none;
 		margin     : 20px;
@@ -155,6 +156,7 @@ body {
 					overflow-x : hidden;
 					&:nth-child(2) { right : 0; }
 					textarea, input {
+						font-family: 'verdana';
 						border     : none;
 						font-size  : 14px;
 						width      : 90%;
