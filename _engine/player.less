@@ -261,10 +261,17 @@ body {
 
 				// State for rotating.
 				&.rotated {
-					-webkit-transform : rotateY(180deg);
-					   -moz-transform : rotateY(180deg);
-					    -ms-transform : rotateY(180deg);
-					        transform : rotateY(180deg);
+					.front {
+						-webkit-transform : rotateY(180deg);
+						   -moz-transform : rotateY(180deg);
+							-ms-transform : rotateY(180deg);
+								transform : rotateY(180deg);
+					}
+					.back {
+						-ms-transform : rotateY(0deg);
+						transform : rotateY(0deg);
+						z-index: 15;
+					}
 				}
 
 				// States for discarding.
@@ -587,7 +594,12 @@ body {
 						}
 					}
 				}
-				.front { z-index : 2; }
+				.front { z-index : 2;
+					-webkit-transform : rotateY(0deg);
+					   -moz-transform : rotateY(0deg);
+					    -ms-transform : rotateY(0deg);
+					        transform : rotateY(0deg);
+				}
 				.back  {
 					-webkit-transform : rotateY(-180deg);
 					   -moz-transform : rotateY(-180deg);
