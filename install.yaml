@@ -13,7 +13,7 @@ general:
   api_version: 2
 files:
   creator: creator.html
-  player: swf/flash-cards-engine.swf
+  player: player.html
   flash_version: 10
 score:
   is_scorable: No
@@ -25,9 +25,9 @@ meta_data:
   supported_data:
     - Question/Answer
   about: >
-    Flash Cards is a study tool in which a
-    virtual tutor shows students a deck of
-    flash cards
+    Flashcards is a study tool that allows
+    students to use a virtual deck of cards
+    to study concepts paired with definitions
+    or images.
   excerpt: >
-    A study tool in which a virtual tutor
-    shows students a deck of flash cards.
+    A study tool featuring a deck of flashcards.
