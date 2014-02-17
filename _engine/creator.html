@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html ng-app="FlashcardsCreator">
+	<head>
+		<title>Flash Cards Creator</title>
+		<meta charset='utf-8'/>
+
+		<!-- STYLESHEETS -->
+		<link rel="stylesheet" type="text/css" href="creator.css">
+
+		<!-- REQUIRED MATERIA JAVASCRIPT -->
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="/js/materia.creatorcore.js"></script>
+
+		<!-- YOUR PREREQUISITES -->
+		<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js'></script>
+		<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-animate.min.js'></script>
+		<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-sanitize.min.js'></script>
+		<script src="assets/js/modernizr.js"></script>
+
+		<!-- MAIN CREATOR SCRIPT -->
+		<script src="creator.js"></script>
+	</head>
+	<body ng-cloak ng-controller="FlashcardsCreatorCtrl">
+		<div id="modal"></div>
+		<header>
+				<input
+				type='text'
+				role="title"
+				placeholder="Enter a title here."
+				ng-model="title"
+				value="{{title}}"/>
+		</header>
+		<ul aria-label="cards">
+			<li class="titles" aria-hidden="true">
+				<h3>Front</h3><h3>Back</h3>
+			</li>
+			<li
+			class="card"
+			role="flashcard"
+			ng-repeat="card in cards">
+				<span class="num">{{$index+1}}</span>
+				<span class="face" aria-label="Card front.">
+					<center>
+					<input
+					placeholder='Enter a picture header here.'
+					value="{{card.front}}"
+					ng-hide=" card.URLs[0] == '' "
+					ng-model="card.front"/>
+					<textarea
+					placeholder='Enter text here.'
+					value="{{card.front}}"
+					ng-class="{title : card.URLs[0] != ''}"
+					ng-hide=" card.URLs[0] != '' "
+					ng-model="card.front"></textarea>
+					<img
+					ng-hide=" card.URLs[0] == '' "
+					ng-src="{{card.URLs[0]}}"/>
+					<button
+					class="del-img"
+					aria-label="Delete image."
+					ng-hide=" card.URLs[0] == '' "
+					ng-click="deleteImage($index, 0)">
+						<span class="icon-close"></span>
+						<span class="descript del">remove image</span>
+					</button>
+					</center>
+					<div
+					class="alert"
+					ng-class="{hide : card.front.length < 51 || card.URLs[0] == '' }">
+						<span class="icon-alert"></span> 
+						Reduce your text to fit the card.
+					</div>
+					<button
+					aria-label="Add Image."
+					ng-hide=" card.URLs[0] != '' "
+					ng-click="requestImage($index, 0)">
+						<span class="icon-image"></span>
+						<span class="descript add">add image</span>
+					</button>
+				</span>
+				<span class="face" aria-label="Card back.">
+					<center>
+					<input
+					placeholder='Enter a picture header here.'
+					value="{{card.back}}"
+					ng-hide=" card.URLs[1] == '' "
+					ng-model="card.back"/>
+					<textarea
+					placeholder='Enter text here.'
+					value="{{card.back}}"
+					ng-class="{title : card.URLs[1] != ''}"
+					ng-hide=" card.URLs[1] != '' "
+					ng-model="card.back"></textarea>
+					<img
+					ng-hide=" card.URLs[1] == '' "
+					ng-src="{{card.URLs[1]}}"/>
+					<button
+					class="del-img"
+					aria-label="Delete image."
+					ng-hide=" card.URLs[1] == '' "
+					ng-click="deleteImage($index, 1)">
+						<span class="icon-close"></span>
+						<span class="descript del">remove image</span>
+					</button>
+					</center>
+					<div
+					class="alert"
+					ng-class="{hide : card.back.length < 51 || card.URLs[1] == '' }">
+						<span class="icon-alert"></span> 
+						Reduce your text to fit the card.
+					</div>
+					<button
+					aria-label="Add Image."
+					ng-hide=" card.URLs[1] != '' "
+					ng-click="requestImage($index, 1)">
+						<span class="icon-image"></span>
+						<span class="descript add">add image</span>
+					</button>
+				</span>
+				<button
+				class="delete"
+				aria-label="Delete card."
+				ng-click="removeCard($index)">
+					<span class="icon-close"></span>
+					<span class="descript">remove card</span>
+				</button>
+			</li>
+			<li><button
+				id="add-card"
+				class="add"
+				aria-label="Add Card."
+				ng-click="addCard()">
+				<span class="icon-plus"></span> Add Card</button>
+			</li>
+		</ul>
+
+		<!-- INITIALIZE -->
+		<script type="text/javascript">
+			window.addEventListener('load', function() {
+				Materia.CreatorCore.start(angular.element($('body')).scope())
+			});
+		</script>
+	</body>
+</html>
