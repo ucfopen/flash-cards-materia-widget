@@ -77,11 +77,31 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 # Set the controller for the scope of the document body.
 Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource',
 ($scope, $sanitize, Resource) ->
-	$scope.title = ""
+	$scope.title = "My Flash Cards widget"
 	$scope.cards = []
 	_imgRef = []
 
+	$scope.changeTitle = ->
+		setTimeout ->
+			$('#backgroundcover, .title').addClass 'show'
+			$('.title input[type=text]').focus()
+		,1
+	$scope.setTitle = ->
+		$scope.title = $('.intro input[type=text]').val() or $scope.title
+		$scope.step = 1
+		setTimeout ->
+			$scope.hideCover()
+			$('#add-card').focus()
+		,1
+	$scope.hideCover = ->
+		setTimeout ->
+			$('#backgroundcover, .title, .intro').removeClass 'show'
+		,1
+
+
 	$scope.initNewWidget = (widget, baseUrl) ->
+		$('#backgroundcover, .intro').addClass 'show'
+
 		if not Modernizr.input.placeholder then Resource()
 
 	$scope.initExistingWidget = (title, widget, qset, version, baseUrl) ->
@@ -110,6 +130,9 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 
 	$scope.addCard = (front = "", back = "", assets = ["",""]) ->
 		$scope.cards.push { front:front, back:back, URLs:["",""], assets: assets }
+		setTimeout ->
+			$('#qt_' + ($scope.cards.length - 1)).focus()
+		, 10
 
 	$scope.removeCard = (index) -> 
 		$scope.cards.splice index, 1
