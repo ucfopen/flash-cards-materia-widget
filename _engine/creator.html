@@ -38,45 +38,6 @@
 			role="flashcard"
 			ng-repeat="card in cards">
 				<span class="num">{{$index+1}}</span>
-				<span class="face" aria-label="Card front.">
-					<center>
-					<input
-					placeholder='Enter a picture header here.'
-					value="{{card.front}}"
-					ng-hide=" card.URLs[0] == '' "
-					ng-model="card.front"/>
-					<textarea
-					placeholder='Enter text here.'
-					value="{{card.front}}"
-					ng-class="{title : card.URLs[0] != ''}"
-					ng-hide=" card.URLs[0] != '' "
-					ng-model="card.front" tabindex='{{$index+2}}'></textarea>
-					<img
-					ng-hide=" card.URLs[0] == '' "
-					ng-src="{{card.URLs[0]}}"/>
-					<button
-					class="del-img"
-					aria-label="Delete image."
-					ng-hide=" card.URLs[0] == '' "
-					ng-click="deleteImage($index, 0)">
-						<span class="icon-close"></span>
-						<span class="descript del">remove image</span>
-					</button>
-					</center>
-					<div
-					class="alert"
-					ng-class="{hide : card.front.length < 51 || card.URLs[0] == '' }">
-						<span class="icon-alert"></span> 
-						Reduce your text to fit the card.
-					</div>
-					<button
-					aria-label="Add Image."
-					ng-hide=" card.URLs[0] != '' "
-					ng-click="requestImage($index, 0)">
-						<span class="icon-image"></span>
-						<span class="descript add">add image</span>
-					</button>
-				</span>
 				<span class="face" aria-label="Card back.">
 					<center>
 					<input
@@ -112,6 +73,45 @@
 					aria-label="Add Image."
 					ng-hide=" card.URLs[1] != '' "
 					ng-click="requestImage($index, 1)">
+						<span class="icon-image"></span>
+						<span class="descript add">add image</span>
+					</button>
+				</span>
+				<span class="face" aria-label="Card front.">
+					<center>
+					<input
+					placeholder='Enter a picture header here.'
+					value="{{card.front}}"
+					ng-hide=" card.URLs[0] == '' "
+					ng-model="card.front"/>
+					<textarea
+					placeholder='Enter text here.'
+					value="{{card.front}}"
+					ng-class="{title : card.URLs[0] != ''}"
+					ng-hide=" card.URLs[0] != '' "
+					ng-model="card.front" tabindex='{{$index+2}}'></textarea>
+					<img
+					ng-hide=" card.URLs[0] == '' "
+					ng-src="{{card.URLs[0]}}"/>
+					<button
+					class="del-img"
+					aria-label="Delete image."
+					ng-hide=" card.URLs[0] == '' "
+					ng-click="deleteImage($index, 0)">
+						<span class="icon-close"></span>
+						<span class="descript del">remove image</span>
+					</button>
+					</center>
+					<div
+					class="alert"
+					ng-class="{hide : card.front.length < 51 || card.URLs[0] == '' }">
+						<span class="icon-alert"></span> 
+						Reduce your text to fit the card.
+					</div>
+					<button
+					aria-label="Add Image."
+					ng-hide=" card.URLs[0] != '' "
+					ng-click="requestImage($index, 0)">
 						<span class="icon-image"></span>
 						<span class="descript add">add image</span>
 					</button>
