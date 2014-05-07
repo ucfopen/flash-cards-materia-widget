@@ -106,8 +106,8 @@ Namespace('Flashcards').Engine = do ->
 
 			# Single flashcard specific data.
 			_card.node      = _cardNodes[i]
-			_card.FrontText = data[i].answers[0].text
-			_card.BackText  = data[i].questions[0].text
+			_card.FrontText = data[i].answers[0].text.replace(/\&\#10\;/g, '<br>')
+			_card.BackText  = data[i].questions[0].text.replace(/\&\#10\;/g, '<br>')
 			_card.FrontURL  = if data[i].assets[1] then Materia.Engine.getImageAssetUrl(data[i].assets[1]) else '-1'
 			_card.BackURL  = if data[i].assets[0] then Materia.Engine.getImageAssetUrl(data[i].assets[0]) else '-1'
 
