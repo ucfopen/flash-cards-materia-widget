@@ -25,7 +25,7 @@
 		<div id="modal"></div>
 		<div id='header'>
 			<div class='logo'></div>
-			<h1 id='title' ng-bind='title'></h1>
+			<h1 id='title' ng-bind='title' ng-click='changeTitle()'></h1>
 			<div class='link' ng-click='changeTitle()'>Edit...</div>
 			<div class='center'>{{cards.length}} Cards</div>
 		</div>
@@ -133,7 +133,7 @@
 			</li>
 		</ul>
 
-		<div id='backgroundcover'></div>
+		<div id='backgroundcover' ng-click='hideCover()'></div>
 		<div class='box intro'>
 			<img src='assets/creatorexample.png'>
 			<h1>Flash Cards</h1>
