@@ -4,8 +4,8 @@ Materia
 It's a thing
 
 Widget  : Flashcards, Creator
-Authors : Brandon Stull, Micheal Parks
-Updated : 10/13
+Authors : Jonathan Warner, Brandon Stull, Micheal Parks
+Updated : 5/14
 
 ###
 
@@ -66,10 +66,9 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 		item.ques = $sanitize item.front
 		item.ans = $sanitize item.back
 
-		assets = item.assets
-
 		materiaType: "question"
 		id: ""
+		assets: item.assets
 		type: 'QA'
 		questions: [{text : item.ques}]
 		answers: [{value : '100', text : item.ans}]
