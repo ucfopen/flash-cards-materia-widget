@@ -12,6 +12,26 @@ Updated : 10/13
 # Create an angular module to import the animation module and house our controller
 Flashcards = angular.module 'FlashcardsCreator', ['ngAnimate', 'ngSanitize']
 
+Flashcards.directive('ngEnter', ->
+    return (scope, element, attrs) ->
+        element.bind("keydown keypress", (event) ->
+            if(event.which == 13)
+                scope.$apply ->
+                    scope.$eval(attrs.ngEnter)
+                event.preventDefault()
+        )
+)
+Flashcards.directive('focusMe', ['$timeout', '$parse', ($timeout, $parse) ->
+	link: (scope, element, attrs) ->
+		model = $parse(attrs.focusMe)
+		scope.$watch model, (value) ->
+			if value
+				$timeout ->
+					element[0].focus()
+			value
+])
+
+
 # The 'Resource' service contains all app logic that does pertain to DOM manipulation
 Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 	buildQset: (title, items) ->
@@ -46,32 +66,13 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 		item.ques = $sanitize item.front
 		item.ans = $sanitize item.back
 
-		qsetItem = {}
-		qsetItem.assets = item.assets
+		assets = item.assets
 
-		qsetItem.materiaType = "question"
-		qsetItem.id = ""
-		qsetItem.type = 'QA'
-		qsetItem.questions = [{text : item.ques}]
-		qsetItem.answers = [{value : '100', text : item.ans}]
-
-		qsetItem
-
-	# IE8/IE9 are super special and need this
-	placeholderPolyfill: () ->
-		$('[placeholder]')
-		.focus ->
-			if this.value is this.placeholder
-				this.value = ''
-				this.className = ''
-		.blur ->
-			if this.value is '' or this.value is this.placeholder
-				this.className = 'placeholder'
-				this.value = this.placeholder
-
-		$('form').submit ->
-			$(this).find('[placeholder]').each ->
-				if this.value is this.placeholder then this.value = ''
+		materiaType: "question"
+		id: ""
+		type: 'QA'
+		questions: [{text : item.ques}]
+		answers: [{value : '100', text : item.ans}]
 ]
 
 # Set the controller for the scope of the document body.
@@ -81,33 +82,22 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 	$scope.cards = []
 	_imgRef = []
 
-	$scope.changeTitle = ->
-		setTimeout ->
-			$('#backgroundcover, .title').addClass 'show'
-			$('.title input[type=text]').focus()
-		,1
+	# View actions
 	$scope.setTitle = ->
-		$scope.title = $('.intro input[type=text]').val() or $scope.title
+		$scope.title = $scope.introTitle or $scope.title
 		$scope.step = 1
-		setTimeout ->
-			$scope.hideCover()
-			$('#add-card').focus()
-		,1
-	$scope.hideCover = ->
-		setTimeout ->
-			$('#backgroundcover, .title, .intro').removeClass 'show'
-		,1
+		$scope.hideCover()
 
+	$scope.hideCover = ->
+		$scope.showTitleDialog = $scope.showIntroDialog = false
 
 	$scope.initNewWidget = (widget, baseUrl) ->
-		$('#backgroundcover, .intro').addClass 'show'
-
-		if not Modernizr.input.placeholder then Resource()
+		$scope.$apply ->
+			$scope.showIntroDialog = true
 
 	$scope.initExistingWidget = (title, widget, qset, version, baseUrl) ->
 		$scope.title = title
 		$scope.onQuestionImportComplete qset.items[0].items
-		if not Modernizr.input.placeholder then _polyfill()
 
 	$scope.onSaveClicked = (mode = 'save') ->
 		# Create a qset to save
@@ -130,14 +120,11 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 
 	$scope.addCard = (front = "", back = "", assets = ["",""]) ->
 		$scope.cards.push { front:front, back:back, URLs:["",""], assets: assets }
-		setTimeout ->
-			$('#qt_' + ($scope.cards.length - 1)).focus()
-		, 10
 
-	$scope.removeCard = (index) -> 
+	$scope.removeCard = (index) ->
 		$scope.cards.splice index, 1
 
-	$scope.requestImage = (index, face) -> 
+	$scope.requestImage = (index, face) ->
 		Materia.CreatorCore.showMediaImporter()
 		# Save the card/face that requested the image
 		_imgRef[0] = index
@@ -150,5 +137,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 
 	$scope.deleteImage = (index, face) ->
 		$scope.cards[index].URLs[face] = ""
+	
+	Materia.CreatorCore.start $scope
 ]
 
