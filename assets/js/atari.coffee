@@ -2,7 +2,6 @@ Namespace("Flashcards").Atari =
 	Nodes : {}
 	Sound : {}
 	start : ->
-		console.log('atari start')
 		document.getElementById('main').className = "atari"
 
 		@cacheNodes()
@@ -39,7 +38,6 @@ Namespace("Flashcards").Atari =
 		@Sound.saw7 = T("saw", {freq:1220, mul:0.1})
 
 	showLoadingElem : (elem, i) ->
-		console.log elem
 		setTimeout ->
 			elem.className = 'shown'
 		, i*150+(Math.random()*400)
