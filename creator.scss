@@ -243,10 +243,15 @@ body {
 					right      : -58px;
 					width      : 35px;
 					margin-top : 13px;
+					cursor: pointer;
 					.descript {
 						top   : 7px;
 						left  : 40px;
 						color : rgba(255,255,255,0.6);
+					}
+
+					&:hover {
+						background: rgba(255,0,0,0.5);
 					}
 				}
 			}
