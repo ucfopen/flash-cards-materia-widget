@@ -67,11 +67,11 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 		item.ans = $sanitize item.back
 
 		materiaType: "question"
-		id: ""
+		id: item.id
 		assets: item.assets
 		type: 'QA'
-		questions: [{text : item.ques}]
-		answers: [{value : '100', text : item.ans}]
+		questions: [{text : item.ques, id: item.qid }]
+		answers: [{value : '100', text : item.ans, id: item.ansid }]
 ]
 
 # Set the controller for the scope of the document body.
@@ -108,7 +108,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 	$scope.onQuestionImportComplete = (items) ->
 		# Add each imported question to the DOM
 		for i in [0..items.length-1]
-			$scope.addCard items[i].questions[0].text.replace(/\&\#10\;/g, '\n'), items[i].answers[0].text.replace(/\&\#10\;/g, '\n'), items[i].assets
+			$scope.addCard items[i].questions[0].text.replace(/\&\#10\;/g, '\n'), items[i].answers[0].text.replace(/\&\#10\;/g, '\n'), items[i].assets, items[i].id, items[i].questions[0].id, items[i].answers[0].id
 			if items[i].assets[0] and items[i].assets[0] != '-1' then $scope.cards[i].URLs[0] = Materia.CreatorCore.getMediaUrl items[i].assets[0]
 			if items[i].assets[1] and items[i].assets[0] != '-1' then $scope.cards[i].URLs[1] = Materia.CreatorCore.getMediaUrl items[i].assets[1]
 		$scope.$apply()
@@ -117,8 +117,8 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 		$scope.setURL Materia.CreatorCore.getMediaUrl(media[0].id), media[0].id
 		$scope.$apply()
 
-	$scope.addCard = (front = "", back = "", assets = ["",""]) ->
-		$scope.cards.push { front:front, back:back, URLs:["",""], assets: assets }
+	$scope.addCard = (front = "", back = "", assets = ["",""], id = "", qid = "", ansid = "") ->
+		$scope.cards.push { front:front, back:back, URLs:["",""], assets: assets, id: id, qid: qid, ansid: ansid }
 
 	$scope.removeCard = (index) ->
 		$scope.cards.splice index, 1
