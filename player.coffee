@@ -59,7 +59,7 @@ Namespace('Flashcards').Engine = do ->
 
 	_browserSupportsSvg = ->
 		document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.0") || document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.1")
-			
+
 	_easterEggStart = () ->
 		yepnope(
 			load : [
@@ -108,8 +108,8 @@ Namespace('Flashcards').Engine = do ->
 			_card.node      = _cardNodes[i]
 			_card.FrontText = data[i].answers[0].text.replace(/\&\#10\;/g, '<br>')
 			_card.BackText  = data[i].questions[0].text.replace(/\&\#10\;/g, '<br>')
-			_card.FrontURL  = if data[i].assets[1] then Materia.Engine.getImageAssetUrl(data[i].assets[1]) else '-1'
-			_card.BackURL  = if data[i].assets[0] then Materia.Engine.getImageAssetUrl(data[i].assets[0]) else '-1'
+			_card.FrontURL  = if data[i].assets?[1] then Materia.Engine.getImageAssetUrl(data[i].assets[1]) else '-1'
+			_card.BackURL  = if data[i].assets?[0] then Materia.Engine.getImageAssetUrl(data[i].assets[0]) else '-1'
 
 			if _card.FrontURL? && _card.FrontURL != '-1'
 				if _card.FrontText is '' then _frontClass = "no-text" else _frontClass = "mixed"
@@ -155,7 +155,7 @@ Namespace('Flashcards').Engine = do ->
 			document.addEventListener 'touchstart', (e) -> e.preventDefault()
 
 			# Hammer.js events for mobile devices.
-			Hammer(document).on 'swiperight', (e) -> 
+			Hammer(document).on 'swiperight', (e) ->
 				if _canMove 'left'  then _shiftCards 'right'
 				e.stopPropagation()
 			Hammer(document).on 'swipeleft', (e) ->
@@ -292,7 +292,7 @@ Namespace('Flashcards').Engine = do ->
 				, 600
 
 				setTimeout ->
-				
+
 				Nodes.icons[3].className = 'icon focused' # Focus the shuffle icon.
 
 				# Shuffle and reset the card data, then conclude the animation.
@@ -512,7 +512,7 @@ Namespace('Flashcards').Engine = do ->
 				Nodes.icons[4].className    = 'icon'
 				Nodes.gameboard.className   = ''
 				Nodes.helpOverlay.className = 'overlay'
-			else 
+			else
 				Nodes.rightArrow.className  = 'arrow shown'
 				Nodes.leftArrow.className   = 'arrow shown'
 				Nodes.icons[4].className    = 'icon focused'
