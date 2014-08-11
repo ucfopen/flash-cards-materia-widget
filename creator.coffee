@@ -109,8 +109,8 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 		# Add each imported question to the DOM
 		for i in [0..items.length-1]
 			$scope.addCard items[i].questions[0].text.replace(/\&\#10\;/g, '\n'), items[i].answers[0].text.replace(/\&\#10\;/g, '\n'), items[i].assets, items[i].id, items[i].questions[0].id, items[i].answers[0].id
-			if items[i].assets[0] and items[i].assets[0] != '-1' then $scope.cards[i].URLs[0] = Materia.CreatorCore.getMediaUrl items[i].assets[0]
-			if items[i].assets[1] and items[i].assets[0] != '-1' then $scope.cards[i].URLs[1] = Materia.CreatorCore.getMediaUrl items[i].assets[1]
+			if items[i].assets?[0] and items[i].assets?[0] != '-1' then $scope.cards[i].URLs[0] = Materia.CreatorCore.getMediaUrl items[i].assets[0]
+			if items[i].assets?[1] and items[i].assets?[1] != '-1' then $scope.cards[i].URLs[1] = Materia.CreatorCore.getMediaUrl items[i].assets[1]
 		$scope.$apply()
 
 	$scope.onMediaImportComplete = (media) ->
@@ -136,7 +136,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 
 	$scope.deleteImage = (index, face) ->
 		$scope.cards[index].URLs[face] = ""
-	
+
 	Materia.CreatorCore.start $scope
 ]
 
