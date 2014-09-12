@@ -737,3 +737,44 @@ body {
 		}
 	}
 }
+
+.instructions {
+	position   : absolute;
+	left       : 0;
+	right      : 0;
+	top        : 0;
+	bottom     : 0;
+	background : rgba(0,0,0,0.8);
+	display    : block;
+	color: #fff;
+	padding: 115px 50px;
+
+	text-align: center;
+
+	z-index: 1000;
+
+	&.hide {
+		display    : none;
+	}
+
+	h2 {
+		margin-bottom: 40px;
+	}
+
+	.gotit {
+		padding: 10px;
+		background: #5fac4b;
+		display: block;
+		width: 100px;
+		position: relative;
+		margin: auto;
+		font-size: 20px;
+		cursor: pointer;
+		margin-top: 30px;
+
+		&:hover {
+			background: #73D15A;
+		}
+	}
+}
+

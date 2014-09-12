@@ -41,6 +41,9 @@ Namespace('Flashcards').Engine = do ->
 			$('.error-notice-container').show()
 			return
 
+		$('.instructions').click ->
+			$('.instructions').hide()
+
 		_qset = qset
 		_cacheNodes()
 		_drawBoard(instance.name, qset.items[0].items.length)
