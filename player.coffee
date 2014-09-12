@@ -41,7 +41,7 @@ Namespace('Flashcards').Engine = do ->
 			$('.error-notice-container').show()
 			return
 
-		$('.instructions').click ->
+		Hammer(document.getElementById('instructions')).on 'tap', ->
 			$('.instructions').hide()
 
 		_qset = qset
