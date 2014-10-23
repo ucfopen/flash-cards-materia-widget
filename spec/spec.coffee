@@ -8,6 +8,19 @@ describe 'Testing framework', ->
 	, 15000
 
 describe 'Main page', ->
+	it 'should show instructions', (done) ->
+		client.getText '#instructions h2', (err, text) ->
+			expect(text).toBe("Flashcards Study Aid")
+		client.getText '#instructions .gotit', (err, text) ->
+			expect(text).toBe("Got it!")
+			done()
+
+	it 'should be able to hide instructions', (done) ->
+		client.click '#instructions .gotit', (err, text) ->
+			client.getAttribute '#instructions', 'style', (err, classes) ->
+				expect(classes).toContain("display: none")
+				done()
+
 	it 'should have a title', (done) ->
 		client
 			.getText '#instance-title', (err, text) ->
@@ -63,3 +76,4 @@ describe 'Main page', ->
 						expect(err).toBeNull()
 						expect(result.value).toBe(true)
 						done()
+						client.end()
