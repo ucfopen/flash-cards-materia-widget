@@ -70,9 +70,9 @@ describe 'Main page', ->
 			client.execute "return $('.flashcard.rotated').length", null, (err, result) ->
 				expect(err).toBeNull()
 				expect(result.value).toBe(0)
-				done()
 				client.execute "$('#icon-rotate').mouseup()", null, (err) ->
-					client.execute "return $('.flashcard.rotated').length == $('.flashcard').length", null, (err, result) ->
+					client.pause 5000
+					client.execute "return $('.flashcard.rotated, .flashcard.right-rotated').length == $('.flashcard').length", null, (err, result) ->
 						expect(err).toBeNull()
 						expect(result.value).toBe(true)
 						done()
