@@ -317,11 +317,12 @@ Namespace('Flashcards').Engine = do ->
 
 	# Shuffles an array.
 	# @arr : An array.
-	_shuffle = (arr) ->
-		for i in [arr.length-1..1]
-			j = Math.floor Math.random() * (i + 1)
-			[arr[i], arr[j]] = [arr[j], arr[i]]
-		arr
+	_shuffle = (a) ->
+		for i in [1...a.length]
+			j = Math.floor Math.random() * (a.length)
+			[a[i], a[j]] = [a[j], a[i]]
+		a
+
 
 	# Triggers the illustration for rotating the cards en masse.
 	# @face : The default rotation of all cards.
