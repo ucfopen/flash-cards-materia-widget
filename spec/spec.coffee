@@ -24,56 +24,46 @@ describe 'Main page', ->
 	it 'should have a title', (done) ->
 		client
 			.getText '#instance-title', (err, text) ->
-				expect(err).toBeNull()
 				expect(text).toContain("Psychology")
 				done()
 
 	it 'should show first card', (done) ->
 		client
 			.getText '.flashcard .front .content .description', (err, text) ->
-				expect(err).toBeNull()
-				expect(text).toContain("A Swiss psychiatrist")
+				expect(text.join()).toContain("A Swiss psychiatrist")
 
 				client.getText '.flashcard .back .content .title', (err, text) ->
-					expect(err).toBeNull()
 					expect(text).toContain("Carl Jung")
 					done()
 
 	it 'should flip card when clicked', (done) ->
-		client.execute "$('.flashcard:first').mouseup()", null, (err) ->
+		client.execute "$('.flashcard:first').mouseup()", (err) ->
 			client.getAttribute '.flashcard', 'class', (err, classes) ->
-				expect(err).toBeNull()
-				expect(classes).toContain('rotated')
+				expect(classes.join()).toContain('rotated')
 				client.pause 500
-				client.execute "$('.flashcard:first').mouseup()", null, (err) ->
-					expect(err).toBeNull()
+				client.execute "$('.flashcard:first').mouseup()", (err) ->
 					client.getAttribute '.flashcard', 'class', (err, classes) ->
-						console.log classes
 						done()
 
 	it 'should go right when I click right', (done) ->
 		client
-			.execute "$('#icon-right').mouseup()", null, (err) ->
+			.execute "$('#icon-right').mouseup()", (err) ->
 				client.getAttribute '.flashcard.left', 'class', (err, classes) ->
-					expect(err).toBeNull()
 					done()
 
 	it 'should go left when I click left', (done) ->
-		client.execute "$('#icon-left').mouseup()", null, (err) ->
-			client.execute "return $('.flashcard.left').length", null, (err, result) ->
-				expect(err).toBeNull()
+		client.execute "$('#icon-left').mouseup()", (err) ->
+			client.execute "return $('.flashcard.left').length", (err, result) ->
 				expect(result.value).toBe(0)
 				done()
 
 	it 'should rotate all when I click rotate', (done) ->
-		client.execute "$('#icon-rotate').mouseup()", null, (err) ->
-			client.execute "return $('.flashcard.rotated').length", null, (err, result) ->
-				expect(err).toBeNull()
+		client.execute "$('#icon-rotate').mouseup()", (err) ->
+			client.execute "return $('.flashcard.rotated').length", (err, result) ->
 				expect(result.value).toBe(0)
-				client.execute "$('#icon-rotate').mouseup()", null, (err) ->
+				client.execute "$('#icon-rotate').mouseup()", (err) ->
 					client.pause 5000
-					client.execute "return $('.flashcard.rotated, .flashcard.right-rotated').length == $('.flashcard').length", null, (err, result) ->
-						expect(err).toBeNull()
+					client.execute "return $('.flashcard.rotated, .flashcard.right-rotated').length == $('.flashcard').length", (err, result) ->
 						expect(result.value).toBe(true)
 						done()
 						client.end()
