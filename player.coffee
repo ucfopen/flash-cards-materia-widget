@@ -125,11 +125,11 @@ Namespace('Flashcards').Engine = do ->
 
 			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'">'+_card.FrontText+'</p>'
 			if _card.FrontURL != '-1'
-				_card.node.children[0].children[1].children[0].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
+				_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
 
 			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'">'+_card.BackText+'</p>'
 			if _card.BackURL != '-1'
-				_card.node.children[1].children[1].children[0].innerHTML  = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
+				_card.node.children[1].children[1].innerHTML  = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
 
 	# Places cards in their correct positions within the gameboard and gives them a specific rotation.
 	# @face : Specifies whether or not to rotate the card when placing them in their positions.
