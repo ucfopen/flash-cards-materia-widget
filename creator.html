@@ -39,7 +39,7 @@
 			ng-repeat="card in cards">
 				<span class="num">{{$index+1}}</span>
 				<span class="face" aria-label="Card back.">
-					<center>
+					<div class="center">
 					<input
 					placeholder='Enter a picture header here.'
 					value="{{card.back}}"
@@ -62,7 +62,7 @@
 						<span class="icon-close"></span>
 						<span class="descript del">remove image</span>
 					</button>
-					</center>
+					</div>
 					<div
 					class="alert"
 					ng-class="{hide : card.back.length < 51 || card.URLs[1] == '' }">
@@ -78,7 +78,7 @@
 					</button>
 				</span>
 				<span class="face" aria-label="Card front.">
-					<center>
+					<div class="center">
 					<input
 					placeholder='Enter a picture header here.'
 					value="{{card.front}}"
@@ -101,7 +101,7 @@
 						<span class="icon-close"></span>
 						<span class="descript del">remove image</span>
 					</button>
-					</center>
+					</div>
 					<div
 					class="alert"
 					ng-class="{hide : card.front.length < 51 || card.URLs[0] == '' }">
