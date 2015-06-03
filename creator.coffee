@@ -1,14 +1,3 @@
-###
-
-Materia
-It's a thing
-
-Widget  : Flashcards, Creator
-Authors : Jonathan Warner, Brandon Stull, Micheal Parks
-Updated : 5/14
-
-###
-
 # Create an angular module to import the animation module and house our controller
 Flashcards = angular.module 'FlashcardsCreator', ['ngAnimate', 'ngSanitize']
 
@@ -25,8 +14,7 @@ Flashcards.directive 'focusMe', ($timeout, $parse) ->
 		model = $parse(attrs.focusMe)
 		scope.$watch model, (value) ->
 			if value
-				$timeout ->
-					element[0].focus()
+				$timeout -> element[0].focus()
 			value
 
 
