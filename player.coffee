@@ -41,7 +41,7 @@ Namespace('Flashcards').Engine = do ->
 			$('.error-notice-container').show()
 			return
 
-		Hammer(document.getElementById('instructions')).on 'tap', ->
+		Hammer(document.getElementById('gotit')).on 'tap', ->
 			$('.instructions').hide()
 
 		_qset = qset
@@ -61,7 +61,7 @@ Namespace('Flashcards').Engine = do ->
 		if Math.floor(Math.random()*100) is 42 then _easterEggStart()
 
 	_browserSupportsSvg = ->
-		document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.0") || document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.1")
+		typeof SVGRect != "undefined"
 
 	_easterEggStart = () ->
 		yepnope(

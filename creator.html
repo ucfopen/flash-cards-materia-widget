@@ -30,14 +30,14 @@
 			<div class='right'>{{cards.length}} Cards</div>
 		</div>
 		<ul aria-label="cards">
-			<li class="titles" aria-hidden="true" ng-show='cards.length'>
+			<li class="titles" aria-hidden="true" ng-class='{hidden:cards.length <= 0}'>
 				<h3>Front</h3><h3>Back</h3>
 			</li>
 			<li
 			class="card"
 			role="flashcard"
 			ng-repeat="card in cards">
-				<span class="num">{{$index+1}}</span>
+				<span class="num" ng-class="{large:$index+1 >= 100}">{{$index+1}}</span>
 				<span class="face" aria-label="Card back.">
 					<div class="center">
 					<input
@@ -66,7 +66,7 @@
 					<div
 					class="alert"
 					ng-class="{hide : card.back.length < 51 || card.URLs[1] == '' }">
-						<span class="icon-alert"></span> 
+						<span class="icon-alert"></span>
 						Reduce your text to fit the card.
 					</div>
 					<button
@@ -89,7 +89,7 @@
 					value="{{card.front}}"
 					ng-class="{title : card.URLs[0] != ''}"
 					ng-hide=" card.URLs[0] != '' "
-					ng-model="card.front" focus-me="true" tabindex="{{$index+1}}"></textarea>
+					ng-model="card.front" focus-me="$index + 1 == cards.length" tabindex="{{$index+1}}"></textarea>
 					<img
 					ng-hide=" card.URLs[0] == '' "
 					ng-src="{{card.URLs[0]}}"/>
@@ -105,7 +105,7 @@
 					<div
 					class="alert"
 					ng-class="{hide : card.front.length < 51 || card.URLs[0] == '' }">
-						<span class="icon-alert"></span> 
+						<span class="icon-alert"></span>
 						Reduce your text to fit the card.
 					</div>
 					<button
@@ -124,7 +124,7 @@
 					<span class="descript">remove card</span>
 				</button>
 			</li>
-			<li><button
+			<li class="add-card-container"><button
 				id="add-card"
 				class="add"
 				aria-label="Add Card."

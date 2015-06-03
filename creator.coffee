@@ -80,6 +80,11 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 	$scope.title = "My Flash Cards widget"
 	$scope.cards = []
 	_imgRef = []
+	SCROLL_DURATION_MS = 500
+	WHEEL_DELTA_THRESHOLD = 5
+	scrollDownIntervalId = null
+	scrollDownTimeoutId = null
+
 
 	# View actions
 	$scope.setTitle = ->
@@ -106,19 +111,25 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 	$scope.onSaveComplete = () -> true
 
 	$scope.onQuestionImportComplete = (items) ->
+		$scope.importing = true;
+
 		# Add each imported question to the DOM
 		for i in [0..items.length-1]
-			$scope.addCard items[i].questions[0].text.replace(/\&\#10\;/g, '\n'), items[i].answers[0].text.replace(/\&\#10\;/g, '\n'), items[i].assets, items[i].id, items[i].questions[0].id, items[i].answers[0].id
+			$scope.addCard items[i].questions[0].text.replace(/\&\#10\;/g, '\n'), items[i].answers[0].text.replace(/\&\#10\;/g, '\n'), items[i].assets, items[i].id, items[i].questions[0].id, items[i].answers[0].id, false
 			if items[i].assets?[0] and items[i].assets[0] != '-1' then $scope.cards[i].URLs[0] = Materia.CreatorCore.getMediaUrl items[i].assets[0]
 			if items[i].assets?[1] and items[i].assets[1] != '-1' then $scope.cards[i].URLs[1] = Materia.CreatorCore.getMediaUrl items[i].assets[1]
+
+		$scope.importing = false;
+
 		$scope.$apply()
 
 	$scope.onMediaImportComplete = (media) ->
 		$scope.setURL Materia.CreatorCore.getMediaUrl(media[0].id), media[0].id
 		$scope.$apply()
 
-	$scope.addCard = (front = "", back = "", assets = ["",""], id = "", qid = "", ansid = "") ->
+	$scope.addCard = (front = "", back = "", assets = ["",""], id = "", qid = "", ansid = "", shouldScrollToBottom = true) ->
 		$scope.cards.push { front:front, back:back, URLs:["",""], assets: assets, id: id, qid: qid, ansid: ansid }
+		scrollToBottom() if shouldScrollToBottom
 
 	$scope.removeCard = (index) ->
 		$scope.cards.splice index, 1
@@ -136,6 +147,21 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 
 	$scope.deleteImage = (index, face) ->
 		$scope.cards[index].URLs[face] = ""
+
+
+	scrollToBottom = ->
+		clearInterval scrollDownTimeoutId
+		if scrollDownIntervalId is null
+			scrollDownIntervalId = setInterval ->
+				window.scrollTo 0, document.body.scrollHeight
+			, 10
+		scrollDownTimeoutId = setTimeout clearScroll, SCROLL_DURATION_MS
+
+	clearScroll = ->
+		clearInterval scrollDownIntervalId
+		scrollDownIntervalId = null
+
+	window.addEventListener 'mousewheel', clearScroll.bind(@)
 
 	Materia.CreatorCore.start $scope
 ]

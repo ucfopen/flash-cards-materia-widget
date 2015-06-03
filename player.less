@@ -275,7 +275,7 @@ body {
 				}
 
 				// States for discarding.
-				&.discarded-pos-0 { 
+				&.discarded-pos-0 {
 					z-index : 5;
 					-webkit-transform : rotate(15deg) scale(0.3) translate(1380px, 420px);
 					   -moz-transform : rotate(15deg) scale(0.3) translate(1380px, 420px);
@@ -442,7 +442,7 @@ body {
 					-webkit-transform : scale(0.25) translate( 200px, -500px);
 					   -moz-transform : scale(0.25) translate( 200px, -500px);
 					    -ms-transform : scale(0.25) translate( 200px, -500px);
-					        transform : scale(0.25) translate( 200px, -500px); 
+					        transform : scale(0.25) translate( 200px, -500px);
 					.front, .back { background-color: #DDD; }
 				}
 				&.stage-sh-4 {
@@ -453,7 +453,7 @@ body {
 					        transform : scale(0.25) translate( 400px, -500px);
 					.front, .back { background-color: #EEE; }
 				}
-				&.stage-sh-0-rotated { 
+				&.stage-sh-0-rotated {
 					z-index : 5;
 					-webkit-transform : scale(0.25) rotateY(180deg) translate(-400px, -500px);
 					   -moz-transform : scale(0.25) rotateY(180deg) translate(-400px, -500px);
@@ -461,7 +461,7 @@ body {
 					        transform : scale(0.25) rotateY(180deg) translate(-400px, -500px);
 					.front, .back { background-color: #AAA; }
 				}
-				&.stage-sh-1-rotated { 
+				&.stage-sh-1-rotated {
 					z-index : 6;
 					-webkit-transform : scale(0.25) rotateY(180deg) translate(-200px, -500px);
 					   -moz-transform : scale(0.25) rotateY(180deg) translate(-200px, -500px);
@@ -469,7 +469,7 @@ body {
 					        transform : scale(0.25) rotateY(180deg) translate(-200px, -500px);
 					.front, .back { background-color: #BBB; }
 				}
-				&.stage-sh-2-rotated { 
+				&.stage-sh-2-rotated {
 					z-index : 7;
 					-webkit-transform : scale(0.25) rotateY(180deg) translate(     0, -500px);
 					   -moz-transform : scale(0.25) rotateY(180deg) translate(     0, -500px);
@@ -477,7 +477,7 @@ body {
 					        transform : scale(0.25) rotateY(180deg) translate(     0, -500px);
 					.front, .back { background-color: #CCC; }
 				}
-				&.stage-sh-3-rotated { 
+				&.stage-sh-3-rotated {
 					z-index : 8;
 					-webkit-transform : scale(0.25) rotateY(180deg) translate( 200px, -500px);
 					   -moz-transform : scale(0.25) rotateY(180deg) translate( 200px, -500px);
@@ -485,7 +485,7 @@ body {
 					        transform : scale(0.25) rotateY(180deg) translate( 200px, -500px);
 					.front, .back { background-color: #DDD; }
 				}
-				&.stage-sh-4-rotated { 
+				&.stage-sh-4-rotated {
 					z-index : 9;
 					-webkit-transform : scale(0.25) rotateY(180deg) translate( 400px, -500px);
 					   -moz-transform : scale(0.25) rotateY(180deg) translate( 400px, -500px);
@@ -625,7 +625,7 @@ body {
 				font-size     : 23px;
 				margin-bottom : 5px;
 			}
-			.icon { 
+			.icon {
 				position : relative;
 				left     : auto;
 				bottom   : auto;
@@ -715,6 +715,8 @@ body {
 	bottom     : 0;
 	background : #2f3944;
 	display    : none;
+	z-index    : 9999;
+
 	.error-notice {
 		background : #fceead url('../img/error-icon.png') center 26px no-repeat;
 		width      : 625px;
@@ -725,7 +727,7 @@ body {
 		h1 {
 			color       : #f78348;
 			font-size   : 13pt;
-			padding-top : 130px;
+			padding-top : 100px;
 			font-weight : normal;
 		}
 
@@ -753,12 +755,68 @@ body {
 
 	z-index: 1000;
 
-	&.hide {
-		display    : none;
+	.dialog {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+
+		transform: translate(-50%, -50%);
+		-ms-transform: translate(-50%, -50%);
+		-moz-transform: translate(-50%, -50%);
+		-webkit-transform: translate(-50%, -50%);
+
+		width: 575px;
+		height: 375px;
+
+		font-family: 'Lato';
+
+		background: white;
+		color: black;
+
+		h2 {
+			margin-top: 20px;
+
+			font-weight: normal;
+		}
+
+		p {
+			font-size: 11pt;
+
+			color: gray;
+		}
+
+		figure {
+			width: 100%;
+			padding: 15px 0;
+			margin: 0 0 25px 0;
+
+			background: #dbdbdb;
+
+			img {
+				width: 430px;
+				margin-bottom: 2px;
+			}
+
+			ul {
+				margin: 0;
+				padding: 0;
+
+				li {
+					display: inline-block;
+					width: 140px;
+					margin: 0 10px;
+
+					font-size: 10pt;
+
+					list-style-type: none;
+					vertical-align: top;
+				}
+			}
+		}
 	}
 
-	h2 {
-		margin-bottom: 40px;
+	&.hide {
+		display    : none;
 	}
 
 	.gotit {
@@ -770,7 +828,7 @@ body {
 		margin: auto;
 		font-size: 20px;
 		cursor: pointer;
-		margin-top: 30px;
+		color: white;
 
 		&:hover {
 			background: #73D15A;
