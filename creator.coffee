@@ -12,16 +12,15 @@ Updated : 5/14
 # Create an angular module to import the animation module and house our controller
 Flashcards = angular.module 'FlashcardsCreator', ['ngAnimate', 'ngSanitize']
 
-Flashcards.directive('ngEnter', ->
-    return (scope, element, attrs) ->
-        element.bind("keydown keypress", (event) ->
-            if(event.which == 13)
-                scope.$apply ->
-                    scope.$eval(attrs.ngEnter)
-                event.preventDefault()
-        )
-)
-Flashcards.directive('focusMe', ['$timeout', '$parse', ($timeout, $parse) ->
+Flashcards.directive 'ngEnter', ->
+	return (scope, element, attrs) ->
+		element.bind "keydown keypress", (event) ->
+			if event.which == 13
+				scope.$apply -> scope.$eval(attrs.ngEnter)
+				event.preventDefault()
+
+
+Flashcards.directive 'focusMe', ($timeout, $parse) ->
 	link: (scope, element, attrs) ->
 		model = $parse(attrs.focusMe)
 		scope.$watch model, (value) ->
@@ -29,11 +28,10 @@ Flashcards.directive('focusMe', ['$timeout', '$parse', ($timeout, $parse) ->
 				$timeout ->
 					element[0].focus()
 			value
-])
 
 
 # The 'Resource' service contains all app logic that does pertain to DOM manipulation
-Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
+Flashcards.factory 'Resource', ($sanitize) ->
 	buildQset: (title, items) ->
 		qsetItems = []
 		qset = {}
@@ -43,7 +41,7 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 			Materia.CreatorCore.cancelSave 'Please enter a title.'
 			return false
 		else
-			for i in [0..items.length-1]
+			for i in [0...items.length]
 				if items[i].front.length > 50 && items[i].URLs[0] != ''
 					Materia.CreatorCore.cancelSave 'Please reduce the text of the front of card #'+(i+1)+' to fit the card.'
 					return false
@@ -56,7 +54,7 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 		qset.rand = false
 		qset.name = ''
 
-		qsetItems.push @processQsetItem items[i] for i in [0..items.length-1]
+		qsetItems.push @processQsetItem items[i] for i in [0...items.length]
 		qset.items = [{ items: qsetItems }]
 
 		qset
@@ -72,11 +70,10 @@ Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
 		type: 'QA'
 		questions: [{text : item.ques, id: item.qid }]
 		answers: [{value : '100', text : item.ans, id: item.ansid }]
-]
+
 
 # Set the controller for the scope of the document body.
-Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource',
-($scope, $sanitize, Resource) ->
+Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize, Resource) ->
 	$scope.title = "My Flash Cards widget"
 	$scope.cards = []
 	_imgRef = []
@@ -108,11 +105,12 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 		qset = Resource.buildQset $sanitize($scope.title), $scope.cards
 		if qset then Materia.CreatorCore.save $sanitize($scope.title), qset
 
-	$scope.onSaveComplete = () -> true
+	$scope.onSaveComplete = -> true
 
 	$scope.onQuestionImportComplete = (items) ->
 		# Add each imported question to the DOM
-		for i in [0..items.length-1]
+		# TODO switch to for object of syntax
+		for i in [0...items.length]
 			$scope.addCard items[i].questions[0].text.replace(/\&\#10\;/g, '\n'), items[i].answers[0].text.replace(/\&\#10\;/g, '\n'), items[i].assets, items[i].id, items[i].questions[0].id, items[i].answers[0].id, false
 			if items[i].assets?[0] and items[i].assets[0] != '-1' then $scope.cards[i].URLs[0] = Materia.CreatorCore.getMediaUrl items[i].assets[0]
 			if items[i].assets?[1] and items[i].assets[1] != '-1' then $scope.cards[i].URLs[1] = Materia.CreatorCore.getMediaUrl items[i].assets[1]
@@ -135,7 +133,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 		_imgRef[0] = index
 		_imgRef[1] = face
 
-	$scope.setURL = (URL,id) ->
+	$scope.setURL = (URL, id) ->
 		# Bind the image URL to the DOM
 		$scope.cards[_imgRef[0]].URLs[_imgRef[1]] = URL
 		$scope.cards[_imgRef[0]].assets[_imgRef[1]] = id
@@ -159,5 +157,3 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 	window.addEventListener 'mousewheel', clearScroll.bind(@)
 
 	Materia.CreatorCore.start $scope
-]
-
