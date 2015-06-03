@@ -111,16 +111,11 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 	$scope.onSaveComplete = () -> true
 
 	$scope.onQuestionImportComplete = (items) ->
-		$scope.importing = true;
-
 		# Add each imported question to the DOM
 		for i in [0..items.length-1]
 			$scope.addCard items[i].questions[0].text.replace(/\&\#10\;/g, '\n'), items[i].answers[0].text.replace(/\&\#10\;/g, '\n'), items[i].assets, items[i].id, items[i].questions[0].id, items[i].answers[0].id, false
 			if items[i].assets?[0] and items[i].assets[0] != '-1' then $scope.cards[i].URLs[0] = Materia.CreatorCore.getMediaUrl items[i].assets[0]
 			if items[i].assets?[1] and items[i].assets[1] != '-1' then $scope.cards[i].URLs[1] = Materia.CreatorCore.getMediaUrl items[i].assets[1]
-
-		$scope.importing = false;
-
 		$scope.$apply()
 
 	$scope.onMediaImportComplete = (media) ->
