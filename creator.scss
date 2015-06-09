@@ -29,10 +29,8 @@
 
 $green: #70bd34;
 
-input:focus,
-select:focus,
-textarea:focus,
-button:focus { outline : none;}
+textarea:focus, input:focus { outline : none;}
+
 textarea { resize : none; }
 html, body {
 	cursor           : default;
@@ -194,7 +192,7 @@ body {
 					background : #FFF;
 					overflow-y : auto;
 					overflow-x : hidden;
-					&:nth-child(2) { right : 0; }
+					&:nth-child(3) { right : 0; }
 					textarea, input {
 						font-family: 'verdana';
 						border     : none;
