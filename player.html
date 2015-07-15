@@ -9,6 +9,7 @@
 
 		<!-- STYLESHEETS -->
 		<link rel="stylesheet" type="text/css" href="player.css">
+		<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 
 		<!-- REQUIRED MATERIA JAVASCRIPT -->
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -124,24 +125,19 @@
 		</section>
 
 		<div id="instructions" class="instructions">
-			<h2>Flashcards Study Aid</h2>
-
-			<p>
-				Flip through and study the cards.
-			</p>
-			<p>
-				You may wish to shuffle the cards before you use them.
-			</p>
-
-			<p>
-				Stop when you feel confident in your knowledge.
-			</p>
-
-			<p>
-				This widget is not scored.
-			</p>
-
-			<div class="gotit">Got it!</div>
+			<div class="dialog">
+				<h2>Studying with Flash Cards</h2>
+				<p>This is a virtual deck of two-sided cards that you can use to help you study.</p>
+				<figure>
+					<img src="assets/intro.svg">
+					<ul>
+						<li>Click cards to flip them - See if you guessed the correct answer.</li>
+						<li>Discard a card when you feel confident that you know it.</li>
+						<li>Shuffle the deck or flip all the cards and try to guess the other side.</li>
+					</ul>
+				</figure>
+				<div id="gotit" class="gotit">Got it!</div>
+			</div>
 		</div>
 
 		<div class="error-notice-container">

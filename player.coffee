@@ -1,18 +1,9 @@
-###
-
-Materia
-It's a thing
-
-Widget  : Flashcards, Engine
-Authors : Micheal Parks
-
-###
 
 Namespace('Flashcards').Card        = [] # Array of objects that holds active cards.
 Namespace('Flashcards').DiscardPile = [] # Array of objects that holds discards.
 
 Namespace('Flashcards').Engine = do ->
-	Nodes = {} # DOM Elements.
+	nodes = {} # DOM Elements.
 
 	currentCardId = 0       # Specifies the main card that the user is interacting with.
 	numCards      = null    # Specifies the number of active cards.
@@ -41,7 +32,7 @@ Namespace('Flashcards').Engine = do ->
 			$('.error-notice-container').show()
 			return
 
-		Hammer(document.getElementById('instructions')).on 'tap', ->
+		Hammer(document.getElementById('gotit')).on 'tap', ->
 			$('.instructions').hide()
 
 		_qset = qset
@@ -61,7 +52,7 @@ Namespace('Flashcards').Engine = do ->
 		if Math.floor(Math.random()*100) is 42 then _easterEggStart()
 
 	_browserSupportsSvg = ->
-		document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.0") || document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Shape", "1.1")
+		typeof SVGRect != "undefined"
 
 	_easterEggStart = () ->
 		yepnope(
@@ -78,15 +69,15 @@ Namespace('Flashcards').Engine = do ->
 
 	# Reference commonly accessed nodes.
 	_cacheNodes = () ->
-		Nodes.container    = document.getElementById 'container'
-		Nodes.gameboard    = document.getElementById 'board'
-		Nodes.leftArrow    = document.getElementById 'icon-left'
-		Nodes.rightArrow   = document.getElementById 'icon-right'
-		Nodes.helpOverlay  = document.getElementById 'overlay'
-		Nodes.icons        = document.getElementsByClassName 'icon'
-		Nodes.finishMssg   = document.getElementById 'finished'
+		nodes.container    = document.getElementById 'container'
+		nodes.gameboard    = document.getElementById 'board'
+		nodes.leftArrow    = document.getElementById 'icon-left'
+		nodes.rightArrow   = document.getElementById 'icon-right'
+		nodes.helpOverlay  = document.getElementById 'overlay'
+		nodes.icons        = document.getElementsByClassName 'icon'
+		nodes.finishMssg   = document.getElementById 'finished'
 
-		Nodes.$container   = $(Nodes.container)
+		nodes.$container   = $(nodes.container)
 
 	# Draws the gameboard.
 	# @title  : The game instance title.
@@ -95,7 +86,7 @@ Namespace('Flashcards').Engine = do ->
 		document.getElementById('instance-title').innerHTML = title
 
 		_tFlashcard = $($('#t-flashcard').html())
-		Nodes.$container.append _tFlashcard.clone() for i in [0..length-1]
+		nodes.$container.append _tFlashcard.clone() for i in [0...length]
 
 	# Stores card data.
 	# @data : Card information pulled from the qset.
@@ -103,7 +94,7 @@ Namespace('Flashcards').Engine = do ->
 		numCards   = data.length
 		_cardNodes = document.getElementsByClassName 'flashcard'
 
-		for i in [0..numCards-1]
+		for i in [0...numCards]
 			Flashcards.Card.push {}
 			_card = Flashcards.Card[i]
 
@@ -136,13 +127,13 @@ Namespace('Flashcards').Engine = do ->
 	_setCardPositions = (face = null) ->
 		if face is 'reverse'
 			rotation = '-rotated'
-			for i in [0..numCards-1]
+			for i in [0...numCards]
 				if i is currentCardId     then Flashcards.Card[i].node.className = 'flashcard rotated'
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left-rotated'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right-rotated'
 		else
 			rotation = ''
-			for i in [0..numCards-1]
+			for i in [0...numCards]
 				if i is currentCardId     then Flashcards.Card[i].node.className = 'flashcard'
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right'
@@ -177,13 +168,13 @@ Namespace('Flashcards').Engine = do ->
 			Hammer(document.getElementById('icon-shuffle')).on 'tap', _shuffleCards
 
 			_flashcardNodes = document.getElementsByClassName('flashcard')
-			for i in [0.._flashcardNodes.length-1]
+			for i in [0..._flashcardNodes.length]
 				Hammer(_flashcardNodes[i]).on 'tap', ->
 					if _isDiscarded(this) then _unDiscard()
 					else _flipCard()
 
 			_removeNodes = document.getElementsByClassName('remove-button')
-			for i in [0.._removeNodes.length-1]
+			for i in [0..._removeNodes.length]
 				Hammer(_removeNodes[i]).on 'tap', (e) ->
 					_discard()
 					e.stopPropagation()
@@ -252,8 +243,8 @@ Namespace('Flashcards').Engine = do ->
 
 	# Shows or hides directional arrows depending on what cards are viewable.
 	_setArrowState = () ->
-			if _canMove 'right' then Nodes.rightArrow.className = 'arrow shown' else Nodes.rightArrow.className = 'arrow'
-			if _canMove 'left'  then Nodes.leftArrow.className  = 'arrow shown' else Nodes.leftArrow.className  = 'arrow'
+			if _canMove 'right' then nodes.rightArrow.className = 'arrow shown' else nodes.rightArrow.className = 'arrow'
+			if _canMove 'left'  then nodes.leftArrow.className  = 'arrow shown' else nodes.leftArrow.className  = 'arrow'
 
 	# Rotates the current card 180 degrees.
 	_flipCard = () ->
@@ -296,13 +287,13 @@ Namespace('Flashcards').Engine = do ->
 
 				setTimeout ->
 
-				Nodes.icons[3].className = 'icon focused' # Focus the shuffle icon.
+				nodes.icons[3].className = 'icon focused' # Focus the shuffle icon.
 
 				# Shuffle and reset the card data, then conclude the animation.
 				setTimeout ->
 					Flashcards.Card = _shuffle(Flashcards.Card)
 					_setCardPositions(if rotation is '' then null else 'reverse')
-					Nodes.icons[3].className = 'icon'
+					nodes.icons[3].className = 'icon'
 				, 1500
 
 	_stageShufflePt1 = (card, i) ->
@@ -333,7 +324,7 @@ Namespace('Flashcards').Engine = do ->
 
 				if atari then Flashcards.Atari.playIcon 'rotate'
 
-				Nodes.icons[2].className = 'icon focused' # Focus the rotate icon.
+				nodes.icons[2].className = 'icon focused' # Focus the rotate icon.
 
 				_rotation        = if rotation is '' then '' else '-rotated'
 				_reverseRotation = if rotation is '' then '-rotated' else ''
@@ -361,7 +352,7 @@ Namespace('Flashcards').Engine = do ->
 
 					_setCardPositions(if face is 'back' then 'reverse' else '')
 
-					Nodes.icons[2].className = 'icon'
+					nodes.icons[2].className = 'icon'
 				, 1400
 
 	# Decides if a flashcard node has any of the discard position classes.
@@ -377,7 +368,7 @@ Namespace('Flashcards').Engine = do ->
 				numDiscard++
 				numCards--
 
-				Nodes.icons[1].className = "icon"
+				nodes.icons[1].className = "icon"
 
 				if atari then Flashcards.Atari.playDiscard()
 
@@ -396,8 +387,8 @@ Namespace('Flashcards').Engine = do ->
 				# If the user has discarded the entire deck, prompt them to restore it.
 				if numCards is 0
 					_hideIcons()
-					_showElement Nodes.finishMssg, true
-					Nodes.container.className = 'hidden'
+					_showElement nodes.finishMssg, true
+					nodes.container.className = 'hidden'
 				else
 					if Flashcards.Card[currentCardId]?
 						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
@@ -431,7 +422,7 @@ Namespace('Flashcards').Engine = do ->
 				numDiscard--
 				numCards++
 
-				if numDiscard is 0 then Nodes.icons[1].className = "icon unselectable"
+				if numDiscard is 0 then nodes.icons[1].className = "icon unselectable"
 
 				# Move last discarded from discard to active pile.
 				_moveCardObject(Flashcards.DiscardPile, Flashcards.Card, Flashcards.DiscardPile.length-1)
@@ -452,12 +443,12 @@ Namespace('Flashcards').Engine = do ->
 		if atari then Flashcards.Atari.playIcon 'restore'
 
 		_showIcons()
-		Nodes.icons[0].className = 'icon focused'
-		Nodes.icons[1].className = 'icon focused'
+		nodes.icons[0].className = 'icon focused'
+		nodes.icons[1].className = 'icon focused'
 
 		setTimeout ->
-			Nodes.icons[0].className = 'icon'
-			Nodes.icons[1].className = 'icon'
+			nodes.icons[0].className = 'icon'
+			nodes.icons[1].className = 'icon'
 		, 1000
 
 	# Moves all discarded cards into the active deck.
@@ -468,18 +459,18 @@ Namespace('Flashcards').Engine = do ->
 				_restoreTriggered()
 
 				# Move all cards from the discard pile into the active pile.
-				for i in [0..Flashcards.DiscardPile.length-1]
+				for i in [0...Flashcards.DiscardPile.length]
 					_moveCardObject(Flashcards.DiscardPile, Flashcards.Card, Flashcards.DiscardPile.length-1)
 
 				# Reset discard data.
 				if numCards is 0 then currentCardId = 0
 				numDiscard = 0
 				numCards = Flashcards.Card.length
-				for i in [0..numCards-1]
+				for i in [0...numCards]
 					Flashcards.Card[i].node.className = 'flashcard discarded-pos-3'
 
 				setTimeout ->
-					for i in [0..numCards-1]
+					for i in [0...numCards]
 						Flashcards.Card[i].node.className = "flashcard right"+rotation
 
 					# Stage the cards.
@@ -487,8 +478,8 @@ Namespace('Flashcards').Engine = do ->
 						if Flashcards.Card[currentCardId+i]?
 							Flashcards.Card[currentCardId+i].node.className = 'flashcard stage-'+(i+2)+rotation
 
-					_hideElement(Nodes.finishMssg, true) # Hide the finish message.
-					Nodes.container.className = ''       # Make sure the card container is shown.
+					_hideElement(nodes.finishMssg, true) # Hide the finish message.
+					nodes.container.className = ''       # Make sure the card container is shown.
 
 					# Return cards to default positions.
 					setTimeout ->
@@ -497,7 +488,7 @@ Namespace('Flashcards').Engine = do ->
 					, 800
 
 					setTimeout ->
-						Nodes.icons[1].className = "icon unselectable"
+						nodes.icons[1].className = "icon unselectable"
 					, 1200
 				, 20
 
@@ -511,17 +502,17 @@ Namespace('Flashcards').Engine = do ->
 
 			if overlay is true then overlay = false else overlay = true
 
-			if Nodes.helpOverlay.className is 'overlay shown'
+			if nodes.helpOverlay.className is 'overlay shown'
 				_setArrowState()
-				Nodes.icons[4].className    = 'icon'
-				Nodes.gameboard.className   = ''
-				Nodes.helpOverlay.className = 'overlay'
+				nodes.icons[4].className    = 'icon'
+				nodes.gameboard.className   = ''
+				nodes.helpOverlay.className = 'overlay'
 			else
-				Nodes.rightArrow.className  = 'arrow shown'
-				Nodes.leftArrow.className   = 'arrow shown'
-				Nodes.icons[4].className    = 'icon focused'
-				Nodes.gameboard.className   = 'blurred'
-				Nodes.helpOverlay.className = 'overlay shown'
+				nodes.rightArrow.className  = 'arrow shown'
+				nodes.leftArrow.className   = 'arrow shown'
+				nodes.icons[4].className    = 'icon focused'
+				nodes.gameboard.className   = 'blurred'
+				nodes.helpOverlay.className = 'overlay shown'
 
 	# Adds a shown class to an element and optionally fades it in.
 	_showElement = (elem, fadeIn = false) ->
@@ -541,14 +532,13 @@ Namespace('Flashcards').Engine = do ->
 		, 205
 
 	_hideIcons = () ->
-		for i in [1..Nodes.icons.length-1]
-			Nodes.icons[i].className = 'icon faded-out'
+		for i in [1...nodes.icons.length]
+			nodes.icons[i].className = 'icon faded-out'
 
 	_showIcons = () ->
-		for i in [1..Nodes.icons.length-1]
-			Nodes.icons[i].className = 'icon'
+		for i in [1...nodes.icons.length]
+			nodes.icons[i].className = 'icon'
 
 	# Public.
 	start : start
-	Nodes : Nodes
-
+	nodes : nodes

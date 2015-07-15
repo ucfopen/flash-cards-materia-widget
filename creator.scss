@@ -20,7 +20,7 @@
 	-webkit-font-smoothing : antialiased;
 }
 .icon-alert:before  {content: "\e006";}
-.icon-plus:before   {content: "\e007";}
+.icon-plus:before   {content: "\e007"; margin-right: 0.5em; }
 .icon-close:before  {content: "\e008";}
 .icon-rotate:before {content: "\e001";}
 .icon-image:before  {content: "\e000";}
@@ -29,10 +29,8 @@
 
 $green: #70bd34;
 
-input:focus,
-select:focus,
-textarea:focus,
-button:focus { outline : none;}
+textarea:focus, input:focus { outline : none;}
+
 textarea { resize : none; }
 html, body {
 	cursor           : default;
@@ -132,13 +130,13 @@ body {
 	-webkit-backface-visibility : hidden;
 	ul {
 		position : relative;
-		width    : 825px;
+		width    : 805px;
 		margin   : auto;
 		padding  : 0;
 		perspective : 800px;
 		perspective-origin : 50% 100%;
 		li {
-			margin : 0 0 30px 0;
+			margin : 0 0 15px 0;
 			height : 200px;
 	  		transform-style : preserve-3d;
 			&.titles {
@@ -152,15 +150,18 @@ body {
 					&:nth-child(2) { left : 50%; }
 				}
 			}
+			&:last-child {
+				height: auto;
+			}
 			&.card {
-				&.ng-enter, 
-				&.ng-leave { 
-					transition : 1025ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-				} 
+				&.ng-enter,
+				&.ng-leave {
+					transition : .5s cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+				}
 
 				&.ng-leave.ng-leave-active,
 				&.ng-enter {
-					transform : rotateX(-180deg) translatez(30px);
+					transform : rotateX(90deg) translatez(30px);
 					opacity   : 0;
 					height    : 0;
 					margin    : 0 0;
@@ -171,7 +172,7 @@ body {
 					transform : rotateX(0deg) translatez(0);
 					opacity : 1;
 					height  : 200px;
-					margin  : 0 0 30px 0;
+					margin  : 0 0 15px 0;
 				}
 				.num {
 					position    : absolute;
@@ -179,6 +180,10 @@ body {
 					margin-left : -65px;
 					line-height : 20px;
 					font-size   : 26px;
+
+					&.large {
+						font-size: 20px;
+					}
 				}
 				.face {
 					position   : absolute;
@@ -187,7 +192,7 @@ body {
 					background : #FFF;
 					overflow-y : auto;
 					overflow-x : hidden;
-					&:nth-child(2) { right : 0; }
+					&:nth-child(3) { right : 0; }
 					textarea, input {
 						font-family: 'verdana';
 						border     : none;
@@ -213,12 +218,12 @@ body {
 						font-size  : 22px;
 						width      : 30px;
 						transition : all 200ms;
-						&:hover { 
-							color : #47303C; 
+						&:hover {
+							color : #47303C;
 							.descript { color : #47303C; }
 						}
 						.descript {
-							top : 10px; 
+							top : 10px;
 							&.add { left : -85px; }
 							&.del { left : -95px; }
 						}
@@ -257,7 +262,7 @@ body {
 			}
 			#add-card {
 				display          : inline-block;
-				left             : 50%;
+				left             : 0;
 				bottom           : 0;
 				background-color : $green;
 				padding          : 6px 28px;
@@ -266,11 +271,12 @@ body {
 				font-size: 16px;
 				font-family: 'Lato';
 				border-radius: 0;
-				margin: 65px -75px;
-				width: 150px;
-				height: 42px;
+				margin: 0;
+				width: 100%;
+				height: 60px;
 				position:relative;
 				top: 0px;
+				cursor: pointer;
 
 				&:focus {
 					background: #78bf39;
@@ -438,3 +444,6 @@ body {
 	text-align: center;
 }
 
+.hidden {
+	visibility: hidden;
+}
