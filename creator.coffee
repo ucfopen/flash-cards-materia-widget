@@ -44,6 +44,15 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	scrollDownTimeoutId = null
 
 
+	importCards = (items) ->
+		$scope.lastAction = $scope.ACTION_IMPORT;
+
+		for item in items
+			$scope.addCard item
+
+		$scope.$apply()
+
+
 	# View actions
 	$scope.setTitle = ->
 		$scope.title = $scope.introTitle or $scope.title
@@ -81,9 +90,9 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 	$scope.onSaveComplete = -> true
 
-	$scope.onQuestionImportComplete = (items) -> importCards items
+	$scope.onQuestionImportComplete = importCards.bind(@)
 
-	$scope.requestImage = (cardFace) ->
+	$scope.requestMediaImport = (cardFace) ->
 		# Save the card/face that requested the image
 		faceWaitingForMedia = cardFace
 		Materia.CreatorCore.showMediaImporter()
@@ -123,13 +132,6 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		cardFace.asset = ''
 
 
-	importCards = (items) ->
-		$scope.lastAction = $scope.ACTION_IMPORT;
-
-		for item in items
-			$scope.addCard item
-
-		$scope.$apply()
 
 	buildQsetFromCards = (cards) ->
 		items = []
