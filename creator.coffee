@@ -1,90 +1,62 @@
-###
-
-Materia
-It's a thing
-
-Widget  : Flashcards, Creator
-Authors : Jonathan Warner, Brandon Stull, Micheal Parks
-Updated : 5/14
-
-###
-
 # Create an angular module to import the animation module and house our controller
 Flashcards = angular.module 'FlashcardsCreator', ['ngAnimate', 'ngSanitize']
 
-Flashcards.directive('ngEnter', ->
-    return (scope, element, attrs) ->
-        element.bind("keydown keypress", (event) ->
-            if(event.which == 13)
-                scope.$apply ->
-                    scope.$eval(attrs.ngEnter)
-                event.preventDefault()
-        )
-)
-Flashcards.directive('focusMe', ['$timeout', '$parse', ($timeout, $parse) ->
+Flashcards.directive 'ngEnter', ->
+	return (scope, element, attrs) ->
+		element.bind "keydown keypress", (event) ->
+			if event.which == 13
+				scope.$apply -> scope.$eval(attrs.ngEnter)
+				event.preventDefault()
+
+
+Flashcards.directive 'focusMeWatch', ($timeout, $parse) ->
 	link: (scope, element, attrs) ->
 		model = $parse(attrs.focusMe)
 		scope.$watch model, (value) ->
 			if value
-				$timeout ->
-					element[0].focus()
+				$timeout -> element[0].focus()
 			value
-])
 
 
-# The 'Resource' service contains all app logic that does pertain to DOM manipulation
-Flashcards.factory 'Resource', ['$sanitize', ($sanitize) ->
-	buildQset: (title, items) ->
-		qsetItems = []
-		qset = {}
+Flashcards.directive 'focusMe', ($timeout) ->
+	scope:
+		condition: "=focusMe"
+	link: (scope, element, attrs) ->
+		if scope.condition
+			$timeout -> element[0].focus()
 
-		# Decide if it is ok to save
-		if title is ''
-			Materia.CreatorCore.cancelSave 'Please enter a title.'
-			return false
-		else
-			for i in [0..items.length-1]
-				if items[i].front.length > 50 && items[i].URLs[0] != ''
-					Materia.CreatorCore.cancelSave 'Please reduce the text of the front of card #'+(i+1)+' to fit the card.'
-					return false
-				if items[i].back.length > 50 && items[i].URLs[1] != ''
-					Materia.CreatorCore.cancelSave 'Please reduce the text of the back of card #'+(i+1)+' to fit the card.'
-					return false
-
-		qset.options = {}
-		qset.assets = []
-		qset.rand = false
-		qset.name = ''
-
-		qsetItems.push @processQsetItem items[i] for i in [0..items.length-1]
-		qset.items = [{ items: qsetItems }]
-
-		qset
-
-	processQsetItem: (item) ->
-		# Remove any dangerous content
-		item.ques = $sanitize item.front
-		item.ans = $sanitize item.back
-
-		materiaType: "question"
-		id: item.id
-		assets: item.assets
-		type: 'QA'
-		questions: [{text : item.ques, id: item.qid }]
-		answers: [{value : '100', text : item.ans, id: item.ansid }]
-]
 
 # Set the controller for the scope of the document body.
-Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource',
-($scope, $sanitize, Resource) ->
+Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
+	SCROLL_DURATION_MS = 500
+	WHEEL_DELTA_THRESHOLD = 5
+
+	$scope.FACE_BACK = 0;
+	$scope.FACE_FRONT = 1;
+	$scope.ACTION_CREATE_NEW_CARD = 'create';
+	$scope.ACTION_IMPORT = 'import';
 	$scope.title = "My Flash Cards widget"
 	$scope.cards = []
-	_imgRef = []
+	$scope.introCompleted = false
+
+	faceWaitingForMedia = null
+	scrollDownIntervalId = null
+	scrollDownTimeoutId = null
+
+
+	importCards = (items) ->
+		$scope.lastAction = $scope.ACTION_IMPORT;
+
+		for item in items
+			$scope.addCard item
+
+		$scope.$apply()
+
 
 	# View actions
 	$scope.setTitle = ->
 		$scope.title = $scope.introTitle or $scope.title
-		$scope.step = 1
+		$scope.introCompleted = true
 		$scope.hideCover()
 
 	$scope.hideCover = ->
@@ -96,47 +68,106 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', 'Resource
 
 	$scope.initExistingWidget = (title, widget, qset, version, baseUrl) ->
 		$scope.title = title
-		$scope.onQuestionImportComplete qset.items[0].items
+		importCards qset.items[0].items
 
 	$scope.onSaveClicked = (mode = 'save') ->
-		# Create a qset to save
-		qset = Resource.buildQset $sanitize($scope.title), $scope.cards
-		if qset then Materia.CreatorCore.save $sanitize($scope.title), qset
+		sanitizedTitle = $sanitize $scope.title
 
-	$scope.onSaveComplete = () -> true
+		# Decide if it is ok to save
+		if sanitizedTitle is ''
+			Materia.CreatorCore.cancelSave 'Please enter a title.'
+			return false
 
-	$scope.onQuestionImportComplete = (items) ->
-		# Add each imported question to the DOM
-		for i in [0..items.length-1]
-			$scope.addCard items[i].questions[0].text.replace(/\&\#10\;/g, '\n'), items[i].answers[0].text.replace(/\&\#10\;/g, '\n'), items[i].assets, items[i].id, items[i].questions[0].id, items[i].answers[0].id
-			if items[i].assets?[0] and items[i].assets[0] != '-1' then $scope.cards[i].URLs[0] = Materia.CreatorCore.getMediaUrl items[i].assets[0]
-			if items[i].assets?[1] and items[i].assets[1] != '-1' then $scope.cards[i].URLs[1] = Materia.CreatorCore.getMediaUrl items[i].assets[1]
-		$scope.$apply()
+		for card, i in $scope.cards
+			if card.front.text.length > 50 and card.front.asset
+				Materia.CreatorCore.cancelSave 'Please reduce the text of the front of card #'+(i+1)+' to fit the card.'
+				return false
+			if card.back.text.length > 50 and card.back.asset
+				Materia.CreatorCore.cancelSave 'Please reduce the text of the back of card #'+(i+1)+' to fit the card.'
+				return false
+
+		Materia.CreatorCore.save sanitizedTitle, buildQsetFromCards($scope.cards)
+
+	$scope.onSaveComplete = -> true
+
+	$scope.onQuestionImportComplete = importCards.bind(@)
+
+	$scope.requestMediaImport = (cardFace) ->
+		# Save the card/face that requested the image
+		faceWaitingForMedia = cardFace
+		Materia.CreatorCore.showMediaImporter()
 
 	$scope.onMediaImportComplete = (media) ->
-		$scope.setURL Materia.CreatorCore.getMediaUrl(media[0].id), media[0].id
+		faceWaitingForMedia.asset = media[0].id
+
+		faceWaitingForMedia = null
+
 		$scope.$apply()
 
-	$scope.addCard = (front = "", back = "", assets = ["",""], id = "", qid = "", ansid = "") ->
-		$scope.cards.push { front:front, back:back, URLs:["",""], assets: assets, id: id, qid: qid, ansid: ansid }
+	$scope.createNewCard = ->
+		$scope.lastAction = $scope.ACTION_CREATE_NEW_CARD;
+		$scope.addCard()
+		scrollToBottom()
+
+	$scope.getMediaUrl = (asset) ->
+		if not asset or asset is '-1' then return ''
+		Materia.CreatorCore.getMediaUrl(asset)
+
+	$scope.addCard = (item) ->
+		$scope.cards.push
+			id: item?.id || ''
+			front:
+				text: item?.questions?[0]?.text?.replace(/\&\#10\;/g, '\n') || ''
+				id: item?.questions?[0]?.id || ''
+				asset: item?.assets?[0] || ''
+			back:
+				text: item?.answers?[0]?.text?.replace(/\&\#10\;/g, '\n') || ''
+				id: item?.answers?[0]?.id || ''
+				asset: item?.assets?[1] || ''
 
 	$scope.removeCard = (index) ->
 		$scope.cards.splice index, 1
 
-	$scope.requestImage = (index, face) ->
-		Materia.CreatorCore.showMediaImporter()
-		# Save the card/face that requested the image
-		_imgRef[0] = index
-		_imgRef[1] = face
+	$scope.deleteImage = (cardFace) ->
+		cardFace.asset = ''
 
-	$scope.setURL = (URL,id) ->
-		# Bind the image URL to the DOM
-		$scope.cards[_imgRef[0]].URLs[_imgRef[1]] = URL
-		$scope.cards[_imgRef[0]].assets[_imgRef[1]] = id
 
-	$scope.deleteImage = (index, face) ->
-		$scope.cards[index].URLs[face] = ""
+
+	buildQsetFromCards = (cards) ->
+		items = []
+
+		for card in cards
+			items.push getQsetItemFromCard(card)
+
+		options: {}
+		assets: []
+		rand: false
+		name: ''
+		items: [{items:items}]
+
+	getQsetItemFromCard = (card) ->
+		sanitizedQuestion = $sanitize card.front.text
+		sanitizedAnswer   = $sanitize card.back.text
+
+		materiaType: 'question'
+		type: 'QA'
+		id: card.id
+		questions: [{id:card.front.id, text:sanitizedQuestion}]
+		answers: [{id:card.back.id, text:sanitizedAnswer, value:'100'}]
+		assets: [card.front.asset, card.back.asset]
+
+	scrollToBottom = ->
+		clearInterval scrollDownTimeoutId
+		if scrollDownIntervalId is null
+			scrollDownIntervalId = setInterval ->
+				window.scrollTo 0, document.body.scrollHeight
+			, 10
+		scrollDownTimeoutId = setTimeout clearScroll, SCROLL_DURATION_MS
+
+	clearScroll = ->
+		clearInterval scrollDownIntervalId
+		scrollDownIntervalId = null
+
+	window.addEventListener 'mousewheel', clearScroll.bind(@)
 
 	Materia.CreatorCore.start $scope
-]
-

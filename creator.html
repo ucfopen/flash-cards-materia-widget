@@ -30,105 +30,71 @@
 			<div class='right'>{{cards.length}} Cards</div>
 		</div>
 		<ul aria-label="cards">
-			<li class="titles" aria-hidden="true" ng-show='cards.length'>
+			<li class="titles" aria-hidden="true" ng-class='{hidden:cards.length <= 0}'>
 				<h3>Front</h3><h3>Back</h3>
 			</li>
-			<li
-			class="card"
-			role="flashcard"
-			ng-repeat="card in cards">
-				<span class="num">{{$index+1}}</span>
-				<span class="face" aria-label="Card back.">
+			<li class="card" role="flashcard" ng-repeat="card in cards" ng-init="cardIndex = $index; startingTabIndex = cardIndex * 5 + 1;">
+				<span class="num" ng-class="{large:cardIndex+1 >= 100}">{{cardIndex+1}}</span>
+				<span class="face" ng-repeat="face in ['front', 'back']" ng-init="cardFace = card[face]; faceText = cardFace.text" ng-attr-aria-label="Card {{face}}.">
 					<div class="center">
-					<input
-					placeholder='Enter a picture header here.'
-					value="{{card.back}}"
-					ng-hide=" card.URLs[1] == '' "
-					ng-model="card.back"/>
-					<textarea
-					placeholder='Enter text here.'
-					value="{{card.back}}"
-					ng-class="{title : card.URLs[1] != ''}"
-					ng-hide=" card.URLs[1] != '' "
-					ng-model="card.back" tabindex='{{$index+2}}'></textarea>
-					<img
-					ng-hide=" card.URLs[1] == '' "
-					ng-src="{{card.URLs[1]}}"/>
-					<button
-					class="del-img"
-					aria-label="Delete image."
-					ng-hide=" card.URLs[1] == '' "
-					ng-click="deleteImage($index, 1)">
-						<span class="icon-close"></span>
-						<span class="descript del">remove image</span>
-					</button>
+						<input
+							placeholder='Enter a picture header here.'
+							value="{{cardFace.text}}"
+							ng-hide="!cardFace.asset"
+							ng-model="cardFace.text"
+							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'>
+						<textarea
+							placeholder='Enter text here.'
+							value="{{cardFace.text}}"
+							ng-class="{title : cardFace.asset}"
+							ng-hide="cardFace.asset"
+							ng-model="cardFace.text"
+							focus-me="face == 'front' && lastAction == ACTION_CREATE_NEW_CARD"
+							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></textarea>
+						<img
+							ng-hide="!cardFace.asset"
+							ng-src="{{getMediaUrl(cardFace.asset)}}"/>
+						<button
+							class="del-img"
+							aria-label="Delete image."
+							ng-hide="!cardFace.asset"
+							ng-click="deleteImage(cardFace)"
+							ng-attr-tabindex='{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}'
+							>
+							<span class="icon-close"></span>
+							<span class="descript del">remove image</span>
+						</button>
 					</div>
 					<div
-					class="alert"
-					ng-class="{hide : card.back.length < 51 || card.URLs[1] == '' }">
-						<span class="icon-alert"></span> 
+						class="alert"
+						ng-class="{hide : cardFace.text.length < 51 || !cardFace.asset }">
+						<span class="icon-alert"></span>
 						Reduce your text to fit the card.
 					</div>
 					<button
-					aria-label="Add Image."
-					ng-hide=" card.URLs[1] != '' "
-					ng-click="requestImage($index, 1)">
+						aria-label="Add Image."
+						ng-hide="cardFace.asset"
+						ng-click="requestMediaImport(cardFace)"
+						ng-attr-tabindex='{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}'>
 						<span class="icon-image"></span>
 						<span class="descript add">add image</span>
 					</button>
 				</span>
-				<span class="face" aria-label="Card front.">
-					<div class="center">
-					<input
-					placeholder='Enter a picture header here.'
-					value="{{card.front}}"
-					ng-hide=" card.URLs[0] == '' "
-					ng-model="card.front"/>
-					<textarea
-					placeholder='Enter text here.'
-					value="{{card.front}}"
-					ng-class="{title : card.URLs[0] != ''}"
-					ng-hide=" card.URLs[0] != '' "
-					ng-model="card.front" focus-me="true" tabindex="{{$index+1}}"></textarea>
-					<img
-					ng-hide=" card.URLs[0] == '' "
-					ng-src="{{card.URLs[0]}}"/>
-					<button
-					class="del-img"
-					aria-label="Delete image."
-					ng-hide=" card.URLs[0] == '' "
-					ng-click="deleteImage($index, 0)">
-						<span class="icon-close"></span>
-						<span class="descript del">remove image</span>
-					</button>
-					</div>
-					<div
-					class="alert"
-					ng-class="{hide : card.front.length < 51 || card.URLs[0] == '' }">
-						<span class="icon-alert"></span> 
-						Reduce your text to fit the card.
-					</div>
-					<button
-					aria-label="Add Image."
-					ng-hide=" card.URLs[0] != '' "
-					ng-click="requestImage($index, 0)">
-						<span class="icon-image"></span>
-						<span class="descript add">add image</span>
-					</button>
-				</span>
+
 				<button
 				class="delete"
 				aria-label="Delete card."
-				ng-click="removeCard($index)">
+				ng-click="removeCard($index)"
+				ng-attr-tabindex='{{startingTabIndex + 4}}'>
 					<span class="icon-close"></span>
 					<span class="descript">remove card</span>
 				</button>
 			</li>
-			<li><button
+			<li class="add-card-container"><button
 				id="add-card"
 				class="add"
 				aria-label="Add Card."
-				ng-click="addCard()" tabindex='{{cards.length + 1}}'>
+				ng-click="createNewCard()" ng-attr-tabindex='{{cards.length * 5 + 1}}'>
 				<span class="icon-plus"></span> Add Card</button>
 			</li>
 		</ul>
@@ -142,15 +108,15 @@
 			<p>No score is recorded for this widget.</p>
 			<hr>
 			<b>Start by giving your Flash Cards widget a title</b><br>
-			<input type='text' placeholder='My Flash Cards widget' ng-model='introTitle' autofocus='1' ng-enter='setTitle()' focus-me='showIntroDialog'>
+			<input type='text' placeholder='My Flash Cards widget' ng-model='introTitle' autofocus='1' ng-enter='setTitle()' focus-me-watch='showIntroDialog'>
 			<input type='button' value='Get Started' ng-click='setTitle()'>
 		</div>
 		<div class='box title' ng-class='{ show: showTitleDialog }'>
 			<b>Give your Flash Cards widget a title</b><br>
-			<input type='text' placeholder='My Flash Cards widget' ng-model='title' ng-enter='hideCover()' focus-me='showTitleDialog'>
+			<input type='text' placeholder='My Flash Cards widget' ng-model='title' ng-enter='hideCover()' focus-me-watch='showTitleDialog'>
 			<input type='submit' value='Done' ng-click='hideCover()'>
 		</div>
-		<div class='arrow_box' ng-show='!cards.length && step'>
+		<div class='arrow_box' ng-show='cards.length == 0 && introCompleted'>
 			<span>Click here to add your first card</span>
 		</div>
 	</body>
