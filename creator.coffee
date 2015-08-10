@@ -128,7 +128,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	$scope.removeCard = (index) ->
 		$scope.cards.splice index, 1
 
-	$scope.deleteImage = (cardFace) ->
+	$scope.deleteAsset = (cardFace) ->
 		cardFace.asset = ''
 
 

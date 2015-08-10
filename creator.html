@@ -38,7 +38,7 @@
 				<span class="face" ng-repeat="face in ['front', 'back']" ng-init="cardFace = card[face]; faceText = cardFace.text" ng-attr-aria-label="Card {{face}}.">
 					<div class="center">
 						<input
-							placeholder='Enter a picture header here.'
+							placeholder='Enter a header here.'
 							value="{{cardFace.text}}"
 							ng-hide="!cardFace.asset"
 							ng-model="cardFace.text"
@@ -51,18 +51,20 @@
 							ng-model="cardFace.text"
 							focus-me="face == 'front' && lastAction == ACTION_CREATE_NEW_CARD"
 							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></textarea>
-						<img
-							ng-hide="!cardFace.asset"
-							ng-src="{{getMediaUrl(cardFace.asset)}}"/>
+						<div class="asset-box">
+							<audio
+								ng-hide="!cardFace.asset"
+								ng-src="{{getMediaUrl(cardFace.asset)}}" controls></audio>
+						</div>
 						<button
-							class="del-img"
-							aria-label="Delete image."
+							class="del-asset"
+							aria-label="Delete asset."
 							ng-hide="!cardFace.asset"
-							ng-click="deleteImage(cardFace)"
+							ng-click="deleteAsset(cardFace)"
 							ng-attr-tabindex='{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}'
 							>
 							<span class="icon-close"></span>
-							<span class="descript del">remove image</span>
+							<span class="descript del">remove image/audio</span>
 						</button>
 					</div>
 					<div
@@ -72,12 +74,12 @@
 						Reduce your text to fit the card.
 					</div>
 					<button
-						aria-label="Add Image."
+						aria-label="Add Asset."
 						ng-hide="cardFace.asset"
 						ng-click="requestMediaImport(cardFace)"
 						ng-attr-tabindex='{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}'>
 						<span class="icon-image"></span>
-						<span class="descript add">add image</span>
+						<span class="descript add">add image/audio</span>
 					</button>
 				</span>
 

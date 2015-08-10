@@ -62,7 +62,7 @@ button {
 	.descript {
 		position   : absolute;
 		font-size  : 13px;
-		width      : 90px;
+		width      : 150px;
 		opacity    : 0;
 		padding    : 5px;
 		margin     : -5px;
@@ -210,6 +210,10 @@ body {
 						max-width  : 400px;
 						max-height : 110px;
 					}
+					audio {
+						max-width  : 400px;
+						max-height : 110px;
+					}
 					button {
 						bottom     : 6px;
 						right      : 10px;
@@ -224,8 +228,8 @@ body {
 						}
 						.descript {
 							top : 10px;
-							&.add { left : -85px; }
-							&.del { left : -95px; }
+							&.add { left : -125px; }
+							&.del { left : -135px; }
 						}
 					}
 					.alert {
