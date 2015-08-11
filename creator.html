@@ -52,9 +52,9 @@
 							focus-me="face == 'front' && lastAction == ACTION_CREATE_NEW_CARD"
 							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></textarea>
 						<div class="asset-box">
-							<audio
+							<audio controls
 								ng-hide="!cardFace.asset"
-								ng-src="{{getMediaUrl(cardFace.asset)}}" controls></audio>
+								data-ng-src="{{$sce.getTrustedResourceUrl(getMediaUrl(cardFace.asset))}}"></audio>
 						</div>
 						<button
 							class="del-asset"
