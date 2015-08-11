@@ -98,7 +98,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		Materia.CreatorCore.showMediaImporter()
 
 	$scope.onMediaImportComplete = (media) ->
-		if media?[0]?.id? then faceWaitingForMedia.asset = media[0].id
+		faceWaitingForMedia.asset = media[0].id
 
 		faceWaitingForMedia = null
 

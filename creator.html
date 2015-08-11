@@ -38,7 +38,7 @@
 				<span class="face" ng-repeat="face in ['front', 'back']" ng-init="cardFace = card[face]; faceText = cardFace.text" ng-attr-aria-label="Card {{face}}.">
 					<div class="center">
 						<input
-							placeholder='Enter a header here.'
+							placeholder='Enter a picture header here.'
 							value="{{cardFace.text}}"
 							ng-hide="!cardFace.asset"
 							ng-model="cardFace.text"
@@ -51,11 +51,9 @@
 							ng-model="cardFace.text"
 							focus-me="face == 'front' && lastAction == ACTION_CREATE_NEW_CARD"
 							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></textarea>
-						<div class="asset-box">
-							<audio controls
-								ng-hide="!cardFace.asset"
-								data-ng-src="{{$sce.getTrustedResourceUrl(getMediaUrl(cardFace.asset))}}"></audio>
-						</div>
+						<img
+							ng-hide="!cardFace.asset"
+							ng-src="{{getMediaUrl(cardFace.asset)}}"/>
 						<button
 							class="del-asset"
 							aria-label="Delete asset."
