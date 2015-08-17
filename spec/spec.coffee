@@ -10,7 +10,7 @@ describe 'Testing framework', ->
 describe 'Main page', ->
 	it 'should show instructions', (done) ->
 		client.getText '#instructions h2', (err, text) ->
-			expect(text).toBe("Flashcards Study Aid")
+			expect(text).toBe("Studying with Flash Cards")
 		client.getText '#instructions .gotit', (err, text) ->
 			expect(text).toBe("Got it!")
 			done()
