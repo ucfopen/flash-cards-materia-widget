@@ -51,9 +51,8 @@
 							ng-model="cardFace.text"
 							focus-me="face == 'front' && lastAction == ACTION_CREATE_NEW_CARD"
 							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></textarea>
-						<img
-							ng-hide="!cardFace.asset"
-							ng-src="{{getMediaUrl(cardFace.asset)}}"/>
+						<div import-asset>
+						</div>
 						<button
 							class="del-asset"
 							aria-label="Delete asset."
