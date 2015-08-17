@@ -26,6 +26,39 @@ Flashcards.directive 'focusMe', ($timeout) ->
 			$timeout -> element[0].focus()
 
 
+Flashcards.directive 'importAsset', ($http) ->
+	link: (scope, element, attrs) ->
+		scope.$watch ((scope) -> scope.assetType), (value) ->
+			asset = scope.assetType
+			console.log scope.faceWaitingForMedia
+			if scope.faceWaitingForMedia
+				console.log scope.faceWaitingForMedia
+				scope.faceWaitingForMedia = null
+				console.log scope.faceWaitingForMedia
+				switch asset
+					when 'flv'
+						video = document.createElement('video')
+						video.src = scope.assetUrl;
+						if element[0].nodeType == 8
+							element.replaceWith(video)
+						else
+							element[0].appendChild(video);
+					when 'mp3'
+						audio = document.createElement('audio')
+						audio.src = scope.assetUrl;
+						audio.controls = true
+						if element[0].nodeType == 8
+							element.replaceWith(audio)
+						else
+							element[0].appendChild(audio)
+					when 'jpg' or 'png' or 'gif'
+						img = document.createElement('img')
+						img.src = scope.assetUrl;
+						if element[0].nodeType == 8
+							element.replaceWith(img)
+						else
+							element[0].appendChild(img)
+
 # Set the controller for the scope of the document body.
 Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	SCROLL_DURATION_MS = 500
@@ -39,9 +72,12 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	$scope.cards = []
 	$scope.introCompleted = false
 
-	faceWaitingForMedia = null
+	$scope.faceWaitingForMedia = null
 	scrollDownIntervalId = null
 	scrollDownTimeoutId = null
+
+	$scope.assetType = null
+	$scope.assetUrl = null
 
 
 	importCards = (items) ->
@@ -94,13 +130,15 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 	$scope.requestMediaImport = (cardFace) ->
 		# Save the card/face that requested the image
-		faceWaitingForMedia = cardFace
+		$scope.faceWaitingForMedia = cardFace
 		Materia.CreatorCore.showMediaImporter()
 
 	$scope.onMediaImportComplete = (media) ->
-		faceWaitingForMedia.asset = media[0].id
+		$scope.faceWaitingForMedia.asset = media[0].id
+		# Variable used by importAsset directive
+		$scope.assetType = media[0].type
 
-		faceWaitingForMedia = null
+		$scope.assetUrl = $scope.getMediaUrl($scope.faceWaitingForMedia.asset)
 
 		$scope.$apply()
 
