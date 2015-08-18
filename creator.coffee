@@ -30,11 +30,9 @@ Flashcards.directive 'importAsset', ($http) ->
 	link: (scope, element, attrs) ->
 		scope.$watch ((scope) -> scope.assetType), (value) ->
 			asset = scope.assetType
-			console.log scope.faceWaitingForMedia
 			if scope.faceWaitingForMedia
-				console.log scope.faceWaitingForMedia
+				console.log 'if'
 				scope.faceWaitingForMedia = null
-				console.log scope.faceWaitingForMedia
 				switch asset
 					when 'flv'
 						video = document.createElement('video')
@@ -58,6 +56,41 @@ Flashcards.directive 'importAsset', ($http) ->
 							element.replaceWith(img)
 						else
 							element[0].appendChild(img)
+			else
+				console.log 'else'
+	
+###
+		scope.$watch ((scope) -> scope.assetType), (value) ->
+			asset = scope.assetType
+			if scope.faceWaitingForMedia
+				console.log scope.faceWaitingForMedia
+				scope.faceWaitingForMedia = null
+				console.log scope.faceWaitingForMedia
+				switch asset
+					when 'flv'
+						video = document.createElement('video')
+						video.src = scope.assetUrl;
+						if element[0].nodeType == 8
+							element.replaceWith(video)
+						else
+							element[0].appendChild(video);
+					when 'mp3'
+						audio = document.createElement('audio')
+						audio.src = scope.assetUrl;
+						audio.controls = true
+						if element[0].nodeType == 8
+							element.replaceWith(audio)
+						else
+							element[0].appendChild(audio)
+					when 'jpg' or 'png' or 'gif'
+						img = document.createElement('img')
+						img.src = scope.assetUrl;
+						console.log element[0].nodeType
+						if element[0].nodeType == 8
+							element.replaceWith(img)
+						else
+							element[0].appendChild(img)
+###
 
 # Set the controller for the scope of the document body.
 Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
@@ -137,7 +170,6 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		$scope.faceWaitingForMedia.asset = media[0].id
 		# Variable used by importAsset directive
 		$scope.assetType = media[0].type
-
 		$scope.assetUrl = $scope.getMediaUrl($scope.faceWaitingForMedia.asset)
 
 		$scope.$apply()
