@@ -25,82 +25,44 @@ Flashcards.directive 'focusMe', ($timeout) ->
 		if scope.condition
 			$timeout -> element[0].focus()
 
-
-Flashcards.directive 'importAsset', ($http) ->
+# Directive that handles all media imports & removals
+Flashcards.directive 'importAsset', ($http, $timeout) ->
+	template: '<div id="{{myId}}"> </div><button class="del-asset" aria-label="Delete asset." ng-click="deleteAsset(cardFace)"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button>'
 	link: (scope, element, attrs) ->
+		scope.myId = Math.floor(Math.random() * 100000) + '-import-asset'
+		scope.deleteAsset = (cardFace) ->
+			cardFace.asset = ''
+			el = angular.element(document.getElementById(scope.myId))
+			el.empty()
+			return
 		scope.$watch ((scope) -> scope.assetType), (value) ->
 			asset = scope.assetType
 			if scope.faceWaitingForMedia
-				console.log 'if'
 				scope.faceWaitingForMedia = null
+				url = scope.assetUrl
 				switch asset
 					when 'flv'
-						video = document.createElement('video')
-						video.src = scope.assetUrl;
-						if element[0].nodeType == 8
-							element.replaceWith(video)
-						else
-							element[0].appendChild(video);
+						$timeout ->
+							el = angular.element(document.getElementById(scope.myId))
+							el.append('<video src="' + url + '" ></video>')
 					when 'mp3'
-						audio = document.createElement('audio')
-						audio.src = scope.assetUrl;
-						audio.controls = true
-						if element[0].nodeType == 8
-							element.replaceWith(audio)
-						else
-							element[0].appendChild(audio)
+						$timeout ->
+							el = angular.element(document.getElementById(scope.myId))
+							el.append('<audio src="' + url + '" ></audio>')
 					when 'jpg' or 'png' or 'gif'
-						img = document.createElement('img')
-						img.src = scope.assetUrl;
-						if element[0].nodeType == 8
-							element.replaceWith(img)
-						else
-							element[0].appendChild(img)
-			else
-				console.log 'else'
-	
-###
-		scope.$watch ((scope) -> scope.assetType), (value) ->
-			asset = scope.assetType
-			if scope.faceWaitingForMedia
-				console.log scope.faceWaitingForMedia
-				scope.faceWaitingForMedia = null
-				console.log scope.faceWaitingForMedia
-				switch asset
-					when 'flv'
-						video = document.createElement('video')
-						video.src = scope.assetUrl;
-						if element[0].nodeType == 8
-							element.replaceWith(video)
-						else
-							element[0].appendChild(video);
-					when 'mp3'
-						audio = document.createElement('audio')
-						audio.src = scope.assetUrl;
-						audio.controls = true
-						if element[0].nodeType == 8
-							element.replaceWith(audio)
-						else
-							element[0].appendChild(audio)
-					when 'jpg' or 'png' or 'gif'
-						img = document.createElement('img')
-						img.src = scope.assetUrl;
-						console.log element[0].nodeType
-						if element[0].nodeType == 8
-							element.replaceWith(img)
-						else
-							element[0].appendChild(img)
-###
+						$timeout ->
+							el = angular.element(document.getElementById(scope.myId))
+							el.append('<img src="' + url + '">')
 
 # Set the controller for the scope of the document body.
 Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	SCROLL_DURATION_MS = 500
 	WHEEL_DELTA_THRESHOLD = 5
 
-	$scope.FACE_BACK = 0;
-	$scope.FACE_FRONT = 1;
-	$scope.ACTION_CREATE_NEW_CARD = 'create';
-	$scope.ACTION_IMPORT = 'import';
+	$scope.FACE_BACK = 0
+	$scope.FACE_FRONT = 1
+	$scope.ACTION_CREATE_NEW_CARD = 'create'
+	$scope.ACTION_IMPORT = 'import'
 	$scope.title = "My Flash Cards widget"
 	$scope.cards = []
 	$scope.introCompleted = false
@@ -114,7 +76,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 
 	importCards = (items) ->
-		$scope.lastAction = $scope.ACTION_IMPORT;
+		$scope.lastAction = $scope.ACTION_IMPORT
 
 		for item in items
 			$scope.addCard item
@@ -197,11 +159,6 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 	$scope.removeCard = (index) ->
 		$scope.cards.splice index, 1
-
-	$scope.deleteAsset = (cardFace) ->
-		cardFace.asset = ''
-
-
 
 	buildQsetFromCards = (cards) ->
 		items = []
