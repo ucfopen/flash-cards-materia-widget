@@ -33,7 +33,7 @@
 			<li class="titles" aria-hidden="true" ng-class='{hidden:cards.length <= 0}'>
 				<h3>Front</h3><h3>Back</h3>
 			</li>
-			<li class="card" role="flashcard" ng-repeat="card in cards" ng-init="cardIndex = $index; startingTabIndex = cardIndex * 5 + 1;">
+			<li class="card" role="flashcard" ng-repeat="card in cards" ng-init="cardIndex = $index; startingTabIndex = cardIndex * 5 + 1;" id="card-{{cardIndex}}">
 				<span class="num" ng-class="{large:cardIndex+1 >= 100}">{{cardIndex+1}}</span>
 				<span class="face" ng-repeat="face in ['front', 'back']" ng-init="cardFace = card[face]; faceText = cardFace.text" ng-attr-aria-label="Card {{face}}.">
 					<div class="center">
@@ -51,18 +51,9 @@
 							ng-model="cardFace.text"
 							focus-me="face == 'front' && lastAction == ACTION_CREATE_NEW_CARD"
 							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></textarea>
-						<div import-asset ng-hide="!cardFace.asset">
-						</div>
-						<button
-							class="del-asset"
-							aria-label="Delete asset."
-							ng-hide="!cardFace.asset"
-							ng-click="deleteAsset(cardFace)"
-							ng-attr-tabindex='{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}'
-							>
-							<span class="icon-close"></span>
-							<span class="descript del">remove image/audio</span>
-						</button>
+						<div
+							import-asset
+							ng-hide='!cardFace.asset'></div>
 					</div>
 					<div
 						class="alert"
