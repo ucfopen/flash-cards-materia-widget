@@ -27,32 +27,31 @@ Flashcards.directive 'focusMe', ($timeout) ->
 
 # Directive that handles all media imports & removals
 Flashcards.directive 'importAsset', ($http, $timeout) ->
-	template: '<div id="{{myId}}"> </div><button class="del-asset" aria-label="Delete asset." ng-click="deleteAsset(cardFace)"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button>'
+	template: '<div id="{{myId}}"></div><button class="del-asset" aria-label="Delete asset." ng-click="deleteAsset(cardFace)"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button>'
 	link: (scope, element, attrs) ->
 		scope.myId = Math.floor(Math.random() * 100000) + '-import-asset'
 		scope.deleteAsset = (cardFace) ->
 			cardFace.asset = ''
 			el = angular.element(document.getElementById(scope.myId))
 			el.empty()
-			return
-		scope.$watch ((scope) -> scope.assetType), (value) ->
+			null
+		scope.$watch ((scope) -> scope.assetUrl), (value) ->
 			asset = scope.assetType
-			if scope.faceWaitingForMedia
-				scope.faceWaitingForMedia = null
-				url = scope.assetUrl
-				switch asset
-					when 'flv'
-						$timeout ->
-							el = angular.element(document.getElementById(scope.myId))
-							el.append('<video src="' + url + '" ></video>')
-					when 'mp3'
-						$timeout ->
-							el = angular.element(document.getElementById(scope.myId))
-							el.append('<audio src="' + url + '" ></audio>')
-					when 'jpg' or 'png' or 'gif'
-						$timeout ->
-							el = angular.element(document.getElementById(scope.myId))
-							el.append('<img src="' + url + '">')
+			url = scope.assetUrl
+			console.log 'changed url', url
+			switch asset
+				when 'flv'
+					$timeout ->
+						el = angular.element(document.getElementById(scope.myId))
+						el.append('<video src="' + url + '" ></video>')
+				when 'mp3'
+					$timeout ->
+						el = angular.element(document.getElementById(scope.myId))
+						el.append('<audio controls src="' + url + '" ></audio>')
+				when 'jpg' or 'png' or 'gif'
+					$timeout ->
+						el = angular.element(document.getElementById(scope.myId))
+						el.append('<img src="' + url + '">')
 
 # Set the controller for the scope of the document body.
 Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
