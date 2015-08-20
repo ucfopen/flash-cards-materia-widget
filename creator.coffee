@@ -28,6 +28,8 @@ Flashcards.directive 'focusMe', ($timeout) ->
 # Directive that handles all media imports & removals
 Flashcards.directive 'importAsset', ($http, $timeout) ->
 	template: '<div id="{{myId}}"></div><button class="del-asset" aria-label="Delete asset." ng-click="deleteAsset(cardFace)"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button>'
+	scope:
+		cardFace: '='
 	link: (scope, element, attrs) ->
 		scope.myId = Math.floor(Math.random() * 100000) + '-import-asset'
 		scope.deleteAsset = (cardFace) ->
@@ -38,19 +40,31 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 		scope.$watch ((scope) -> scope.assetUrl), (value) ->
 			asset = scope.assetType
 			url = scope.assetUrl
-			console.log 'changed url', url
 			switch asset
 				when 'flv'
 					$timeout ->
 						el = angular.element(document.getElementById(scope.myId))
-						el.append('<video src="' + url + '" ></video>')
+						el.empty()
+						el.append('<video controls src="' + url + '" type="rtmp/flv"></video>')
 				when 'mp3'
 					$timeout ->
 						el = angular.element(document.getElementById(scope.myId))
-						el.append('<audio controls src="' + url + '" ></audio>')
+						el.empty()
+						el.append('<audio controls src="' + url + '"></audio>')
 				when 'jpg' or 'png' or 'gif'
 					$timeout ->
 						el = angular.element(document.getElementById(scope.myId))
+						el.empty()
+						el.append('<img src="' + url + '">')
+				when 'png' or 'gif'
+					$timeout ->
+						el = angular.element(document.getElementById(scope.myId))
+						el.empty()
+						el.append('<img src="' + url + '">')
+				when 'gif'
+					$timeout ->
+						el = angular.element(document.getElementById(scope.myId))
+						el.empty()
 						el.append('<img src="' + url + '">')
 
 # Set the controller for the scope of the document body.
