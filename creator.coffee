@@ -28,14 +28,12 @@ Flashcards.directive 'focusMe', ($timeout) ->
 # Directive that handles all media imports & removals
 Flashcards.directive 'importAsset', ($http, $timeout) ->
 	template: '<div id="{{myId}}"></div><button class="del-asset" aria-label="Delete asset." ng-click="deleteAsset(cardFace)"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button>'
-	scope:
-		cardFace: '='
 	link: (scope, element, attrs) ->
 		scope.myId = Math.floor(Math.random() * 100000) + '-import-asset'
 		scope.deleteAsset = (cardFace) ->
-			cardFace.asset = ''
 			el = angular.element(document.getElementById(scope.myId))
 			el.empty()
+			cardFace.asset = ''
 			null
 		scope.$watch ((scope) -> scope.assetUrl), (value) ->
 			asset = scope.assetType
