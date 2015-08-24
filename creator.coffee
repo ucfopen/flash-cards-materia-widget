@@ -51,12 +51,12 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 						el = angular.element(document.getElementById(scope.myId))
 						el.empty()
 						el.append('<audio controls src="' + url + '"></audio>')
-				when 'jpg' or 'png' or 'gif'
+				when 'jpg'
 					$timeout ->
 						el = angular.element(document.getElementById(scope.myId))
 						el.empty()
 						el.append('<img src="' + url + '">')
-				when 'png' or 'gif'
+				when 'png'
 					$timeout ->
 						el = angular.element(document.getElementById(scope.myId))
 						el.empty()
