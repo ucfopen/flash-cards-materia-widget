@@ -27,36 +27,38 @@ Flashcards.directive 'focusMe', ($timeout) ->
 
 # Directive that handles all media imports & removals
 Flashcards.directive 'importAsset', ($http, $timeout) ->
-	template: '<div id="{{myId}}"></div><button class="del-asset" aria-label="Delete asset." ng-click="deleteAsset(cardFace)"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button>'
+	template: '<div id="{{myId}}"></div><button class="del-asset" aria-label="Delete asset." ng-hide="!cardFace.asset" ng-click="deleteAsset(cardFace)"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button><button aria-label="Add Asset." ng-hide="cardFace.asset" ng-click="requestMediaImport(cardFace)" ng-attr-tabindex="{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}"><span class="icon-image"></span><span class="descript add">add image/audio</span></button>'
 	link: (scope, element, attrs) ->
 		scope.myId = Math.floor(Math.random() * 100000) + '-import-asset'
 		scope.deleteAsset = (cardFace) ->
+			cardFace.asset = ''
 			el = angular.element(document.getElementById(scope.myId))
 			el.empty()
-			cardFace.asset = ''
 			null
-		scope.$watch ((scope) -> scope.assetUrl), (value) ->
-			asset = scope.assetType
-			url = scope.assetUrl
+		scope.requestMediaImport = (cardFace) ->
+			# Save the card/face that requested the image
+			scope.faceWaitingForMedia = cardFace
+			Materia.CreatorCore.showMediaImporter()
+		scope.onMediaImportComplete = (media) ->
+			faceWaitingForMedia.asset = media[0].id
+			# Variable used by importAsset directive
+			asset= media[0].type
+			url = $scope.getMediaUrl(faceWaitingForMedia.asset)
 			switch asset
 				when 'flv'
 					$timeout ->
-						el = angular.element(document.getElementById(scope.myId))
 						el.empty()
-						el.append('<video controls src="' + url + '" type="rtmp/flv"></video>')
+						el.append('<video controls src="' + url + '"></video>')
 				when 'mp3'
 					$timeout ->
-						el = angular.element(document.getElementById(scope.myId))
 						el.empty()
 						el.append('<audio controls src="' + url + '"></audio>')
 				when 'jpg'
 					$timeout ->
-						el = angular.element(document.getElementById(scope.myId))
 						el.empty()
 						el.append('<img src="' + url + '">')
 				when 'png'
 					$timeout ->
-						el = angular.element(document.getElementById(scope.myId))
 						el.empty()
 						el.append('<img src="' + url + '">')
 				when 'gif'
@@ -78,12 +80,8 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	$scope.cards = []
 	$scope.introCompleted = false
 
-	$scope.faceWaitingForMedia = null
 	scrollDownIntervalId = null
 	scrollDownTimeoutId = null
-
-	$scope.assetType = null
-	$scope.assetUrl = null
 
 
 	importCards = (items) ->
@@ -133,19 +131,6 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	$scope.onSaveComplete = -> true
 
 	$scope.onQuestionImportComplete = importCards.bind(@)
-
-	$scope.requestMediaImport = (cardFace) ->
-		# Save the card/face that requested the image
-		$scope.faceWaitingForMedia = cardFace
-		Materia.CreatorCore.showMediaImporter()
-
-	$scope.onMediaImportComplete = (media) ->
-		$scope.faceWaitingForMedia.asset = media[0].id
-		# Variable used by importAsset directive
-		$scope.assetType = media[0].type
-		$scope.assetUrl = $scope.getMediaUrl($scope.faceWaitingForMedia.asset)
-
-		$scope.$apply()
 
 	$scope.createNewCard = ->
 		$scope.lastAction = $scope.ACTION_CREATE_NEW_CARD;
