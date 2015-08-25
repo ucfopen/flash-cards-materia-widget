@@ -53,8 +53,9 @@
 							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></textarea>
 						<div
 							import-asset
-							ng-hide='!cardFace.asset'
-							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></div>
+							ng-hide='cardFace.asset'
+							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'>
+						</div>
 					</div>
 					<div
 						class="alert"
@@ -62,14 +63,6 @@
 						<span class="icon-alert"></span>
 						Reduce your text to fit the card.
 					</div>
-					<button
-						aria-label="Add Asset."
-						ng-hide="cardFace.asset"
-						ng-click="requestMediaImport(cardFace)"
-						ng-attr-tabindex='{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}'>
-						<span class="icon-image"></span>
-						<span class="descript add">add image/audio</span>
-					</button>
 				</span>
 
 				<button
