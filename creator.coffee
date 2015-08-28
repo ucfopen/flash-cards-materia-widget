@@ -27,52 +27,49 @@ Flashcards.directive 'focusMe', ($timeout) ->
 
 # Directive that handles all media imports & removals
 Flashcards.directive 'importAsset', ($http, $timeout) ->
-	template: '<div id="{{myId}}"></div><button class="del-asset" aria-label="Delete asset." ng-hide="!cardFace.asset" ng-click="deleteAsset(cardFace)"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button><button aria-label="Add Asset." ng-hide="cardFace.asset" ng-click="addAsset(cardFace)" ng-attr-tabindex="{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}"><span class="icon-image"></span><span class="descript add">add image/audio</span></button>'
+	template: '<div id="{{myId}}"></div><button class="del-asset" aria-label="Delete asset." ng-hide="!cardFace.asset" ng-click="deleteAsset()"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button><button aria-label="Add Asset." ng-hide="cardFace.asset" ng-click="addAsset()" ng-attr-tabindex="{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}"><span class="icon-image"></span><span class="descript add">add image/audio</span></button>'
+	scope:
+		cardFace: '='
+		mediaImport: '='
+		requestMediaImport: '='
+
+
 	link: (scope, element, attrs) ->
 		scope.myId = Math.floor(Math.random() * 100000) + '-import-asset'
-		scope.deleteAsset = (cardFace) ->
-			console.log("Is this happening during page load?")
-			cardFace.asset = ''
+
+		onAssetChange = (assetType, url) ->
+			# Variable used by importAsset directive
+			el    = angular.element(document.getElementById(scope.myId))
+			asset = switch assetType
+				when 'flv'
+					'<video controls src="' + url + '"></video>'
+				when 'mp3'
+					'<audio controls src="' + url + '"></audio>'
+				when 'jpg', 'png', 'gif', undefined # undefined is for dev materia
+					'<img src="' + url + '">'
+				else null
+
+			if asset?
+				el.empty()
+				el.append(asset)
+
+		scope.deleteAsset = ->
+			scope.cardFace.asset = ''
 			el = angular.element(document.getElementById(scope.myId))
 			el.empty()
 			null
 
-		scope.addAsset = (cardFace) ->
-			stopWatching = scope.$watch 'scope.mediaImport.assetUrl', (value) ->
-				console.log 'MEDIAID CHANGED', value
-				stopWatching()
-				console.log 'MEDIAID 2'
-				# Variable used by importAsset directive
-				asset = scope.mediaImport.assetType
-				console.log 'MEDIAID 3'
-				console.log asset
-				url = scope.mediaImport.assetUrl
-				console.log 'MEDIAID 4'
-				console.log url
-				switch asset
-					when 'flv'
-						console.log 'MEDIAID 5'
-						el = angular.element(document.getElementById(scope.myId))
-						el.empty()
-						el.append('<video controls src="' + url + '"></video>')
-					when 'mp3'
-						console.log 'MEDIAID 6'
-						el = angular.element(document.getElementById(scope.myId))
-						el.empty()
-						el.append('<audio controls src="' + url + '"></audio>')
-					when 'jpg', 'png', 'gif', undefined
-						console.log 'MEDIAID 7'
-						el = angular.element(document.getElementById(scope.myId))
-						el.empty()
-						el.append('<img src="' + url + '">')
-
-			scope.requestMediaImport(cardFace)
-
+		scope.addAsset = ->
+			# forces all previous watches to stop and resets the asset value
+			scope.mediaImport.assetUrl = null
+			# stopWatching = scope.$watch 'mediaImport.assetUrl', onAssetChange
+			scope.requestMediaImport(scope.cardFace, onAssetChange)
 
 # Set the controller for the scope of the document body.
 Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	SCROLL_DURATION_MS = 500
 	WHEEL_DELTA_THRESHOLD = 5
+	mediaImportWatcher = null
 
 	$scope.FACE_BACK = 0
 	$scope.FACE_FRONT = 1
@@ -90,6 +87,8 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		mediaId: null
 		assetType: null
 		assetUrl: null
+
+	$scope.someOtherThing = 'test'
 
 
 	importCards = (items) ->
@@ -112,7 +111,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 	$scope.initNewWidget = (widget, baseUrl) ->
 		$scope.$apply ->
-			$scope.showIntroDialog = true
+			$scope.showIntroDialog = false
 
 	$scope.initExistingWidget = (title, widget, qset, version, baseUrl) ->
 		$scope.title = title
@@ -145,16 +144,17 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		$scope.addCard()
 		scrollToBottom()
 
-	$scope.requestMediaImport = (cardFace) ->
-		console.log 'RMI 1'
+	$scope.requestMediaImport = (cardFace, callback) ->
 		# Save the card/face that requested the image
 		$scope.faceWaitingForMedia = cardFace
-		console.log 'RMI 2'
+		mediaImportWatcher() if mediaImportWatcher?
+		mediaImportWatcher = $scope.$watch 'mediaImport.assetUrl', (newValue, oldValue) ->
+			return if newValue == oldValue # do nothing
+			callback($scope.mediaImport.assetType, $scope.mediaImport.assetUrl)
+
 		Materia.CreatorCore.showMediaImporter()
-		console.log 'RMI 3'
 
 	$scope.onMediaImportComplete = (media) ->
-		console.log 'Starting mediaImportComplete'
 		if media?[0]?.id?
 			$scope.faceWaitingForMedia.asset = media[0].id
 		else
@@ -164,7 +164,6 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		$scope.mediaImport.mediaId = media[0].id
 		$scope.mediaImport.assetType = media[0].type
 		$scope.mediaImport.assetUrl = $scope.getMediaUrl(media[0].id)
-		console.log "UPDATED", $scope.mediaImport
 
 		$scope.$apply()
 
