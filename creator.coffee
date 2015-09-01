@@ -113,7 +113,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 	$scope.initNewWidget = (widget, baseUrl) ->
 		$scope.$apply ->
-			$scope.showIntroDialog = false
+			$scope.showIntroDialog = true
 
 	$scope.initExistingWidget = (title, widget, qset, version, baseUrl) ->
 		$scope.title = title
