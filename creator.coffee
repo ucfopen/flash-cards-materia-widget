@@ -90,8 +90,6 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		assetType: null
 		assetUrl: null
 
-	$scope.someOtherThing = 'test'
-
 
 	importCards = (items) ->
 		$scope.lastAction = $scope.ACTION_IMPORT
