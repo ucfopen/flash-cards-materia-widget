@@ -41,8 +41,10 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 			# Variable used by importAsset directive
 			el    = angular.element(document.getElementById(scope.myId))
 			asset = switch assetType
-				when 'flv'
-					'<video controls src="' + url + '"></video>'
+				when 'mp4'
+					'<video width="280" height="140" controls>
+						<source src="' + url + '" type="video/mp4">
+					</video>'
 				when 'mp3'
 					'<audio controls src="' + url + '"></audio>'
 				when 'jpg', 'png', 'gif', undefined # undefined is for dev materia
@@ -159,6 +161,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 			$scope.faceWaitingForMedia.asset = media[0].id
 		else
 			$scope.faceWaitingForMedia = null
+			return
 
 		# Variable used by importAsset directive
 		$scope.mediaImport.mediaId = media[0].id
