@@ -38,7 +38,7 @@
 				<span class="face" ng-repeat="face in ['front', 'back']" ng-init="cardFace = card[face]; faceText = cardFace.text" ng-attr-aria-label="Card {{face}}.">
 					<div class="center">
 						<input
-							placeholder='Enter a picture header here.'
+							placeholder='Enter text here.'
 							value="{{cardFace.text}}"
 							ng-hide="!cardFace.asset"
 							ng-model="cardFace.text"
