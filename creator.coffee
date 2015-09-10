@@ -156,7 +156,10 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 	$scope.onMediaImportComplete = (media) ->
 		if media?[0]?.id?
-			$scope.faceWaitingForMedia.asset = media[0].id
+			$scope.faceWaitingForMedia.asset =
+				id: media[0].id
+				type: media[0].type
+				url: $scope.getMediaUrl(media[0].id)
 		else
 			$scope.faceWaitingForMedia = null
 			return
