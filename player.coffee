@@ -114,15 +114,8 @@ Namespace('Flashcards').Engine = do ->
 				if _card.BackText is '' then _backClass = "no-text" else _backClass = "mixed"
 			else if _card.BackText.split(' ').length < 8 then _backClass = "title" else _backClass = "description"
 
-
-			console.log "Pay attention to me!!!"
-			console.log _card.FrontURL + " --- Front"
-			console.log _card.BackURL + " --- Back"
-
-
 			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'">'+_card.FrontText+'</p>'
 			if _card.FrontURL isnt '-1'
-				console.log typeof data[i].assets[1]
 				if typeof data[i].assets[1] isnt 'object'
 					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
 				else if data[i].assets[1].type == 'jpg' or data[i].assets[1].type == 'jpeg' or data[i].assets[1].type == 'png' or data[i].assets[1].type == 'gif'
@@ -134,7 +127,6 @@ Namespace('Flashcards').Engine = do ->
 
 			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'">'+_card.BackText+'</p>'
 			if _card.BackURL isnt '-1'
-				console.log typeof data[i].assets[0]
 				if typeof data[i].assets[0] isnt 'object'
 					_card.node.children[1].children[0].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
 				else if data[i].assets[0].type == 'jpg' or data[i].assets[0].type == 'jpeg' or data[i].assets[0].type == 'png' or data[i].assets[0].type == 'gif'

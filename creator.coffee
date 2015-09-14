@@ -164,7 +164,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 			$scope.faceWaitingForMedia = null
 			return
 
-		# Variable used by importAsset directive
+		# Variables used by importAsset directive
 		$scope.mediaImport.mediaId = media[0].id
 		$scope.mediaImport.assetType = media[0].type
 		$scope.mediaImport.assetUrl = $scope.getMediaUrl(media[0].id)
