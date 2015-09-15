@@ -8,7 +8,6 @@ Flashcards.directive 'ngEnter', ->
 				scope.$apply -> scope.$eval(attrs.ngEnter)
 				event.preventDefault()
 
-
 Flashcards.directive 'focusMeWatch', ($timeout, $parse) ->
 	link: (scope, element, attrs) ->
 		model = $parse(attrs.focusMe)
@@ -16,7 +15,6 @@ Flashcards.directive 'focusMeWatch', ($timeout, $parse) ->
 			if value
 				$timeout -> element[0].focus()
 			value
-
 
 Flashcards.directive 'focusMe', ($timeout) ->
 	scope:
