@@ -128,13 +128,13 @@ Namespace('Flashcards').Engine = do ->
 			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'">'+_card.BackText+'</p>'
 			if _card.BackURL isnt '-1'
 				if typeof data[i].assets[0] isnt 'object'
-					_card.node.children[1].children[0].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
+					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
 				else if data[i].assets[0].type == 'jpg' or data[i].assets[0].type == 'jpeg' or data[i].assets[0].type == 'png' or data[i].assets[0].type == 'gif'
-					_card.node.children[1].children[0].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
+					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
 				else if data[i].assets[0].type == 'mp3' || data[i].assets[0].type == 'wav' || data[i].assets[0].type == 'aif'
-					_card.node.children[1].children[0].innerHTML = '<audio controls class="'+_backClass+'" src="'+_card.BackURL+'">'
+					_card.node.children[1].children[1].innerHTML = '<audio controls class="'+_backClass+'" src="'+_card.BackURL+'">'
 				else if data[i].assets[0].type == 'mp4' || data[i].assets[0].type == 'mpeg'
-					_card.node.children[1].children[0].innerHTML = '<video controls class="'+_backClass+'" src="'+_card.BackURL+'">'
+					_card.node.children[1].children[1].innerHTML = '<video controls class="'+_backClass+'" src="'+_card.BackURL+'">'
 
 	# Places cards in their correct positions within the gameboard and gives them a specific rotation.
 	# @face : Specifies whether or not to rotate the card when placing them in their positions.
