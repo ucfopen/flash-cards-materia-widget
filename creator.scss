@@ -29,7 +29,7 @@
 
 $green: #70bd34;
 
-textarea:focus, input:focus { outline : none;}
+textarea:focus, input:focus, .card div:focus { outline : none;}
 
 textarea { resize : none; }
 html, body {
@@ -206,10 +206,6 @@ body {
 					}
 					textarea { height : 130px; }
 					input { height : 25px; }
-					img {
-						max-width  : 400px;
-						max-height : 110px;
-					}
 					audio {
 						max-width  : 400px;
 						max-height : 110px;
@@ -232,6 +228,10 @@ body {
 							&.add { left : -125px; }
 							&.del { left : -135px; }
 						}
+					}
+					img {
+						max-width  : 400px;
+						max-height : 110px;
 					}
 					.alert {
 						position  : absolute;
