@@ -122,7 +122,7 @@ Namespace('Flashcards').Engine = do ->
 					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
 				else if data[i].assets[1].type == 'mp3' || data[i].assets[1].type == 'wav' || data[i].assets[1].type == 'aif'
 					_card.node.children[0].children[1].innerHTML = '<audio controls class="'+_frontClass+'" src="'+_card.FrontURL+'">'
-				else if data[i].assets[1].type == 'mp4' || data[i].assets[1].type == 'mpeg'
+				else if data[i].assets[1].type == 'mp4'
 					_card.node.children[0].children[1].innerHTML = '<video controls class="'+_frontClass+'" src="'+_card.FrontURL+'">'
 
 			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'">'+_card.BackText+'</p>'
@@ -133,7 +133,7 @@ Namespace('Flashcards').Engine = do ->
 					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
 				else if data[i].assets[0].type == 'mp3' || data[i].assets[0].type == 'wav' || data[i].assets[0].type == 'aif'
 					_card.node.children[1].children[1].innerHTML = '<audio controls class="'+_backClass+'" src="'+_card.BackURL+'">'
-				else if data[i].assets[0].type == 'mp4' || data[i].assets[0].type == 'mpeg'
+				else if data[i].assets[0].type == 'mp4'
 					_card.node.children[1].children[1].innerHTML = '<video controls class="'+_backClass+'" src="'+_card.BackURL+'">'
 
 	# Places cards in their correct positions within the gameboard and gives them a specific rotation.
