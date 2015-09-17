@@ -204,6 +204,10 @@ Namespace('Flashcards').Engine = do ->
 			$('#icon-rotate').on  'mouseup', -> _rotateCards(if rotation is '' then 'back')
 			$('#icon-shuffle').on 'mouseup', _shuffleCards
 
+			$('audio').on    'mouseup', (e)->
+				if _isDiscarded(this) then _unDiscard()
+				else e.stopPropagation()
+
 			$('.flashcard').on    'mouseup', ->
 				if _isDiscarded(this) then _unDiscard()
 				else _flipCard()
