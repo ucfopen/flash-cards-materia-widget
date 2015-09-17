@@ -30,13 +30,12 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 		cardFace: '='
 		mediaImport: '='
 		requestMediaImport: '='
-		#tabindex: 'attr-tabindex'
-
+		asset: '='
 
 	link: (scope, element, attrs) ->
 		scope.myId = Math.floor(Math.random() * 100000) + '-import-asset'
 
-		onAssetChange = (assetType, url) ->
+		insertAsset = (assetType, url) ->
 			# Variable used by importAsset directive
 			el    = angular.element(document.getElementById(scope.myId))
 			asset = switch assetType
@@ -63,8 +62,12 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 		scope.addAsset = ->
 			# forces all previous watches to stop and resets the asset value
 			scope.mediaImport.assetUrl = null
-			# stopWatching = scope.$watch 'mediaImport.assetUrl', onAssetChange
-			scope.requestMediaImport(scope.cardFace, onAssetChange)
+			# stopWatching = scope.$watch 'mediaImport.assetUrl', insertAsset
+			scope.requestMediaImport(scope.cardFace, insertAsset)
+
+		# populates cards with assets during Edit Widget
+		if scope.asset.id?.length > 0
+			$timeout -> insertAsset(scope.asset.type, scope.asset.url)
 
 # Set the controller for the scope of the document body.
 Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
@@ -175,37 +178,16 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		Materia.CreatorCore.getMediaUrl(asset)
 
 	$scope.addCard = (item) ->
-		if item.assets[0].type == 'jpg' || item.assets[0].type == 'jpeg' || item.assets[0].type == 'gif' || item.assets[0].type == 'png'
-			template0 = '<img src="' + item.assets[0].url + '">'
-		else if item.assets[0].type == 'mp3'
-			template0 = '<audio controls src="' + item.assets[0].url+ '"></audio>'
-		else if item.assets[0].type == 'mp4'
-			template0 = '<video width="280" height="140" controls><source src="' + item.assets[0].url + '" type="video/mp4"></video>'
-		else
-			template0 = ''
-		if item.assets[1].type == 'jpg' || item.assets[1].type == 'jpeg' || item.assets[1].type == 'gif' || item.assets[1].type == 'png'
-			template1 = '<img src="' + item.assets[1].url + '">'
-		else if item.assets[1].type == 'mp3'
-			template1 = '<audio controls src="' + item.assets[1].url+ '"></audio>'
-		else if item.assets[1].type == 'mp4'
-			template1 = '<video width="280" height="140" controls><source src="' + item.assets[1].url + '" type="video/mp4"></video>'
-		else
-			template1 = ''
-
 		$scope.cards.push
 			id: item?.id || ''
 			front:
 				text: item?.questions?[0]?.text?.replace(/\&\#10\;/g, '\n') || ''
 				id: item?.questions?[0]?.id || ''
 				asset: item?.assets?[0] || ''
-				template: template0
 			back:
 				text: item?.answers?[0]?.text?.replace(/\&\#10\;/g, '\n') || ''
 				id: item?.answers?[0]?.id || ''
 				asset: item?.assets?[1] || ''
-				template: template1
-
-		console.table $scope.cards
 
 	$scope.removeCard = (index) ->
 		$scope.cards.splice index, 1
