@@ -92,6 +92,8 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		assetType: null
 		assetUrl: null
 
+	$scope.acceptedMediaTypes = ['jpg', 'jpeg', 'gif', 'png', 'mp3']
+
 
 	importCards = (items) ->
 		$scope.lastAction = $scope.ACTION_IMPORT
@@ -154,7 +156,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 			return if newValue == oldValue # do nothing
 			callback($scope.mediaImport.assetType, $scope.mediaImport.assetUrl)
 
-		Materia.CreatorCore.showMediaImporter()
+		Materia.CreatorCore.showMediaImporter($scope.acceptedMediaTypes)
 
 	$scope.onMediaImportComplete = (media) ->
 		if media?[0]?.id?
