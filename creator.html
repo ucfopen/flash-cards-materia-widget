@@ -33,12 +33,12 @@
 			<li class="titles" aria-hidden="true" ng-class='{hidden:cards.length <= 0}'>
 				<h3>Front</h3><h3>Back</h3>
 			</li>
-			<li class="card" role="flashcard" ng-repeat="card in cards" ng-init="cardIndex = $index; startingTabIndex = cardIndex * 5 + 1;">
+			<li class="card" role="flashcard" ng-repeat="card in cards" ng-init="cardIndex = $index; startingTabIndex = cardIndex * 5 + 1;" id="card-{{cardIndex}}">
 				<span class="num" ng-class="{large:cardIndex+1 >= 100}">{{cardIndex+1}}</span>
 				<span class="face" ng-repeat="face in ['front', 'back']" ng-init="cardFace = card[face]; faceText = cardFace.text" ng-attr-aria-label="Card {{face}}.">
 					<div class="center">
 						<input
-							placeholder='Enter a picture header here.'
+							placeholder='Enter text here.'
 							value="{{cardFace.text}}"
 							ng-hide="!cardFace.asset"
 							ng-model="cardFace.text"
@@ -51,19 +51,13 @@
 							ng-model="cardFace.text"
 							focus-me="face == 'front' && lastAction == ACTION_CREATE_NEW_CARD"
 							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></textarea>
-						<img
-							ng-hide="!cardFace.asset"
-							ng-src="{{getMediaUrl(cardFace.asset)}}"/>
-						<button
-							class="del-img"
-							aria-label="Delete image."
-							ng-hide="!cardFace.asset"
-							ng-click="deleteImage(cardFace)"
-							ng-attr-tabindex='{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}'
-							>
-							<span class="icon-close"></span>
-							<span class="descript del">remove image</span>
-						</button>
+						<div
+							import-asset
+							card-face="cardFace"
+							request-media-import="requestMediaImport"
+							media-import="mediaImport"
+							asset="cardFace.asset"
+							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></div>
 					</div>
 					<div
 						class="alert"
@@ -71,14 +65,6 @@
 						<span class="icon-alert"></span>
 						Reduce your text to fit the card.
 					</div>
-					<button
-						aria-label="Add Image."
-						ng-hide="cardFace.asset"
-						ng-click="requestMediaImport(cardFace)"
-						ng-attr-tabindex='{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}'>
-						<span class="icon-image"></span>
-						<span class="descript add">add image</span>
-					</button>
 				</span>
 
 				<button

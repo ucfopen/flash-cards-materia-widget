@@ -581,15 +581,31 @@ body {
 							}
 						}
 					}
-					.image {
+					.asset {
 						margin-top : -300px;
-						img {
-							max-width : 500px;
+
+						audio {
+							max-width : 100%;
 							&.title, &.description { display : none; }
-							&.no-text { max-height : 300px; }
+							&.no-text {
+								margin-top: 25%;
+								max-height : 300px;
+							}
 							&.mixed {
-								margin-top : 40px;
+								margin-top : 25%;
 								max-height: 250px;
+							}
+						}
+						img {
+							max-width : 90%;
+							&.title, &.description { display : none; }
+							&.no-text {
+								margin-top: 10%;
+								max-height : 200px;
+							}
+							&.mixed {
+								margin-top : 10%;
+								max-height: 200px;
 							}
 						}
 					}

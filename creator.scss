@@ -29,7 +29,7 @@
 
 $green: #70bd34;
 
-textarea:focus, input:focus { outline : none;}
+textarea:focus, input:focus, .card div:focus { outline : none;}
 
 textarea { resize : none; }
 html, body {
@@ -62,7 +62,7 @@ button {
 	.descript {
 		position   : absolute;
 		font-size  : 13px;
-		width      : 90px;
+		width      : 150px;
 		opacity    : 0;
 		padding    : 5px;
 		margin     : -5px;
@@ -206,9 +206,10 @@ body {
 					}
 					textarea { height : 130px; }
 					input { height : 25px; }
-					img {
+					audio {
 						max-width  : 400px;
 						max-height : 110px;
+						margin-top: 50px;
 					}
 					button {
 						bottom     : 6px;
@@ -224,9 +225,13 @@ body {
 						}
 						.descript {
 							top : 10px;
-							&.add { left : -85px; }
-							&.del { left : -95px; }
+							&.add { left : -125px; }
+							&.del { left : -135px; }
 						}
+					}
+					img {
+						max-width  : 400px;
+						max-height : 110px;
 					}
 					.alert {
 						position  : absolute;
