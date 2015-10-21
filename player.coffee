@@ -209,6 +209,11 @@ Namespace('Flashcards').Engine = do ->
 				else e.stopPropagation()
 
 			$('.flashcard').on    'mouseup', ->
+				# Shuts off all audio players when card is flipped.
+				$('audio').each ->
+					if !@paused
+						@pause()
+					return
 				if _isDiscarded(this) then _unDiscard()
 				else _flipCard()
 
