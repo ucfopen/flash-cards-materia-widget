@@ -195,24 +195,39 @@ Namespace('Flashcards').Engine = do ->
 		else
 			document.addEventListener upEventType, -> if overlay then _toggleOverlay()
 
-			$('#icon-left').on    'mouseup', _leftSelected
-			$('#icon-right').on   'mouseup', _rightSelected
-
+			$('#icon-left').on    'mouseup', ->
+				_leftSelected()
+				_killAudio()
+			$('#icon-right').on   'mouseup', ->
+				_rightSelected()
+				_killAudio()
 			$('#icon-help').on    'mouseup', _toggleOverlay
-			$('#icon-restore').on 'mouseup', _unDiscardAll
-			$('#icon-finish').on  'mouseup', _unDiscardAll
-			$('#icon-rotate').on  'mouseup', -> _rotateCards(if rotation is '' then 'back')
-			$('#icon-shuffle').on 'mouseup', _shuffleCards
+			$('#icon-restore').on 'mouseup', ->
+				_killAudio()
+				_unDiscardAll()
+			$('#icon-finish').on  'mouseup', ->
+				_killAudio()
+				_unDiscardAll()
+			$('#icon-rotate').on  'mouseup', ->
+				_killAudio()
+				_rotateCards(if rotation is '' then 'back')
+			$('#icon-shuffle').on 'mouseup', ->
+				_killAudio()
+				_shuffleCards()
 
 			$('audio').on    'mouseup', (e)->
 				if _isDiscarded(this) then _unDiscard()
 				else e.stopPropagation()
 
 			$('.flashcard').on    'mouseup', ->
+				# Shuts off all audio players when card is flipped.
+				_killAudio()
 				if _isDiscarded(this) then _unDiscard()
 				else _flipCard()
 
 			$('.remove-button').on 'mouseup', (e) ->
+				# Shuts off all audio players when card is discarded.
+				_killAudio()
 				_discard()
 				e.stopPropagation()
 
@@ -228,6 +243,7 @@ Namespace('Flashcards').Engine = do ->
 				when 82     then _rotateCards(if rotation is '' then 'back') # R key.
 				when 83     then _shuffleCards()                             # S key.
 				when 85     then _unDiscardAll()                             # U key.
+			_killAudio()
 			e.preventDefault()
 
 	_leftSelected = ()  -> if _canMove 'left'  then _shiftCards 'right'
@@ -274,6 +290,12 @@ Namespace('Flashcards').Engine = do ->
 			# The front is currently showing.
 			else
 				Flashcards.Card[currentCardId].node.className = 'flashcard rotated'
+
+	_killAudio = () ->
+		$('audio').each ->
+			if !@paused
+				@pause()
+			return
 
 	# Shuffles the entire deck.
 	_shuffleCards = () ->
