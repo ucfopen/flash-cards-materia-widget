@@ -68,6 +68,9 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 		# populates cards with assets during Edit Widget
 		if scope.asset.id?.length > 0
 			$timeout -> insertAsset(scope.asset.type, scope.asset.url)
+		# Fallback for older QSets (asset is a string providing the ID, not an object)
+		else if scope.asset.length > 0
+			$timeout -> insertAsset('png', Materia.CreatorCore.getMediaUrl(scope.asset))
 
 # Set the controller for the scope of the document body.
 Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
