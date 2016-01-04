@@ -102,8 +102,24 @@ Namespace('Flashcards').Engine = do ->
 			_card.node      = _cardNodes[i]
 			_card.FrontText = data[i].answers[0].text.replace(/\&\#10\;/g, '<br>')
 			_card.BackText  = data[i].questions[0].text.replace(/\&\#10\;/g, '<br>')
-			_card.FrontURL  = if data[i].assets?[1] then data[i].assets[1].url else '-1'
-			_card.BackURL  = if data[i].assets?[0] then data[i].assets[0].url else '-1'
+
+			if data[i].assets?[1]
+				# Handle former QSet asset format
+				if typeof data[i].assets[1] isnt 'object' and data[i].assets[1] isnt '-1'
+					_card.FrontURL = Materia.Engine.getImageAssetUrl data[i].assets[1]
+				# Handle new QSet asset format
+				else if typeof data[i].assets[1] is 'object'
+					_card.FrontURL = data[i].assets[1].url
+			else _card.FrontURL = '-1'
+
+			if data[i].assets?[0]
+				# Handle former QSet asset format
+				if typeof data[i].assets[0] isnt 'object' and data[i].assets[0] isnt '-1'
+					_card.BackURL = Materia.Engine.getImageAssetUrl data[i].assets[0]
+				# Handle new QSet asset format
+				else if typeof data[i].assets[0] is 'object'
+					_card.BackURL = data[i].assets[0].url
+			else _card.BackURL = '-1'
 
 			if _card.FrontURL? && _card.FrontURL != '-1'
 				if _card.FrontText is '' then _frontClass = "no-text" else _frontClass = "mixed"
