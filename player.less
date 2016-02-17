@@ -566,15 +566,29 @@ body {
 						height : inherit;
 						width  : inherit;
 						overflow-y : auto;
+
+						-webkit-transform-style: preserve-3d;
+						-moz-transform-style: preserve-3d;
+						transform-style: preserve-3d;
+
 						p {
+							margin: 0px;
+							padding-left: 15px;
+							padding-right: 15px;
+
 							&.description {
-								margin-top : 10px;
-								padding    : 30px;
+								position: relative;
+								top: 50%;
+								transform: translate(0, -50%);
+								-webkit-transform: translate(0, -50%);
+								-moz-transform: translate(0, -50%);
 							}
 							&.title {
-								text-align : center;
-								font-size  : 25px;
-								margin-top : 130px;
+								position: relative;
+								top: 50%;
+								transform: translate(0, -50%);
+								-webkit-transform: translate(0, -50%);
+								-moz-transform: translate(0, -50%);
 							}
 							&.mixed {
 								margin-top: 10px;
