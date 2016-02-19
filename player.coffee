@@ -88,6 +88,21 @@ Namespace('Flashcards').Engine = do ->
 		_tFlashcard = $($('#t-flashcard').html())
 		nodes.$container.append _tFlashcard.clone() for i in [0...length]
 
+	# Compute font scaling based on character length / scale factor. Max is 25px, min is 16px. ScaleFactor determines how quickly the font size is reduced.
+	# Scaling is appended to the card's <p> tag as an inline style
+	_computeFontSize = (text) ->
+		scaleFactor = 35
+		defaultSize = 25
+		minSize = 16
+
+		computedFontSize = defaultSize
+
+		diff = text.length / scaleFactor
+		if 25 - diff > minSize then computedFontSize = defaultSize - diff
+		else computedFontSize = minSize
+
+		return computedFontSize
+
 	# Stores card data.
 	# @data : Card information pulled from the qset.
 	_storeCards = (data) ->
@@ -103,11 +118,8 @@ Namespace('Flashcards').Engine = do ->
 			_card.FrontText = data[i].answers[0].text.replace(/\&\#10\;/g, '<br>')
 			_card.BackText  = data[i].questions[0].text.replace(/\&\#10\;/g, '<br>')
 
-			# Variables to handle dynamic font scaling based on front/back text character length
-			fontScaleFactor = 35
-			computedFrontFontSize = 25
+			# Strings that contain inline font scaling style (if applicable)
 			frontStyleStr = ""
-			computedBackFontSize = 25
 			backStyleStr = ""
 
 			if data[i].assets?[1]
@@ -133,11 +145,7 @@ Namespace('Flashcards').Engine = do ->
 			else
 				if _card.FrontText.split(' ').length < 8 then _frontClass = "title" else _frontClass = "description"
 
-				# Compute font scaling based on character length / scale factor. Max is 25px, min is 16px.
-				# Scaling is appended to the card's <p> tag as an inline style
-				frontDiff = _card.FrontText.length / fontScaleFactor
-				if 25 - frontDiff > 16 then computedFrontFontSize = 25 - frontDiff
-				else computedFrontFontSize = 16
+				computedFrontFontSize = _computeFontSize _card.FrontText
 				frontStyleStr = 'style="font-size:'+computedFrontFontSize+'px;'
 
 			if _card.BackURL? && _card.BackURL != '-1'
@@ -145,11 +153,7 @@ Namespace('Flashcards').Engine = do ->
 			else
 				if _card.BackText.split(' ').length < 8 then _backClass = "title" else _backClass = "description"
 
-				# Compute font scaling based on character length / scale factor. Max is 25px, min is 16px.
-				# Scaling is appended to the card's <p> tag as an inline style
-				backDiff = _card.BackText.length / fontScaleFactor
-				if 25 - backDiff > 16 then computedBackFontSize = 25 - backDiff
-				else computedBackFontSize = 16
+				computedBackFontSize = _computeFontSize _card.BackText
 				backStyleStr = 'style="font-size:'+computedBackFontSize+'px;'
 
 			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'" '+frontStyleStr+' ">'+_card.FrontText+'</p>'
