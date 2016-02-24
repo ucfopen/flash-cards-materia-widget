@@ -88,6 +88,21 @@ Namespace('Flashcards').Engine = do ->
 		_tFlashcard = $($('#t-flashcard').html())
 		nodes.$container.append _tFlashcard.clone() for i in [0...length]
 
+	# Compute font scaling based on character length / scale factor. Max is 25px, min is 16px. ScaleFactor determines how quickly the font size is reduced.
+	# Scaling is appended to the card's <p> tag as an inline style
+	_computeFontSize = (text) ->
+		scaleFactor = 35
+		defaultSize = 25
+		minSize = 16
+
+		computedFontSize = defaultSize
+
+		diff = text.length / scaleFactor
+		if 25 - diff > minSize then computedFontSize = defaultSize - diff
+		else computedFontSize = minSize
+
+		return computedFontSize
+
 	# Stores card data.
 	# @data : Card information pulled from the qset.
 	_storeCards = (data) ->
@@ -102,6 +117,10 @@ Namespace('Flashcards').Engine = do ->
 			_card.node      = _cardNodes[i]
 			_card.FrontText = data[i].answers[0].text.replace(/\&\#10\;/g, '<br>')
 			_card.BackText  = data[i].questions[0].text.replace(/\&\#10\;/g, '<br>')
+
+			# Strings that contain inline font scaling style (if applicable)
+			frontStyleStr = ""
+			backStyleStr = ""
 
 			if data[i].assets?[1]
 				# Handle former QSet asset format
@@ -126,11 +145,18 @@ Namespace('Flashcards').Engine = do ->
 			else
 				if _card.FrontText.split(' ').length < 8 then _frontClass = "title" else _frontClass = "description"
 
+				computedFrontFontSize = _computeFontSize _card.FrontText
+				frontStyleStr = 'style="font-size:'+computedFrontFontSize+'px;'
+
 			if _card.BackURL? && _card.BackURL != '-1'
 				if _card.BackText is '' then _backClass = "no-text" else _backClass = "mixed"
-			else if _card.BackText.split(' ').length < 8 then _backClass = "title" else _backClass = "description"
+			else
+				if _card.BackText.split(' ').length < 8 then _backClass = "title" else _backClass = "description"
 
-			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'">'+_card.FrontText+'</p>'
+				computedBackFontSize = _computeFontSize _card.BackText
+				backStyleStr = 'style="font-size:'+computedBackFontSize+'px;'
+
+			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'" '+frontStyleStr+' ">'+_card.FrontText+'</p>'
 			if _card.FrontURL isnt '-1'
 				if typeof data[i].assets[1] isnt 'object'
 					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
@@ -141,7 +167,7 @@ Namespace('Flashcards').Engine = do ->
 				else if data[i].assets[1].type == 'mp4' || data[i].assets[1].type == 'mpeg'
 					_card.node.children[0].children[1].innerHTML = '<video controls class="'+_frontClass+'" src="'+_card.FrontURL+'">'
 
-			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'">'+_card.BackText+'</p>'
+			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'" '+backStyleStr+' ">'+_card.BackText+'</p>'
 			if _card.BackURL isnt '-1'
 				if typeof data[i].assets[0] isnt 'object'
 					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
