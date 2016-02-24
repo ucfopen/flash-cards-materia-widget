@@ -97,6 +97,9 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 	$scope.acceptedMediaTypes = ['jpg', 'jpeg', 'gif', 'png', 'mp3']
 
+	decodeHtmlEntity = (str) ->
+		return str.replace /\&#(\d+);/g, (match, char) ->
+			String.fromCharCode char
 
 	importCards = (items) ->
 		$scope.lastAction = $scope.ACTION_IMPORT
@@ -183,14 +186,15 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		Materia.CreatorCore.getMediaUrl(asset)
 
 	$scope.addCard = (item) ->
+
 		$scope.cards.push
 			id: item?.id || ''
 			front:
-				text: item?.questions?[0]?.text?.replace(/\&\#10\;/g, '\n') || ''
+				text: decodeHtmlEntity item?.questions?[0]?.text?.replace(/\&\#10\;/g, '\n') || ''
 				id: item?.questions?[0]?.id || ''
 				asset: item?.assets?[0] || ''
 			back:
-				text: item?.answers?[0]?.text?.replace(/\&\#10\;/g, '\n') || ''
+				text: decodeHtmlEntity item?.answers?[0]?.text?.replace(/\&\#10\;/g, '\n') || ''
 				id: item?.answers?[0]?.id || ''
 				asset: item?.assets?[1] || ''
 
