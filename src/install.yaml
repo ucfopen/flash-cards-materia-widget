@@ -1,0 +1,35 @@
+---
+general:
+  name: Flash Cards
+  group: Materia
+  height: 516
+  width: 800
+  in_catalog: Yes
+  is_editable: Yes
+  is_playable: Yes
+  is_qset_encrypted: Yes
+  is_answer_encrypted: Yes
+  is_storage_enabled: No
+  api_version: 2
+files:
+  creator: creator.html
+  player: player.html
+  flash_version: 10
+score:
+  is_scorable: No
+  score_module: FlashCards
+meta_data:
+  features:
+    - Customizable
+    - Media
+    - Mobile Friendly
+  supported_data:
+    - Question/Answer
+  about: >
+    Flashcards is a study tool that allows
+    students to use a virtual deck of cards
+    to study concepts paired with definitions
+    or images.
+  excerpt: >
+    A study tool featuring a deck of flashcards.
+
