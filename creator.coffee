@@ -78,6 +78,12 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	WHEEL_DELTA_THRESHOLD = 5
 	mediaImportWatcher = null
 
+	# keep track of any characters that play havoc with $sanitize here to pre-sanitize them
+	PRESANITIZE_CHARACTERS = {
+		'>': '&gt;',
+		'<': '&lt;'
+	}
+
 	$scope.FACE_BACK = 0
 	$scope.FACE_FRONT = 1
 	$scope.ACTION_CREATE_NEW_CARD = 'create'
@@ -98,8 +104,14 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	$scope.acceptedMediaTypes = ['jpg', 'jpeg', 'gif', 'png', 'mp3']
 
 	decodeHtmlEntity = (str) ->
-		return str.replace /\&#(\d+);/g, (match, char) ->
-			String.fromCharCode char
+		# replace html entities with their non-entity characters
+		str = str.replace /\&#(\d+);/g, (match, char) ->
+			a = String.fromCharCode char
+			return a
+		# replace any specific characters we might have pre-sanitized before saving
+		for k, v of PRESANITIZE_CHARACTERS
+			str = str.replace v, k
+		return str
 
 	importCards = (items) ->
 		$scope.lastAction = $scope.ACTION_IMPORT
@@ -108,7 +120,6 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 			$scope.addCard item
 
 		$scope.$apply()
-
 
 	# View actions
 	$scope.setTitle = ->
@@ -186,7 +197,6 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		Materia.CreatorCore.getMediaUrl(asset)
 
 	$scope.addCard = (item) ->
-
 		$scope.cards.push
 			id: item?.id || ''
 			front:
@@ -214,8 +224,8 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		items: [{items:items}]
 
 	getQsetItemFromCard = (card) ->
-		sanitizedQuestion = $sanitize card.front.text
-		sanitizedAnswer   = $sanitize card.back.text
+		sanitizedQuestion = $sanitize preSanitize(card.front.text)
+		sanitizedAnswer   = $sanitize preSanitize(card.back.text)
 
 		materiaType: 'question'
 		type: 'QA'
@@ -223,6 +233,12 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		questions: [{id:card.front.id, text:sanitizedQuestion}]
 		answers: [{id:card.back.id, text:sanitizedAnswer, value:'100'}]
 		assets: [card.front.asset, card.back.asset]
+
+	# replace a specified list of characters with their safe equivalents
+	preSanitize = (text) ->
+		for k, v of PRESANITIZE_CHARACTERS
+			text = text.replace k, v
+		return text
 
 	scrollToBottom = ->
 		clearInterval scrollDownTimeoutId
