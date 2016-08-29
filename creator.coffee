@@ -110,7 +110,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 			return a
 		# replace any specific characters we might have pre-sanitized before saving
 		for k, v of PRESANITIZE_CHARACTERS
-			str = str.replace v, k
+			str = str.replace new RegExp(v, 'g'), k
 		return str
 
 	importCards = (items) ->
@@ -237,7 +237,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	# replace a specified list of characters with their safe equivalents
 	preSanitize = (text) ->
 		for k, v of PRESANITIZE_CHARACTERS
-			text = text.replace k, v
+			text = text.replace new RegExp(k, 'g'), v
 		return text
 
 	scrollToBottom = ->
