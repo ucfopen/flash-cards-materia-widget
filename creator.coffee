@@ -79,10 +79,9 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	mediaImportWatcher = null
 
 	# keep track of any characters that play havoc with $sanitize here to pre-sanitize them
-	PRESANITIZE_CHARACTERS = {
+	PRESANITIZE_CHARACTERS =
 		'>': '&gt;',
 		'<': '&lt;'
-	}
 
 	$scope.FACE_BACK = 0
 	$scope.FACE_FRONT = 1
