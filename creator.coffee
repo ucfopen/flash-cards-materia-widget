@@ -134,11 +134,11 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 			$scope.showIntroDialog = true
 
 	$scope.initExistingWidget = (title, widget, qset, version, baseUrl) ->
-		$scope.title = title
+		$scope.title = decodeHtmlEntity title
 		importCards qset.items[0].items
 
 	$scope.onSaveClicked = (mode = 'save') ->
-		sanitizedTitle = $sanitize $scope.title
+		sanitizedTitle = $sanitize preSanitize($scope.title)
 
 		# Decide if it is ok to save
 		if sanitizedTitle is ''
