@@ -357,6 +357,10 @@ body {
 		opacity: 1;
 	}
 
+	&.fixed {
+		position: fixed;
+	}
+
 	input {
 		margin-top: 20px;
 		padding: 12px;
