@@ -80,6 +80,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 	$scope.FACE_BACK = 0
 	$scope.FACE_FRONT = 1
+	$scope.MAX_CARDS	= 300
 	$scope.ACTION_CREATE_NEW_CARD = 'create'
 	$scope.ACTION_IMPORT = 'import'
 	$scope.title = "My Flash Cards widget"
@@ -150,7 +151,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	$scope.onQuestionImportComplete = importCards.bind(@)
 
 	$scope.createNewCard = ->
-		if $scope.cards.length < 300
+		if $scope.cards.length < $scope.MAX_CARDS
 			$scope.lastAction = $scope.ACTION_CREATE_NEW_CARD;
 			$scope.addCard()
 			scrollToBottom()
