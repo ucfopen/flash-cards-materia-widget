@@ -45,7 +45,7 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 					</video>'
 				when 'mp3'
 					'<audio controls src="' + url + '"></audio>'
-				when 'jpg', 'png', 'gif', undefined # undefined is for dev materia
+				when 'jpg', 'jpeg', 'png', 'gif', undefined # undefined is for dev materia
 					'<img src="' + url + '">'
 				else null
 
