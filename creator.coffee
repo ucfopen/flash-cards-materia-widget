@@ -80,6 +80,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 	$scope.FACE_BACK = 0
 	$scope.FACE_FRONT = 1
+	$scope.MAX_CARDS = 300
 	$scope.ACTION_CREATE_NEW_CARD = 'create'
 	$scope.ACTION_IMPORT = 'import'
 	$scope.title = "My Flash Cards widget"
@@ -117,7 +118,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		$scope.hideCover()
 
 	$scope.hideCover = ->
-		$scope.showTitleDialog = $scope.showIntroDialog = false
+		$scope.showTitleDialog = $scope.showIntroDialog = $scope.showSizeWarningDialog = false
 
 	$scope.initNewWidget = (widget, baseUrl) ->
 		$scope.$apply ->
@@ -150,9 +151,12 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	$scope.onQuestionImportComplete = importCards.bind(@)
 
 	$scope.createNewCard = ->
-		$scope.lastAction = $scope.ACTION_CREATE_NEW_CARD;
-		$scope.addCard()
-		scrollToBottom()
+		if $scope.cards.length < $scope.MAX_CARDS
+			$scope.lastAction = $scope.ACTION_CREATE_NEW_CARD;
+			$scope.addCard()
+			scrollToBottom()
+		else
+			$scope.showSizeWarningDialog = true;
 
 	$scope.requestMediaImport = (cardFace, callback) ->
 		# Save the card/face that requested the image
