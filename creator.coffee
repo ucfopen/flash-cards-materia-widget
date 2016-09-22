@@ -80,7 +80,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 	$scope.FACE_BACK = 0
 	$scope.FACE_FRONT = 1
-	$scope.MAX_CARDS	= 300
+	$scope.MAX_CARDS = 300
 	$scope.ACTION_CREATE_NEW_CARD = 'create'
 	$scope.ACTION_IMPORT = 'import'
 	$scope.title = "My Flash Cards widget"
