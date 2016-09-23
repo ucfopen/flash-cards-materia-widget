@@ -138,10 +138,9 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		importCards qset.items[0].items
 
 	$scope.onSaveClicked = (mode = 'save') ->
-		sanitizedTitle = $sanitize preSanitize($scope.title)
 
 		# Decide if it is ok to save
-		if sanitizedTitle is ''
+		if $scope.title is ''
 			Materia.CreatorCore.cancelSave 'Please enter a title.'
 			return false
 
@@ -153,7 +152,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 				Materia.CreatorCore.cancelSave 'Please reduce the text of the back of card #'+(i+1)+' to fit the card.'
 				return false
 
-		Materia.CreatorCore.save sanitizedTitle, buildQsetFromCards($scope.cards)
+		Materia.CreatorCore.save $scope.title, buildQsetFromCards($scope.cards)
 
 	$scope.onSaveComplete = -> true
 
