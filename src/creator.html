@@ -85,7 +85,7 @@
 			</li>
 		</ul>
 
-		<div id='backgroundcover' ng-click='hideCover()' ng-class='{ show: showTitleDialog || showIntroDialog }'></div>
+		<div id='backgroundcover' ng-click='hideCover()' ng-class='{ show: showTitleDialog || showIntroDialog || showSizeWarningDialog }'></div>
 		<div class='box intro' ng-class='{ show: showIntroDialog }'>
 			<img src='assets/creatorexample.png'>
 			<h1>Flash Cards</h1>
@@ -102,6 +102,12 @@
 			<input type='text' placeholder='My Flash Cards widget' ng-model='title' ng-enter='hideCover()' focus-me-watch='showTitleDialog'>
 			<input type='submit' value='Done' ng-click='hideCover()'>
 		</div>
+
+		<div class='box title fixed' ng-class='{ show: showSizeWarningDialog }'>
+			<h1>Deck Size Limit Exceeded</h1>
+			<p>You have reached the deck card limit.  If you would like to add another card, you must remove a previous card.</p>
+		</div>
+
 		<div class='arrow_box' ng-show='cards.length == 0 && introCompleted'>
 			<span>Click here to add your first card</span>
 		</div>
