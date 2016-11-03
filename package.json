@@ -44,7 +44,8 @@
     "react-dom": "^0.14.7"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gulp"
   },
   "author": "New Media"
 }
