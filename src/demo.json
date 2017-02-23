@@ -21,6 +21,13 @@
                   "value": 100,
                   "text": "Carl Jung"
                 }
+              ],
+              "assets": [
+                {
+                  "id":"1",
+                  "type":"jpg",
+                  "url":"assets/3.jpg"
+                }
               ]
             },
             {
@@ -36,6 +43,13 @@
                 {
                   "value": 100,
                   "text": "Sigmund Freud"
+                }
+              ],
+              "assets": [
+                {
+                  "id":"2",
+                  "type": "jpg",
+                  "url": "assets/2.jpg"
                 }
               ]
             },
@@ -100,6 +114,13 @@
                 {
                   "value": 100,
                   "text": "Ivan Pavlov"
+                }
+              ],
+              "assets": [
+                {
+                  "id":"3",
+                  "type":"jpg",
+                  "url":"assets/1.jpg"
                 }
               ]
             }
