@@ -35,6 +35,9 @@ Namespace('Flashcards').Engine = do ->
 		Hammer(document.getElementById('gotit')).on 'tap', ->
 			$('.instructions').hide()
 
+		if instance.name is undefined or null
+			instance.name = "Widget Title Goes Here"
+
 		_qset = qset
 		_cacheNodes()
 		_drawBoard(instance.name, qset.items[0].items.length)

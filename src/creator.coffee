@@ -78,8 +78,14 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	WHEEL_DELTA_THRESHOLD = 5
 	mediaImportWatcher = null
 
+	# keep track of any characters that play havoc with $sanitize here to pre-sanitize them
+	PRESANITIZE_CHARACTERS =
+		'>': '&gt;',
+		'<': '&lt;'
+
 	$scope.FACE_BACK = 0
 	$scope.FACE_FRONT = 1
+	$scope.MAX_CARDS = 300
 	$scope.ACTION_CREATE_NEW_CARD = 'create'
 	$scope.ACTION_IMPORT = 'import'
 	$scope.title = "My Flash Cards widget"
@@ -98,8 +104,14 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	$scope.acceptedMediaTypes = ['jpg', 'jpeg', 'gif', 'png', 'mp3']
 
 	decodeHtmlEntity = (str) ->
-		return str.replace /\&#(\d+);/g, (match, char) ->
-			String.fromCharCode char
+		# replace html entities with their non-entity characters
+		str = str.replace /\&#(\d+);/g, (match, char) ->
+			a = String.fromCharCode char
+			return a
+		# replace any specific characters we might have pre-sanitized before saving
+		for k, v of PRESANITIZE_CHARACTERS
+			str = str.replace new RegExp(v, 'g'), k
+		return str
 
 	importCards = (items) ->
 		$scope.lastAction = $scope.ACTION_IMPORT
@@ -109,7 +121,6 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 
 		$scope.$apply()
 
-
 	# View actions
 	$scope.setTitle = ->
 		$scope.title = $scope.introTitle or $scope.title
@@ -117,21 +128,20 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		$scope.hideCover()
 
 	$scope.hideCover = ->
-		$scope.showTitleDialog = $scope.showIntroDialog = false
+		$scope.showTitleDialog = $scope.showIntroDialog = $scope.showSizeWarningDialog = false
 
 	$scope.initNewWidget = (widget, baseUrl) ->
 		$scope.$apply ->
 			$scope.showIntroDialog = true
 
 	$scope.initExistingWidget = (title, widget, qset, version, baseUrl) ->
-		$scope.title = title
+		$scope.title = decodeHtmlEntity title
 		importCards qset.items[0].items
 
 	$scope.onSaveClicked = (mode = 'save') ->
-		sanitizedTitle = $sanitize $scope.title
 
 		# Decide if it is ok to save
-		if sanitizedTitle is ''
+		if $scope.title is ''
 			Materia.CreatorCore.cancelSave 'Please enter a title.'
 			return false
 
@@ -143,16 +153,19 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 				Materia.CreatorCore.cancelSave 'Please reduce the text of the back of card #'+(i+1)+' to fit the card.'
 				return false
 
-		Materia.CreatorCore.save sanitizedTitle, buildQsetFromCards($scope.cards)
+		Materia.CreatorCore.save $scope.title, buildQsetFromCards($scope.cards)
 
 	$scope.onSaveComplete = -> true
 
 	$scope.onQuestionImportComplete = importCards.bind(@)
 
 	$scope.createNewCard = ->
-		$scope.lastAction = $scope.ACTION_CREATE_NEW_CARD;
-		$scope.addCard()
-		scrollToBottom()
+		if $scope.cards.length < $scope.MAX_CARDS
+			$scope.lastAction = $scope.ACTION_CREATE_NEW_CARD;
+			$scope.addCard()
+			scrollToBottom()
+		else
+			$scope.showSizeWarningDialog = true;
 
 	$scope.requestMediaImport = (cardFace, callback) ->
 		# Save the card/face that requested the image
@@ -186,7 +199,6 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		Materia.CreatorCore.getMediaUrl(asset)
 
 	$scope.addCard = (item) ->
-
 		$scope.cards.push
 			id: item?.id || ''
 			front:
@@ -214,8 +226,8 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		items: [{items:items}]
 
 	getQsetItemFromCard = (card) ->
-		sanitizedQuestion = $sanitize card.front.text
-		sanitizedAnswer   = $sanitize card.back.text
+		sanitizedQuestion = $sanitize preSanitize(card.front.text)
+		sanitizedAnswer   = $sanitize preSanitize(card.back.text)
 
 		materiaType: 'question'
 		type: 'QA'
@@ -223,6 +235,12 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 		questions: [{id:card.front.id, text:sanitizedQuestion}]
 		answers: [{id:card.back.id, text:sanitizedAnswer, value:'100'}]
 		assets: [card.front.asset, card.back.asset]
+
+	# replace a specified list of characters with their safe equivalents
+	preSanitize = (text) ->
+		for k, v of PRESANITIZE_CHARACTERS
+			text = text.replace new RegExp(k, 'g'), v
+		return text
 
 	scrollToBottom = ->
 		clearInterval scrollDownTimeoutId
