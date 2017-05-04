@@ -1,0 +1,111 @@
+{
+  "name": "Psychology",
+  "qset": {
+    "version": 1,
+    "data": {
+      "items": [
+        {
+          "name": "Chapter I",
+          "items": [
+            {
+              "materiaType": "question",
+              "id": null,
+              "type": "QA",
+              "questions": [
+                {
+                  "text": "A Swiss psychiatrist and author of \"Psychological Types.\"  Practiced analytical psychology."
+                }
+              ],
+              "answers": [
+                {
+                  "value": 100,
+                  "text": "Carl Jung"
+                }
+              ]
+            },
+            {
+              "materiaType": "question",
+              "id": null,
+              "type": "QA",
+              "questions": [
+                {
+                  "text": "Austrian physician who developed psychoanalysis.  Proposed the concepts of the id, Ego and Super-ego."
+                }
+              ],
+              "answers": [
+                {
+                  "value": 100,
+                  "text": "Sigmund Freud"
+                }
+              ]
+            },
+            {
+              "materiaType": "question",
+              "id": null,
+              "type": "QA",
+              "questions": [
+                {
+                  "text": "An impulsive portion of the human psyche proposed by Freud that operates on the \"pleasure principle.\"\n"
+                }
+              ],
+              "answers": [
+                {
+                  "value": 100,
+                  "text": "id"
+                }
+              ]
+            },
+            {
+              "materiaType": "question",
+              "id": null,
+              "type": "QA",
+              "questions": [
+                {
+                  "text": "The conscious portion of the human psyche proposed by Freud.\n"
+                }
+              ],
+              "answers": [
+                {
+                  "value": 100,
+                  "text": "Ego"
+                }
+              ]
+            },
+            {
+              "materiaType": "question",
+              "id": null,
+              "type": "QA",
+              "questions": [
+                {
+                  "text": "The unconscious portion of the human psyche proposed by Freud.\n"
+                }
+              ],
+              "answers": [
+                {
+                  "value": 100,
+                  "text": "Super-Ego"
+                }
+              ]
+            },
+            {
+              "materiaType": "question",
+              "id": null,
+              "type": "QA",
+              "questions": [
+                {
+                  "text": "Russian physiologist who demonstrated the concept of classical conditioning with a famous experiment that measured the saliva of dogs.\n"
+                }
+              ],
+              "answers": [
+                {
+                  "value": 100,
+                  "text": "Ivan Pavlov"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
