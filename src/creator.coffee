@@ -38,7 +38,7 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 		insertAsset = (assetType, url) ->
 			# Variable used by importAsset directive
 			el    = angular.element(document.getElementById(scope.myId))
-			asset = switch assetType
+			asset = switch assetType.toLowerCase()
 				when 'mp4'
 					'<video width="280" height="140" controls>
 						<source src="' + url + '" type="video/mp4">
