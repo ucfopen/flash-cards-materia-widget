@@ -22,8 +22,6 @@ var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
 var zip = require('gulp-zip');
 
-var configs = require('../../backend/config.json')
-
 var widget = sanitize("flash-cards");
 // When compiling this may be entered as an argument.
 var minify = argv.minify;
@@ -674,6 +672,7 @@ exports["install"] = function(callback)
 
 var fullExport = function(callback)
 {
+	var configs = require('../../backend/config.json')
 	var widgetPackagePostFix = Date.now();
 
 	var totalCommand = "cd " + __dirname.slice(0, -widget.length) +
