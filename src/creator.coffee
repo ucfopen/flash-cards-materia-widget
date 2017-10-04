@@ -38,14 +38,14 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 		insertAsset = (assetType, url) ->
 			# Variable used by importAsset directive
 			el    = angular.element(document.getElementById(scope.myId))
-			asset = switch assetType
+			asset = switch assetType.toLowerCase()
 				when 'mp4'
 					'<video width="280" height="140" controls>
 						<source src="' + url + '" type="video/mp4">
 					</video>'
-				when 'mp3'
+				when 'mp3', 'wav'
 					'<audio controls src="' + url + '"></audio>'
-				when 'jpg', 'png', 'gif', undefined # undefined is for dev materia
+				when 'jpg', 'jpeg', 'png', 'gif', undefined # undefined is for dev materia
 					'<img src="' + url + '">'
 				else null
 
