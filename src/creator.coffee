@@ -43,7 +43,7 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 					'<video width="280" height="140" controls>
 						<source src="' + url + '" type="video/mp4">
 					</video>'
-				when 'mp3'
+				when 'mp3', 'wav'
 					'<audio controls src="' + url + '"></audio>'
 				when 'jpg', 'jpeg', 'png', 'gif', undefined # undefined is for dev materia
 					'<img src="' + url + '">'
