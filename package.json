@@ -1,5 +1,5 @@
 {
-  "name": "flash-cards",
+  "name": "@ucfopen/flash-cards",
   "materia": {
     "cleanName": "flash-cards"
   },
@@ -7,17 +7,12 @@
   "scripts": {
     "start": "webpack-dev-server",
     "build-dev": "webpack",
-    "build": "webpack -p",
-    "pretest": "npm run build-dev",
-    "test": "karma start ./karma.conf.js --no-auto-watch --single-run",
-    "pretest-full": "npm run build-dev",
-    "test-full": "karma start ./karma-full.conf.js",
-    "devkit:git": "cd .. && git clone https://github.com/ucfopen/Materia-Widget-Dev-Kit.git materia-widget-development-kit",
-    "devkit:link": "cd ../materia-widget-development-kit && yarn link && cd - && yarn link materia-widget-development-kit"
+    "build": "webpack -p"
   },
   "devDependencies": {
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
     "materia-widget-development-kit": "v1.2.2"
-  }
+  },
+  "license": "AGPL-3.0"
 }
