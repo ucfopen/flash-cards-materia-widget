@@ -3,7 +3,7 @@
   "materia": {
     "cleanName": "flash-cards"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "start": "webpack-dev-server",
     "build-dev": "webpack",
@@ -12,7 +12,7 @@
   "devDependencies": {
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
-    "materia-widget-development-kit":"2.0.0"
+    "materia-widget-development-kit": "2.0.0"
   },
   "license": "AGPL-3.0"
 }
