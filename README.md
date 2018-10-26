@@ -5,7 +5,7 @@
 
 Flash Cards is a study tool that allows students to interact with a virtual deck of cards to study concepts paired with definitions or images. Flash Cards is designed for use with [Materia](https://github.com/ucfopen/Materia), an open-source platform for interactive course content developed by the University of Central Florida.
 
-![Flash Cards Player](src/_screen-shots/3.png)
+![Flash Cards Player](src/_screen-shots/2.png)
 
 ### Basic Use
 
