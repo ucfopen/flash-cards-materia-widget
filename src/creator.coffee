@@ -8,23 +8,24 @@ Flashcards.directive 'ngEnter', ->
 				scope.$apply -> scope.$eval(attrs.ngEnter)
 				event.preventDefault()
 
-Flashcards.directive 'focusMeWatch', ($timeout, $parse) ->
+Flashcards.directive 'focusMeWatch', ['$timeout', '$parse', ($timeout, $parse) ->
 	link: (scope, element, attrs) ->
 		model = $parse(attrs.focusMe)
 		scope.$watch model, (value) ->
 			if value
 				$timeout -> element[0].focus()
 			value
+]
 
-Flashcards.directive 'focusMe', ($timeout) ->
+Flashcards.directive 'focusMe', ['$timeout', ($timeout) ->
 	scope:
 		condition: "=focusMe"
 	link: (scope, element, attrs) ->
 		if scope.condition
 			$timeout -> element[0].focus()
-
+]
 # Directive that handles all media imports & removals
-Flashcards.directive 'importAsset', ($http, $timeout) ->
+Flashcards.directive 'importAsset', ['$http', '$timeout', ($http, $timeout) ->
 	template: '<div id="{{myId}}"></div><button class="del-asset" aria-label="Delete asset." ng-hide="!cardFace.asset" ng-click="deleteAsset()"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button><button aria-label="Add Asset." ng-hide="cardFace.asset" ng-click="addAsset()" ng-attr-tabindex="{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}"><span class="icon-image"></span><span class="descript add">add image/audio</span></button>'
 	scope:
 		cardFace: '='
@@ -71,9 +72,10 @@ Flashcards.directive 'importAsset', ($http, $timeout) ->
 		# Fallback for older QSets (asset is a string providing the ID, not an object)
 		else if scope.asset.length > 0
 			$timeout -> insertAsset('png', Materia.CreatorCore.getMediaUrl(scope.asset))
+]
 
 # Set the controller for the scope of the document body.
-Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
+Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', ($scope, $sanitize) ->
 	SCROLL_DURATION_MS = 500
 	WHEEL_DELTA_THRESHOLD = 5
 	mediaImportWatcher = null
@@ -257,3 +259,4 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ($scope, $sanitize) ->
 	window.addEventListener 'mousewheel', clearScroll.bind(@)
 
 	Materia.CreatorCore.start $scope
+]
