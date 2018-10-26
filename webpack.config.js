@@ -4,10 +4,14 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 let srcPath = path.join(process.cwd(), 'src')
 let outputPath = path.join(process.cwd(), 'build')
 
+// load default copyList to which we'll append new items to copy
+let defaultCopy = require('materia-widget-development-kit/webpack-widget').getDefaultCopyList()
+
 // load the reusable legacy webpack config from materia-widget-dev
 let webpackConfig = require('materia-widget-development-kit/webpack-widget').getLegacyWidgetBuildConfig({
 	//pass in extra files for webpack to copy
-	preCopy: [
+	copyList: [
+		...defaultCopy,
 		{
 			from: `${srcPath}/hammer.min.js`,
 			to: outputPath,
