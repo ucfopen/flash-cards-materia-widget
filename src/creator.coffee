@@ -174,6 +174,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', ($scope, 
 		$scope.faceWaitingForMedia = cardFace
 		mediaImportWatcher() if mediaImportWatcher?
 		mediaImportWatcher = $scope.$watch 'mediaImport.assetUrl', (newValue, oldValue) ->
+
 			return if newValue == oldValue # do nothing
 			callback($scope.mediaImport.assetType, $scope.mediaImport.assetUrl)
 

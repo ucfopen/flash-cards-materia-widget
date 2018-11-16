@@ -4,7 +4,7 @@
 		&.rotated {
 			-ms-transform : none !important;
 			.front { -ms-transform-style : preserve-3d; -ms-transform : rotateY(180deg) !important; }
-			.back  { -ms-transform-style : preserve-3d; -ms-transform : rotateY(  0deg) !important; } 
+			.back  { -ms-transform-style : preserve-3d; -ms-transform : rotateY(  0deg) !important; }
 		}
 	}
 }

@@ -1,68 +1,73 @@
 const path = require('path')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const srcPath = path.join(process.cwd(), 'src') + path.sep
+const outputPath = path.join(process.cwd(), 'build')
+const widgetWebpack = require('materia-widget-development-kit/webpack-widget')
+const ModernizrWebpackPlugin = require('modernizr-webpack-plugin');
+const entries = widgetWebpack.getDefaultEntries()
+const copy = widgetWebpack.getDefaultCopyList()
 
-let srcPath = path.join(process.cwd(), 'src')
-let outputPath = path.join(process.cwd(), 'build')
-
-// load default copyList to which we'll append new items to copy
-let defaultCopy = require('materia-widget-development-kit/webpack-widget').getDefaultCopyList()
-
-// load the reusable legacy webpack config from materia-widget-dev
-let webpackConfig = require('materia-widget-development-kit/webpack-widget').getLegacyWidgetBuildConfig({
-	//pass in extra files for webpack to copy
-	copyList: [
-		...defaultCopy,
-		{
-			from: `${srcPath}/hammer.min.js`,
-			to: outputPath,
-		},
-		{
-			from: `${srcPath}/yepnope.min.js`,
-			to: outputPath,
-		},
-		{
-			from: `${srcPath}/konami.js`,
-			to: outputPath,
-		}
-	]
-})
-
-webpackConfig.entry['assets/js/atari.js'] = [path.join(__dirname, 'src', 'assets/js/atari.coffee')]
-webpackConfig.entry['assets/css/atari.css'] = [path.join(__dirname, 'src', 'assets/css/atari.less')]
-webpackConfig.entry['assets/css/IE.css'] = [path.join(__dirname, 'src', 'assets/css/IE.less')]
-
-webpackConfig.entry['player.css'] = [
-	path.join(__dirname, 'src', 'player.html'),
-	path.join(__dirname, 'src', 'player.less')
+//pass in extra files for webpack to copy
+const newCopy = [
+	...copy,
+	{
+		from: path.join(__dirname, 'node_modules', 'hammerjs', 'hammer.min.js'),
+		to: path.join(outputPath, 'assets', 'js', 'hammer.js'),
+	},
+	{
+		from: path.join(__dirname, 'node_modules', 'konami', 'konami.js'),
+		to: path.join(outputPath, 'assets', 'js', 'konami.js'),
+	},
+	{
+		from: path.join(__dirname, 'node_modules', 'timbre', 'timbre.dev.js'),
+		to: path.join(outputPath, 'assets', 'js', 'timbre.js'),
+	}
 ]
 
-webpackConfig.module.rules.push({
-	test: /\.less$/i,
-	exclude: /node_modules/,
-	loader: ExtractTextPlugin.extract({
-		use: [
-			'raw-loader',
-			{
-				// postcss-loader is needed to run autoprefixer
-				loader: 'postcss-loader',
-				options: {
-					// add autoprefixer, tell it what to prefix
-					plugins: [require('autoprefixer')({browsers: [
-						'Explorer >= 11',
-						'last 3 Chrome versions',
-						'last 3 ChromeAndroid versions',
-						'last 3 Android versions',
-						'last 3 Firefox versions',
-						'last 3 FirefoxAndroid versions',
-						'last 3 iOS versions',
-						'last 3 Safari versions',
-						'last 3 Edge versions'
-					]})]
-				}
-			},
-			'less-loader'
-		]
-	})
-})
+entries['assets/js/atari.js'] = [srcPath+'atari.coffee']
+entries['assets/css/atari.css'] = [srcPath+'atari.scss']
+entries['assets/css/IE.css'] = [srcPath+'IE.scss']
+// options for the build
+let options = {
+	entries: entries,
+	copyList: newCopy,
+}
+
+const webpackConfig = widgetWebpack.getLegacyWidgetBuildConfig(options)
+
+const modernizrConfig = {
+	noChunk: true,
+	filename: 'assets/js/modernizr.js',
+	'options':[
+		'domprefixes',
+		'prefixes',
+		"testAllProps",
+		"testProp",
+		"testStyles",
+		"teststyles",
+		"html5shiv",
+		"load"
+	],
+	'feature-detects': [
+		"touchevents",
+		"svg/inline",
+		"svg",
+		"svg/clippaths",
+		'css/animations',
+		'css/transforms',
+		'css/transforms3d',
+		'css/transitions',
+		'css/generatedcontent',
+		'css/opacity',
+		'css/rgba'
+	],
+	minify: {
+		output: {
+			comments: true,
+			beautify: false
+		}
+	}
+}
+
+webpackConfig.plugins.push(new ModernizrWebpackPlugin(modernizrConfig))
 
 module.exports = webpackConfig
