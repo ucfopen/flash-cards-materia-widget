@@ -59,17 +59,17 @@
 #icon-alert          { content : "\e006"; }
 
 // Color palette.
-@a : #584B4B;
-@b : #44382A;
-@c : #6B6263;
-@d : #543F3D;
-@e : #A45B5B;
-@f : #87735F;
+$a : #584B4B;
+$b : #44382A;
+$c : #6B6263;
+$d : #543F3D;
+$e : #A45B5B;
+$f : #87735F;
 
 body {
 	position         : absolute;
 	color            : #FFF;
-	background-color : @a !important;
+	background-color : $a !important;
 	padding          : 0;
 	margin           : 0;
 	width            : 800px;
@@ -111,7 +111,7 @@ body {
 		&.shown { opacity : 1; }
 		.box {
 			position         : absolute;
-			background-color : @e;
+			background-color : $e;
 			padding          : 5px 10px;
 			border-radius    : 5px;
 		}
@@ -122,11 +122,11 @@ body {
 				position : absolute;
 				top      : 195px;
 				path {
-					stroke       : @e;
+					stroke       : $e;
 					stroke-width : 3;
 				}
 				circle {
-					fill         : @e;
+					fill         : $e;
 					stroke-width : 0;
 				}
 			}

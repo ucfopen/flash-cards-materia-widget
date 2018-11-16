@@ -9,10 +9,14 @@
     "build-dev": "webpack",
     "build": "webpack -p"
   },
-  "devDependencies": {
-    "less": "^3.8.1",
-    "less-loader": "^4.1.0",
-    "materia-widget-development-kit": "2.0.0"
+  "dependencies": {
+    "hammerjs": "2.0.6",
+    "konami": "^1.6.2",
+    "materia-widget-development-kit": "^2.0.0",
+    "modernizr-webpack-plugin": "^1.0.7",
+    "timbre": "14.11.25"
   },
-  "license": "AGPL-3.0"
+  "license": "AGPL-3.0",
+  "description": "Flash Cards is a study tool that allows students to interact with a virtual deck of cards to study concepts paired with definitions or images.",
+  "author": "University of Central Florida, Center for Distributed Learning"
 }
