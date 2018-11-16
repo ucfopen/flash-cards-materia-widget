@@ -622,6 +622,18 @@ body {
 								max-height: 200px;
 							}
 						}
+						iframe {
+							max-width : 100%;
+							&.title, &.description { display : none; }
+							&.no-text {
+								margin-top: 8%;
+								max-height : 300px;
+							}
+							&.mixed {
+								margin-top : 8%;
+								max-height: 250px;
+							}
+						}
 					}
 				}
 				.front { z-index : 2;

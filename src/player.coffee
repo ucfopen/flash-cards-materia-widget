@@ -167,8 +167,8 @@ Namespace('Flashcards').Engine = do ->
 					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
 				else if data[i].assets[1].type == 'mp3' || data[i].assets[1].type == 'wav' || data[i].assets[1].type == 'aif'
 					_card.node.children[0].children[1].innerHTML = '<audio controls class="'+_frontClass+'" src="'+_card.FrontURL+'">'
-				else if data[i].assets[1].type == 'mp4' || data[i].assets[1].type == 'mpeg'
-					_card.node.children[0].children[1].innerHTML = '<video controls class="'+_frontClass+'" src="'+_card.FrontURL+'">'
+				else if data[i].assets[1].type == 'link'
+					_card.node.children[0].children[1].innerHTML = '<iframe class="'+_frontClass+'" src="' + _card.FrontURL + '" frameborder="0" allowfullscreen></iframe>'
 
 			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'" '+backStyleStr+' ">'+_card.BackText+'</p>'
 			if _card.BackURL isnt '-1'
@@ -178,8 +178,8 @@ Namespace('Flashcards').Engine = do ->
 					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
 				else if data[i].assets[0].type == 'mp3' || data[i].assets[0].type == 'wav' || data[i].assets[0].type == 'aif'
 					_card.node.children[1].children[1].innerHTML = '<audio controls class="'+_backClass+'" src="'+_card.BackURL+'">'
-				else if data[i].assets[0].type == 'mp4' || data[i].assets[0].type == 'mpeg'
-					_card.node.children[1].children[1].innerHTML = '<video controls class="'+_backClass+'" src="'+_card.BackURL+'">'
+				else if data[i].assets[0].type == 'link'
+					_card.node.children[1].children[1].innerHTML = '<iframe class="'+_backClass+'" src="' + _card.BackURL + '" frameborder="0" allowfullscreen></iframe>'
 
 	# Places cards in their correct positions within the gameboard and gives them a specific rotation.
 	# @face : Specifies whether or not to rotate the card when placing them in their positions.
@@ -242,22 +242,22 @@ Namespace('Flashcards').Engine = do ->
 
 			$('#icon-left').on    'mouseup', ->
 				_leftSelected()
-				_killAudio()
+				_killAudioVideo()
 			$('#icon-right').on   'mouseup', ->
 				_rightSelected()
-				_killAudio()
+				_killAudioVideo()
 			$('#icon-help').on    'mouseup', _toggleOverlay
 			$('#icon-restore').on 'mouseup', ->
-				_killAudio()
+				_killAudioVideo()
 				_unDiscardAll()
 			$('#icon-finish').on  'mouseup', ->
-				_killAudio()
+				_killAudioVideo()
 				_unDiscardAll()
 			$('#icon-rotate').on  'mouseup', ->
-				_killAudio()
+				_killAudioVideo()
 				_rotateCards(if rotation is '' then 'back')
 			$('#icon-shuffle').on 'mouseup', ->
-				_killAudio()
+				_killAudioVideo()
 				_shuffleCards()
 
 			$('audio').on    'mouseup', (e)->
@@ -266,13 +266,13 @@ Namespace('Flashcards').Engine = do ->
 
 			$('.flashcard').on    'mouseup', ->
 				# Shuts off all audio players when card is flipped.
-				_killAudio()
+				_killAudioVideo()
 				if _isDiscarded(this) then _unDiscard()
 				else _flipCard()
 
 			$('.remove-button').on 'mouseup', (e) ->
 				# Shuts off all audio players when card is discarded.
-				_killAudio()
+				_killAudioVideo()
 				_discard()
 				e.stopPropagation()
 
@@ -288,7 +288,8 @@ Namespace('Flashcards').Engine = do ->
 				when 82     then _rotateCards(if rotation is '' then 'back') # R key.
 				when 83     then _shuffleCards()                             # S key.
 				when 85     then _unDiscardAll()                             # U key.
-			_killAudio()
+
+			_killAudioVideo()
 			e.preventDefault()
 
 	_leftSelected = ()  -> if _canMove 'left'  then _shiftCards 'right'
@@ -336,10 +337,16 @@ Namespace('Flashcards').Engine = do ->
 			else
 				Flashcards.Card[currentCardId].node.className = 'flashcard rotated'
 
-	_killAudio = () ->
+	_killAudioVideo = () ->
 		$('audio').each ->
 			if !@paused
 				@pause()
+			return
+
+		$('iframe').each ->
+			source = this.src
+			this.src = ''
+			this.src = source
 			return
 
 	# Shuffles the entire deck.
