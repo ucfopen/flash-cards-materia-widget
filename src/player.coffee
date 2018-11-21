@@ -60,12 +60,17 @@ Namespace('Flashcards').Engine = do ->
 	_easterEggStart = () ->
 		yepnope(
 			load : [
-				'css!//fonts.googleapis.com/css?family=Press+Start+2P',
 				'assets/js/atari.js',
 				'assets/js/timbre.js',
 				'assets/css/atari.css'
 			]
 			complete : () ->
+				font = document.createElement('link')
+				font.setAttribute('rel', 'stylesheet')
+				font.setAttribute('type', 'text/css')
+				font.setAttribute('href', 'https://fonts.googleapis.com/css?family=Press+Start+2P')
+				document.getElementsByTagName('head')[0].appendChild(font)
+
 				atari = true
 				Flashcards.Atari.start()
 		)

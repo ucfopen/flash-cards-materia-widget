@@ -38,8 +38,8 @@ Flashcards.directive 'importAsset', ['$http', '$timeout', ($http, $timeout) ->
 
 		insertAsset = (assetType, url) ->
 			# Variable used by importAsset directive
-			el    = angular.element(document.getElementById(scope.myId))
-			debugger
+			el = angular.element(document.getElementById(scope.myId))
+
 			asset = switch assetType.toLowerCase()
 				when 'link', 'youtube', 'vimeo'
 					'<iframe width="49%" height="140" src="' + url + '" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>'
