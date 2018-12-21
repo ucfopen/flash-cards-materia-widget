@@ -26,7 +26,7 @@ Flashcards.directive 'focusMe', ['$timeout', ($timeout) ->
 ]
 # Directive that handles all media imports & removals
 Flashcards.directive 'importAsset', ['$http', '$timeout', ($http, $timeout) ->
-	template: '<div id="{{myId}}"></div><button class="del-asset" aria-label="Delete asset." ng-hide="!cardFace.asset" ng-click="deleteAsset()"><span class="icon-close"></span><span class="descript del">remove image/audio</span></button><button aria-label="Add Asset." ng-hide="cardFace.asset" ng-click="addAsset()" ng-attr-tabindex="{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}"><span class="icon-image"></span><span class="descript add">add image/audio</span></button>'
+	template: '<div id="{{myId}}"></div><button class="del-asset" aria-label="Remove media" ng-hide="!cardFace.asset" ng-click="deleteAsset()"><span class="icon-close"></span><span class="descript del">remove media</span></button><button aria-label="Add media." ng-hide="cardFace.asset" ng-click="addAsset()" ng-attr-tabindex="{{startingTabIndex + 1 + (face == "front" ? 0 : 2)}}"><span class="icon-image"></span><span class="descript add">add media</span></button>'
 	scope:
 		cardFace: '='
 		mediaImport: '='
@@ -38,15 +38,18 @@ Flashcards.directive 'importAsset', ['$http', '$timeout', ($http, $timeout) ->
 
 		insertAsset = (assetType, url) ->
 			# Variable used by importAsset directive
-			el    = angular.element(document.getElementById(scope.myId))
+			el = angular.element(document.getElementById(scope.myId))
+
 			asset = switch assetType.toLowerCase()
+				when 'link', 'youtube', 'vimeo'
+					'<iframe width="49%" height="140" src="' + url + '" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>'
 				when 'mp4'
 					'<video width="280" height="140" controls>
 						<source src="' + url + '" type="video/mp4">
 					</video>'
 				when 'mp3', 'wav'
 					'<audio controls src="' + url + '"></audio>'
-				when 'jpg', 'jpeg', 'png', 'gif', undefined # undefined is for dev materia
+				when 'jpg', 'jpeg', 'png', 'gif'
 					'<img src="' + url + '">'
 				else null
 
@@ -103,7 +106,7 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', ($scope, 
 		assetType: null
 		assetUrl: null
 
-	$scope.acceptedMediaTypes = ['jpg', 'jpeg', 'gif', 'png', 'mp3']
+	$scope.acceptedMediaTypes = ['image', 'audio', 'video']
 
 	decodeHtmlEntity = (str) ->
 		# replace html entities with their non-entity characters
@@ -181,19 +184,22 @@ Flashcards.controller 'FlashcardsCreatorCtrl', ['$scope', '$sanitize', ($scope, 
 		Materia.CreatorCore.showMediaImporter($scope.acceptedMediaTypes)
 
 	$scope.onMediaImportComplete = (media) ->
-		if media?[0]?.id?
-			$scope.faceWaitingForMedia.asset =
-				id: media[0].id
-				type: media[0].type
-				url: $scope.getMediaUrl(media[0].id)
-		else
+		if ! media?[0]?.id?
 			$scope.faceWaitingForMedia = null
 			return
 
+		m = media[0]
+
+		$scope.faceWaitingForMedia.asset =
+			id: m.id
+			type: m.type
+			url: (if m.remote_url? then m.remote_url else $scope.getMediaUrl(m.id))
+
+
 		# Variables used by importAsset directive
-		$scope.mediaImport.mediaId = media[0].id
-		$scope.mediaImport.assetType = media[0].type
-		$scope.mediaImport.assetUrl = $scope.getMediaUrl(media[0].id)
+		$scope.mediaImport.mediaId = m.id
+		$scope.mediaImport.assetType = m.type
+		$scope.mediaImport.assetUrl = $scope.faceWaitingForMedia.asset.url
 
 		$scope.$apply()
 
