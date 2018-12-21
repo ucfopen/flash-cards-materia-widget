@@ -16,10 +16,6 @@ const newCopy = [
 	{
 		from: path.join(__dirname, 'node_modules', 'konami', 'konami.js'),
 		to: path.join(outputPath, 'assets', 'js', 'konami.js'),
-	},
-	{
-		from: path.join(__dirname, 'node_modules', 'timbre', 'timbre.dev.js'),
-		to: path.join(outputPath, 'assets', 'js', 'timbre.js'),
 	}
 ]
 

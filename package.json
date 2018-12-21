@@ -15,8 +15,7 @@
     "hammerjs": "2.0.6",
     "konami": "^1.6.2",
     "materia-widget-development-kit": "2.2.1",
-    "modernizr-webpack-plugin": "^1.0.7",
-    "timbre": "14.11.25"
+    "modernizr-webpack-plugin": "^1.0.7"
   },
   "license": "AGPL-3.0",
   "description": "Flash Cards is a study tool that allows students to interact with a virtual deck of cards to study concepts paired with definitions or images.",
