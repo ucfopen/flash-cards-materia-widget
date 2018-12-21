@@ -34,12 +34,11 @@ const modernizrConfig = {
 	noChunk: true,
 	filename: 'assets/js/modernizr.js',
 	'options':[
-		'domprefixes',
+		'domPrefixes',
 		'prefixes',
 		"testAllProps",
 		"testProp",
 		"testStyles",
-		"teststyles",
 		"html5shiv",
 		"load"
 	],
