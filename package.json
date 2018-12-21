@@ -7,7 +7,9 @@
   "scripts": {
     "start": "webpack-dev-server",
     "build-dev": "webpack",
-    "build": "webpack -p"
+    "build": "webpack -p",
+    "test": "echo 'tests not implemented'",
+    "test-ci": "echo 'tests not implemented'"
   },
   "dependencies": {
     "hammerjs": "2.0.6",
