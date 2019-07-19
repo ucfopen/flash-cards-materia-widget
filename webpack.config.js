@@ -2,47 +2,76 @@ const fs = require('fs')
 const marked = require('meta-marked')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
-const srcPath = path.join(process.cwd(), 'src') + path.sep
 const outputPath = path.join(process.cwd(), 'build')
 
 const widgetWebpack = require('materia-widget-development-kit/webpack-widget')
 const ModernizrWebpackPlugin = require('modernizr-webpack-plugin');
-const entries = widgetWebpack.getDefaultEntries()
 const copy = widgetWebpack.getDefaultCopyList()
 
 //pass in extra files for webpack to copy
-const newCopy = copy.concat([
+const customCopy = copy.concat([
 	{
 		from: path.join(__dirname, 'node_modules', 'hammerjs', 'hammer.min.js'),
-		to: path.join(outputPath, 'assets', 'js', 'hammer.js'),
+		to: outputPath,
 	},
 	{
 		from: path.join(__dirname, 'node_modules', 'konami', 'konami.js'),
 		to: path.join(outputPath, 'assets', 'js', 'konami.js'),
 	},
 	{
-		from: path.join(__dirname, 'src', '_helper-docs', 'assets'),
+		from: path.join(__dirname, 'src', '_guides', 'assets'),
 		to: path.join(outputPath, 'guides', 'assets'),
 		toType: 'dir'
-	}
+	},
 ])
 
-entries['assets/js/atari.js'] = [srcPath+'atari.coffee']
-entries['assets/css/atari.css'] = [srcPath+'atari.scss']
-entries['assets/css/IE.css'] = [srcPath+'IE.scss']
-entries['guides/guideStyles.css'] = [srcPath+'_helper-docs/guideStyles.scss']
+const entries = {
+	'creator.js': [
+		path.join(__dirname, 'src', 'creator.coffee')
+	],
+	'player.js': [
+		path.join(__dirname, 'src', 'player.coffee')
+	],
+	'creator.css': [
+		path.join(__dirname, 'src', 'creator.html'),
+		path.join(__dirname, 'src', 'creator.scss')
+	],
+	'player.css': [
+		path.join(__dirname, 'src', 'player.html'),
+		path.join(__dirname, 'src', 'player.scss')
+	],
+	'assets/js/atari.js': [
+		path.join(__dirname, 'src', 'atari.coffee')
+	],
+	'assets/css/atari.css': [
+		path.join(__dirname, 'src', 'atari.scss')
+	],
+	'assets/css/IE.css': [
+		path.join(__dirname, 'src', 'IE.scss')
+	],
+	'guides/guideStyles.css': [
+		path.join(__dirname, 'src', '_guides', 'guideStyles.scss')
+	],
+	'guides/player.temp.html': [
+		path.join(__dirname, 'src', '_guides', 'player.md')
+	],
+	'guides/creator.temp.html': [
+		path.join(__dirname, 'src', '_guides', 'creator.md')
+	]
+}
+
 // options for the build
 let options = {
 	entries: entries,
-	copyList: newCopy,
+	copyList: customCopy,
 }
 
 const generateHelperPlugin = name => {
-	const file = fs.readFileSync(path.join(__dirname, 'src', '_helper-docs', name+'.md'), 'utf8')
+	const file = fs.readFileSync(path.join(__dirname, 'src', '_guides', name+'.md'), 'utf8')
 	const content = marked(file)
 
 	return new HtmlWebpackPlugin({
-		template: path.join(__dirname, 'src', '_helper-docs', 'helperTemplate'),
+		template: path.join(__dirname, 'src', '_guides', 'helperTemplate'),
 		filename: path.join(outputPath, 'guides', name+'.html'),
 		title: name.charAt(0).toUpperCase() + name.slice(1),
 		chunks: ['guides'],
