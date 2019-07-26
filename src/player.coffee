@@ -54,8 +54,6 @@ Namespace('Flashcards').Engine = do ->
 		# If the user has stumbled upon the meaning of life, give them atari mode.
 		if Math.floor(Math.random()*100) is 42 then _easterEggStart()
 
-		Materia.Score.submitUnscorableForParticipation()
-
 	_browserSupportsSvg = ->
 		typeof SVGRect != "undefined"
 
