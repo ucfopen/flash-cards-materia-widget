@@ -1,7 +1,6 @@
 ---
 general:
   name: Flash Cards
-  group: Materia
   height: 516
   width: 800
   in_catalog: Yes
