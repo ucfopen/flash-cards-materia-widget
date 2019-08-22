@@ -55,7 +55,7 @@ Namespace('Flashcards').Engine = do ->
 		if Math.floor(Math.random()*100) is 42 then _easterEggStart()
 
 		# Send log for partipation score
-		Materia.Score.submitUnscorableForParticipation()
+		Materia.Score.submitScoreForParticipation()
 		# Force the enginecore to send the logs over (instead of waiting 20-30 seconds)
 		Materia.Engine.sendPendingLogs()
 
