@@ -4187,19 +4187,19 @@ marked@^0.6.0:
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.6.3.tgz#79babad78af638ba4d522a9e715cdfdd2429e946"
   integrity sha512-Fqa7eq+UaxfMriqzYLayfqAE40WN03jf+zHjT18/uXNuzjq3TY0XTbrAoPeqSJrAmPz11VuUA+kBPYOhHt9oOQ==
 
-materia-server-client-assets@2.1.0-alpha1:
-  version "2.1.0-alpha1"
-  resolved "https://registry.yarnpkg.com/materia-server-client-assets/-/materia-server-client-assets-2.1.0-alpha1.tgz#f1a9c73b1fec831e0bef822c9f1d1ac9af285da8"
-  integrity sha512-dRQCzxJfW/rrEmMS/+ko9mM3R3pfoMFJoqFlCjz55bco3g7JCtgQKY8H6cZY+D99+F1KM0EGbq7Ad/mF79/v4A==
+materia-server-client-assets@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/materia-server-client-assets/-/materia-server-client-assets-2.1.0.tgz#8e10383296804fab2b7c2b25358ede26e9e9024c"
+  integrity sha512-osOIJ7xlf5cQJwOxA6JUD499gs3arjDTB7vKTUM68icg6gDq+kmhfFGE+XcBFQuoI/HTcqN9JR/TsA+Z5n5Rqg==
   dependencies:
     angular "1.6.9"
     js-snakecase "^1.2.0"
     ngmodal ucfcdl/ngModal#v1.2.2
 
-materia-widget-development-kit@^2.5.0-alpha3:
-  version "2.5.0-alpha3"
-  resolved "https://registry.yarnpkg.com/materia-widget-development-kit/-/materia-widget-development-kit-2.5.0-alpha3.tgz#d7efe7bda4df11a378a354851416defc93918c88"
-  integrity sha512-qOak9fRpdUuRulYJ8BkG0Eq6FNbQjyUTHKcXunsMKPUpJdwAlZQEt+JfNPffcHsUeiKvUHWI4Jhfy2nL0X/keA==
+materia-widget-development-kit@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/materia-widget-development-kit/-/materia-widget-development-kit-2.5.0.tgz#0cc4d82854abf21286c18367cbede374529385b6"
+  integrity sha512-nvYBA/ZBm4SXpLWo6cccm0EDplmBAkcY4c9mjWCuY2BUwJvBgxvA33cKscYg0ktmI3dolPCYMXnb5CERx4239g==
   dependencies:
     "@babel/core" "^7.4.5"
     "@babel/preset-env" "^7.4.5"
@@ -4221,7 +4221,7 @@ materia-widget-development-kit@^2.5.0-alpha3:
     html-loader "^0.5.5"
     html-webpack-plugin "^2.29.0"
     markdown-loader "^5.0.0"
-    materia-server-client-assets "2.1.0-alpha1"
+    materia-server-client-assets "2.1.0"
     node-sass "^4.12.0"
     postcss-loader "2.0.6"
     prettier "^1.11.1"
@@ -4565,7 +4565,7 @@ next-tick@^1.0.0:
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
   integrity sha1-yobR/ogoFpsBICCOPchCS524NCw=
 
-ngmodal@ucfcdl/ngModal#v1.2.2:
+"ngmodal@github:ucfcdl/ngModal#v1.2.2":
   version "1.2.2"
   resolved "https://codeload.github.com/ucfcdl/ngModal/tar.gz/6abad982bdb8f258ffcdc20316a907c2292399d2"
 
