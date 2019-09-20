@@ -1,7 +1,6 @@
 ---
 general:
   name: Flash Cards
-  group: Materia
   height: 516
   width: 800
   in_catalog: Yes
@@ -14,6 +13,8 @@ general:
 files:
   creator: creator.html
   player: player.html
+  creator_guide: guides/creator.html
+  player_guide: guides/player.html
   flash_version: 10
 score:
   is_scorable: No
