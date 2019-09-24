@@ -10,6 +10,7 @@ Flash cards is a study tool using a virtual deck of two-sided cards.
 4. Restore all discarded cards back into the deck
 5. Flip over all cards in the deck
 6. Shuffle all cards in the deck
+7. Pagination controls
 
 ## Details ##
 
