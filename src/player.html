@@ -32,54 +32,79 @@
 			<p class="load">Loading User Data from file:- SHELLCFG/DAT   <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
 		</section>
 
-		<section id="game">
-			<section id="atari-bg" aria-hidden="true"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></section>
+		<div id="instructions" class="instructions">
+			<div class="dialog" role="dialog" aria-describedby="tutorial-desc" aria-labelledby="tutorial-header">
+				<h2 id="tutorial-header">Studying with Flash Cards</h2>
+				<p id="tutorial-desc">This is a virtual deck of two-sided cards that you can use to help you study.</p>
+				<figure>
+					<img src="assets/intro.svg" alt="Locations of controls. Press H after clicking Got It! to learn key bindings.">
+					<ul>
+						<li>Click cards to flip them - See if you guessed the correct answer.</li>
+						<li>Discard a card when you feel confident that you know it.</li>
+						<li>Shuffle the deck or flip all the cards and try to guess the other side.</li>
+					</ul>
+				</figure>
+				<button id="gotit" class="gotit" tabindex="0" onclick="Namespace('Flashcards').Engine.hideInstructions()">Got it!</button>
+			</div>
+		</div>
 
-			<section id="overlay" class="overlay" aria-hidden="true">
-				<div class="arr box" id="left-arr">previous card</div>
-				<svg class="arr" id="left-arr">
+		<div class="error-notice-container">
+			<div class="error-notice">
+				<h1>This widget uses features that your browser doesn't support</h1>
+				<h2>Upgrade your browser to use this widget</h2>
+			</div>
+		</div>
+
+		<section id="game">
+			<section id="atari-bg"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></section>
+
+			<div id="icon-help" role="button" class="icon" aria-label="Press H for help"></div>
+
+			<section id="overlay" class="overlay">
+				<div class="arr box" id="left-arr">previous card - A</div tabindex="0">
+				<svg class="arr" id="left-arr" aria-hidden="true">
 					<path d="M40 0 L20 65 Z"></path>
 					<circle cx="20" cy="65" r="7"></circle>
 				</svg>
 
-				<div class="arr box" id="right-arr">next card</div>
-				<svg class="arr" id="right-arr">
+				<div class="arr box" id="right-arr" tabindex="0">next card - D</div>
+				<svg class="arr" id="right-arr" aria-hidden="true">
 					<path d="M10 0 L30 65 Z"></path>
 					<circle cx="30" cy="65" r="7"></circle>
 				</svg>
 
-				<div id="flip" class="box">flip card</div>
-				<svg class="arr" id="mid-arr">
+				<div id="flip" class="box" tabindex="0">flip card - F</div>
+				<svg class="arr" id="mid-arr" aria-hidden="true">
 					<path d="M25 0 L25 65 Z"></path>
 					<circle cx="25" cy="65" r="7"></circle>
 				</svg>
 
-				<div id="discard" class="box">discard</div>
-				<svg class="arr" id="right-arr-2">
+				<div id="discard" class="box" tabindex="0">discard - X</div>
+				<svg class="arr" id="right-arr-2" aria-hidden="true">
 					<path d="M30 0 L10 48 Z"></path>
 					<circle cx="10" cy="48" r="7"></circle>
 				</svg>
 
-				<div id="rotate" class="box">rotate cards</div>
-				<svg class="arr" id="bottom-mid-arr">
+				<div id="rotate" class="box" tabindex="0">rotate cards - R</div>
+				<svg class="arr" id="bottom-mid-arr" aria-hidden="true">
 					<path d="M25 0 L25 45 Z"></path>
 					<circle cx="25" cy="45" r="7"></circle>
 				</svg>
 
-				<div id="shuffle" class="box">shuffle cards</div>
-				<svg class="arr" id="bottom-right-arr">
+				<div id="shuffle" class="box" tabindex="0">shuffle cards - S</div>
+				<svg class="arr" id="bottom-right-arr" aria-hidden="true">
 					<path d="M30 0 L10 25 Z"></path>
 					<circle cx="10" cy="25" r="7"></circle>
 				</svg>
 
-				<div id="restore-one" class="box">restore last discard</div>
-				<svg class="arr" id="bottom-horiz-arr">
-					<path d="M5 20 L40 20 Z"></path>
+				<div id="restore-one" class="box" tabindex="0">restore last discard - W</div>
+				<svg class="arr" id="bottom-horiz-arr" aria-hidden="true">
+					<path d="M40 20 L25 20 Z"></path>
 					<circle cx="40" cy="20" r="7"></circle>
 				</svg>
 
-				<div id="restore-all" class="box">restore deck</div>
-				<svg class="arr" id="bottom-left-arr">
+				<div id="restore-all" class="box" tabindex="0">restore deck - U</div>
+				<svg class="arr" id="bottom-left-arr" aria-hidden="true">
 					<path d="M5 0 L35 25 Z"></path>
 					<circle cx="35" cy="25" r="7"></circle>
 				</svg>
@@ -112,32 +137,7 @@
 				<div aria-label="Shuffle cards." id="icon-shuffle" class="icon"></div>
 
 			</section>
-
-			<div id="icon-help" class="icon" aria-hidden="true"></div>
 		</section>
-
-		<div id="instructions" class="instructions">
-			<div class="dialog">
-				<h2>Studying with Flash Cards</h2>
-				<p>This is a virtual deck of two-sided cards that you can use to help you study.</p>
-				<figure>
-					<img src="assets/intro.svg">
-					<ul>
-						<li>Click cards to flip them - See if you guessed the correct answer.</li>
-						<li>Discard a card when you feel confident that you know it.</li>
-						<li>Shuffle the deck or flip all the cards and try to guess the other side.</li>
-					</ul>
-				</figure>
-				<div id="gotit" class="gotit">Got it!</div>
-			</div>
-		</div>
-
-		<div class="error-notice-container">
-			<div class="error-notice">
-				<h1>This widget uses features that your browser doesn't support</h1>
-				<h2>Upgrade your browser to use this widget</h2>
-			</div>
-		</div>
 
 	</body>
 

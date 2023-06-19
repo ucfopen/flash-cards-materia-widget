@@ -28,12 +28,13 @@ Namespace('Flashcards').Engine = do ->
 
 	# Called by Materia.Engine when widget Engine should start the UI.
 	start = (instance, qset, version = '1') ->
+
+		$('#game').hide()
+		$('#overlay').hide()
+
 		if not _browserSupportsSvg()
 			$('.error-notice-container').show()
 			return
-
-		Hammer(document.getElementById('gotit')).on 'tap', ->
-			$('.instructions').hide()
 
 		if instance.name is undefined or null
 			instance.name = "Widget Title Goes Here"
@@ -61,6 +62,10 @@ Namespace('Flashcards').Engine = do ->
 
 	_browserSupportsSvg = ->
 		typeof SVGRect != "undefined"
+
+	_hideInstructions = () ->
+		$('.instructions').hide()
+		$('#game').show()
 
 	_easterEggStart = () ->
 		yepnope(
@@ -290,14 +295,19 @@ Namespace('Flashcards').Engine = do ->
 		window.addEventListener 'keydown', (e) ->
 			switch e.keyCode
 				when 37     then _leftSelected()                             # Left arrow key.
+				when 65     then _leftSelected()                             # A key.
 				when 38     then _unDiscard()                                # Up arrow key.
+				when 87     then _unDiscard()                                # W key.
 				when 39     then _rightSelected()                            # Right arrow key.
+				when 68     then _rightSelected()                            # D key.
 				when 40     then _discard()                                  # Down arrow key.
+				when 88     then _discard()                                  # X key.
 				when 32, 70 then _flipCard()                                 # F key and space bar.
 				when 72     then _toggleOverlay()                            # H key.
 				when 82     then _rotateCards(if rotation is '' then 'back') # R key.
 				when 83     then _shuffleCards()                             # S key.
 				when 85     then _unDiscardAll()                             # U key.
+				when 27		then
 
 			_killAudioVideo()
 			e.preventDefault()
@@ -602,7 +612,13 @@ Namespace('Flashcards').Engine = do ->
 				animating = false
 			, 300
 
-			if overlay is true then overlay = false else overlay = true
+			if overlay is true
+				overlay = false
+				$('#overlay').hide()
+			else
+				overlay = true
+				$('#overlay').show()
+				$('#left-arr').focus()
 
 			if nodes.helpOverlay.className is 'overlay shown'
 				_setArrowState()
@@ -644,3 +660,4 @@ Namespace('Flashcards').Engine = do ->
 	# Public.
 	start : start
 	nodes : nodes
+	hideInstructions : _hideInstructions
