@@ -106,6 +106,8 @@ Namespace('Flashcards').Engine = do ->
 		_tFlashcard = $($('#t-flashcard').html())
 		nodes.$container.append _tFlashcard.clone() for i in [0...length]
 
+		if (nodes.$container.length > 0) then document.getElementById("container").firstChild.setAttribute("aria-hidden", false);
+
 	# Compute font scaling based on character length / scale factor. Max is 25px, min is 16px. ScaleFactor determines how quickly the font size is reduced.
 	# Scaling is appended to the card's <p> tag as an inline style
 	_computeFontSize = (text) ->
@@ -332,12 +334,14 @@ Namespace('Flashcards').Engine = do ->
 
 			# Move the current card in the specified direction.
 			Flashcards.Card[currentCardId].node.className = 'flashcard '+direction+rotation
+			Flashcards.Card[currentCardId].node.setAttribute("aria-hidden", true);
 
 			# Increment or decrement the current card ID.
 			currentCardId = if direction is 'left' then currentCardId+1 else currentCardId-1
 
 			# Animate the new current card to the center.
 			Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
+			Flashcards.Card[currentCardId].node.setAttribute("aria-hidden", false);
 
 			_setArrowState()
 
@@ -353,8 +357,12 @@ Namespace('Flashcards').Engine = do ->
 			# The back is currently showing.
 			if Flashcards.Card[currentCardId].node.className is 'flashcard rotated'
 				Flashcards.Card[currentCardId].node.className = 'flashcard'
+				document.querySelector(".back").setAttribute("aria-hidden", false)
+				document.querySelector(".front").setAttribute("aria-hidden", true)
 			# The front is currently showing.
 			else
+				document.querySelector(".back").setAttribute("aria-hidden", true)
+				document.querySelector(".front").setAttribute("aria-hidden", false)
 				Flashcards.Card[currentCardId].node.className = 'flashcard rotated'
 
 	_killAudioVideo = () ->
@@ -503,10 +511,10 @@ Namespace('Flashcards').Engine = do ->
 					nodes.container.className = 'hidden'
 				else
 					if Flashcards.Card[currentCardId]?
-						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
+						Flashcards.Card[currentCardId].node.className = "flashcard hidden "+(if rotation is '' then '' else 'rotated')
 					else
 						currentCardId--
-						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
+						Flashcards.Card[currentCardId].node.className = "flashcard hidden "+(if rotation is '' then '' else 'rotated')
 
 				_setArrowState()
 
@@ -662,3 +670,4 @@ Namespace('Flashcards').Engine = do ->
 	start : start
 	nodes : nodes
 	hideInstructions : _hideInstructions
+	toggleOverlay : _toggleOverlay

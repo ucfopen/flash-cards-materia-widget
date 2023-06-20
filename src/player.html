@@ -59,7 +59,7 @@
 			</div>
 		</section>
 
-		<section id="game">
+		<section id="game" role="application">
 			<section id="atari-bg" aria-hidden="true">
 				<div></div>
 				<div></div>
@@ -70,6 +70,8 @@
 				<div></div>
 				<div></div>
 			</section>
+
+			<div tabindex="0" onfocus="document.getElementById('icon-help').focus()"></div>
 
 			<button id="icon-help" class="icon" aria-label="Press H for help"></button>
 
@@ -122,7 +124,7 @@
 					<circle cx="35" cy="25" r="7"></circle>
 				</svg>
 
-				<div id="dummy-card"></div>
+				<div id="dummy-card" tabindex="0" onfocus="document.getElementById('icon-help').focus()"></div>
 			</section>
 
 			<main id="board">
@@ -130,11 +132,13 @@
 				<h1 id="instance-title"></h1>
 
 				<!-- arrows -->
-				<button id="icon-left" class="arrow"></button>
-				<button id="icon-right" class="arrow shown"></button>
+				<button id="icon-left" class="arrow" aria-label="Previous card."></button>
 
 				<!-- Holds flashcards -->
 				<section id="container"></section>
+
+				<button id="icon-right" class="arrow shown"  aria-label="Next card."></button>
+
 
 				<!-- Finish message -->
 				<section id="finished" class="hidden">
@@ -152,16 +156,16 @@
 	</body>
 
 <!-- Flashcard Template -->
-<script type="text/template" id="t-flashcard"><div aria-label="flashcard" class="flashcard">
-	<section aria-label="back" class="back">
+<script type="text/template" id="t-flashcard"><div aria-label="flashcard" class="flashcard" aria-hidden="true">
+	<section aria-label="back" class="back" aria-hidden="true">
 		<div class="content"></div>
 		<div class="asset"></div>
-		<button aria-label="discard" class="remove-button">&#215;</button>
+		<button id="discard-front" aria-label="discard" class="remove-button">&#215;</button>
 	</section>
-	<section aria-label="front" class="front">
+	<section aria-label="front" class="front" aria-hidden="false">
 		<div class="content"></div>
 		<div class="asset"></div>
-		<button aria-label="discard" class="remove-button">&#215;</button>
+		<button id="discard-back" aria-label="discard" class="remove-button">&#215;</button>
 	</section>
 </div></script>
 
