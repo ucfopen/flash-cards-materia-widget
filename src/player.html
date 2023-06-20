@@ -32,7 +32,7 @@
 			<p class="load">Loading User Data from file:- SHELLCFG/DAT   <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
 		</section>
 
-		<div id="instructions" class="instructions">
+		<section id="instructions" class="instructions">
 			<div class="dialog" role="dialog" aria-describedby="tutorial-desc" aria-labelledby="tutorial-header">
 				<h2 id="tutorial-header">Studying with Flash Cards</h2>
 				<p id="tutorial-desc">This is a virtual deck of two-sided cards that you can use to help you study.</p>
@@ -46,22 +46,35 @@
 				</figure>
 				<button id="gotit" class="gotit" tabindex="0" onclick="Namespace('Flashcards').Engine.hideInstructions()">Got it!</button>
 			</div>
-		</div>
+		</section>
 
-		<div class="error-notice-container">
-			<div class="error-notice">
-				<h1>This widget uses features that your browser doesn't support</h1>
-				<h2>Upgrade your browser to use this widget</h2>
+		<section class="error-notice-container">
+			<div class="error-notice"
+			role="alertdialog"
+			aria-modal="true"
+			aria-describedby="error-notice-desc"
+			aria-labelledby="error-notice-title">
+				<h1 id="error-notice-title">This widget uses features that your browser doesn't support</h1>
+				<h2 id="error-notice-desc">Upgrade your browser to use this widget</h2>
 			</div>
-		</div>
+		</section>
 
 		<section id="game">
-			<section id="atari-bg"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></section>
+			<section id="atari-bg" aria-hidden="true">
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+			</section>
 
-			<div id="icon-help" role="button" class="icon" aria-label="Press H for help"></div>
+			<button id="icon-help" class="icon" aria-label="Press H for help"></button>
 
 			<section id="overlay" class="overlay">
-				<div class="arr box" id="left-arr">previous card - A</div tabindex="0">
+				<div class="arr box" id="left-arr" tabindex="0">previous card - A</div>
 				<svg class="arr" id="left-arr" aria-hidden="true">
 					<path d="M40 0 L20 65 Z"></path>
 					<circle cx="20" cy="65" r="7"></circle>
@@ -112,47 +125,44 @@
 				<div id="dummy-card"></div>
 			</section>
 
-			<section id="board">
+			<main id="board">
 
-				<div id="instance-title"></div>
+				<h1 id="instance-title"></h1>
 
 				<!-- arrows -->
-				<div id="icon-left" class="arrow"></div>
-				<div id="icon-right" class="arrow shown"></div>
+				<button id="icon-left" class="arrow"></button>
+				<button id="icon-right" class="arrow shown"></button>
 
 				<!-- Holds flashcards -->
-				<div id="container"></div>
-
-				<!-- FOR IE -->
-				<div id="clarification" style="display : none;"></div>
+				<section id="container"></section>
 
 				<!-- Finish message -->
-				<div id="finished" class="hidden">
+				<section id="finished" class="hidden">
 					<p>No cards remaining.</p>
-					<div id="icon-finish" class="icon"></div>
-				</div>
+					<button id="icon-finish" class="icon"></button>
+				</section>
 
-				<div aria-label="Restore cards." id="icon-restore" class="icon unselectable"></div>
-				<div aria-label="Rotate cards." id="icon-rotate" class="icon"></div>
-				<div aria-label="Shuffle cards." id="icon-shuffle" class="icon"></div>
+				<button aria-label="Restore cards." id="icon-restore" class="icon"></button>
+				<button aria-label="Rotate cards." id="icon-rotate" class="icon"></button>
+				<button aria-label="Shuffle cards." id="icon-shuffle" class="icon"></button>
 
-			</section>
+			</main>
 		</section>
 
 	</body>
 
 <!-- Flashcard Template -->
 <script type="text/template" id="t-flashcard"><div aria-label="flashcard" class="flashcard">
-	<div aria-label="back" class="back">
+	<section aria-label="back" class="back">
 		<div class="content"></div>
 		<div class="asset"></div>
-		<div aria-label="discard" class="remove-button">&#215;</div>
-	</div>
-	<div aria-label="front" class="front">
+		<button aria-label="discard" class="remove-button">&#215;</button>
+	</section>
+	<section aria-label="front" class="front">
 		<div class="content"></div>
 		<div class="asset"></div>
-		<div aria-label="discard" class="remove-button">&#215;</div>
-	</div>
+		<button aria-label="discard" class="remove-button">&#215;</button>
+	</section>
 </div></script>
 
 <!-- Templates for atari mode -->

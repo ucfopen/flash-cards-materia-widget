@@ -147,6 +147,8 @@ Namespace('Flashcards').Engine = do ->
 				# Handle new QSet asset format
 				else if typeof data[i].assets[1] is 'object'
 					_card.FrontURL = data[i].assets[1].url
+				# Assign alt text
+				_card.FrontAlt  = data[i].assets[1].alt;
 			else _card.FrontURL = '-1'
 
 			if data[i].assets?[0]
@@ -156,6 +158,8 @@ Namespace('Flashcards').Engine = do ->
 				# Handle new QSet asset format
 				else if typeof data[i].assets[0] is 'object'
 					_card.BackURL = data[i].assets[0].url
+				# Assign alt text
+				_card.BackAlt  = data[i].assets[0].alt;
 			else _card.BackURL = '-1'
 
 			if _card.FrontURL? && _card.FrontURL != '-1'
@@ -177,9 +181,9 @@ Namespace('Flashcards').Engine = do ->
 			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'" '+frontStyleStr+' ">'+_card.FrontText+'</p>'
 			if _card.FrontURL isnt '-1'
 				if typeof data[i].assets[1] isnt 'object'
-					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
+					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'" alt="'+_card.FrontAlt+'">'
 				else if data[i].assets[1].type == 'jpg' or data[i].assets[1].type == 'jpeg' or data[i].assets[1].type == 'png' or data[i].assets[1].type == 'gif'
-					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
+					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'" alt="'+_card.FrontAlt+'">'
 				else if data[i].assets[1].type == 'mp3' || data[i].assets[1].type == 'wav' || data[i].assets[1].type == 'aif'
 					_card.node.children[0].children[1].innerHTML = '<audio controls class="'+_frontClass+'" src="'+_card.FrontURL+'">'
 				else if data[i].assets[1].type == 'link'
@@ -188,9 +192,9 @@ Namespace('Flashcards').Engine = do ->
 			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'" '+backStyleStr+' ">'+_card.BackText+'</p>'
 			if _card.BackURL isnt '-1'
 				if typeof data[i].assets[0] isnt 'object'
-					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
+					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'" alt="'+_card.BackAlt+'">'
 				else if data[i].assets[0].type == 'jpg' or data[i].assets[0].type == 'jpeg' or data[i].assets[0].type == 'png' or data[i].assets[0].type == 'gif'
-					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
+					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'" alt="'+_card.BackAlt+'">'
 				else if data[i].assets[0].type == 'mp3' || data[i].assets[0].type == 'wav' || data[i].assets[0].type == 'aif'
 					_card.node.children[1].children[1].innerHTML = '<audio controls class="'+_backClass+'" src="'+_card.BackURL+'">'
 				else if data[i].assets[0].type == 'link'
@@ -293,24 +297,20 @@ Namespace('Flashcards').Engine = do ->
 
 		# Key events for keyboardz.
 		window.addEventListener 'keydown', (e) ->
-			switch e.keyCode
-				when 37     then _leftSelected()                             # Left arrow key.
-				when 65     then _leftSelected()                             # A key.
-				when 38     then _unDiscard()                                # Up arrow key.
-				when 87     then _unDiscard()                                # W key.
-				when 39     then _rightSelected()                            # Right arrow key.
-				when 68     then _rightSelected()                            # D key.
-				when 40     then _discard()                                  # Down arrow key.
-				when 88     then _discard()                                  # X key.
-				when 32, 70 then _flipCard()                                 # F key and space bar.
-				when 72     then _toggleOverlay()                            # H key.
-				when 82     then _rotateCards(if rotation is '' then 'back') # R key.
-				when 83     then _shuffleCards()                             # S key.
-				when 85     then _unDiscardAll()                             # U key.
-				when 27		then
+			switch e.key
+				when 'ArrowLeft', 'a'   	then _leftSelected()
+				when 'ArrowUp', 'w'     	then _unDiscard()
+				when 'ArrowRight', 'd'     	then _rightSelected()
+				when 'd'     				then _rightSelected()
+				when 'ArrowDown', 'x'     	then _discard()
+				when 'f' 					then _flipCard()
+				when 'h'     				then _toggleOverlay()
+				when 'r'     				then _rotateCards(if rotation is '' then 'back')
+				when 's'     				then _shuffleCards()
+				when 'u'     				then _unDiscardAll()
+				# when 27		then
 
 			_killAudioVideo()
-			e.preventDefault()
 
 	_leftSelected = ()  -> if _canMove 'left'  then _shiftCards 'right'
 	_rightSelected = () -> if _canMove 'right' then _shiftCards 'left'
@@ -651,7 +651,8 @@ Namespace('Flashcards').Engine = do ->
 
 	_hideIcons = () ->
 		for i in [1...nodes.icons.length]
-			nodes.icons[i].className = 'icon faded-out'
+			if (nodes.icons[i]).id != 'icon-finish'
+				nodes.icons[i].className = 'icon faded-out'
 
 	_showIcons = () ->
 		for i in [1...nodes.icons.length]

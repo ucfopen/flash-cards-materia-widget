@@ -13,13 +13,18 @@
 #icon-finish, #icon-alert,
 #icon-left, #icon-right {
 	font-family            : 'icomoon';
-	speak                  : none;
 	font-style             : normal;
 	font-weight            : normal;
 	font-variant           : normal;
 	text-transform         : none;
 	line-height            : 1;
 	-webkit-font-smoothing : antialiased;
+	border: none;
+	background: none;
+
+	&:hover, &:focus {
+		color: rgb(54, 54, 54);
+	}
 }
 .icon {
 	font-size     : 24px;
@@ -49,6 +54,13 @@
 
 .icon.unselectable:hover {background-color : rgba(255,255,255,0) !important;}
 
+.icon:before {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+}
+
 #icon-help:before    { content : "\e005"; }
 #icon-shuffle:before { content : "\e004"; }
 #icon-rotate:before  { content : "\e003"; }
@@ -65,6 +77,7 @@ $c : #6B6263;
 $d : #543F3D;
 $e : #A45B5B;
 $f : #87735F;
+
 
 body {
 	position         : absolute;
@@ -86,7 +99,12 @@ body {
 	-webkit-user-select : none;
 	   -moz-user-select : none;
 	    -ms-user-select : none;
-	        user-select : none;
+			user-select : none;
+
+
+	*:focus {
+		outline: solid 2px #0093e7;
+	}
 
 	table { display: none; }
 	#game {
@@ -114,32 +132,7 @@ body {
 			background-color : $e;
 			padding          : 5px 10px;
 			border-radius    : 5px;
-		}
-		svg {
-			&.arr {
-				height   : 100px;
-				width    : 50px;
-				position : absolute;
-				top      : 195px;
-				path {
-					stroke       : $e;
-					stroke-width : 3;
-				}
-				circle {
-					fill         : $e;
-					stroke-width : 0;
-				}
-			}
-			&#left-arr         {              left  : 40px;  }
-			&#right-arr        {              right : 40px;  }
-			&#right-arr-2      { top : 77px;  right : 125px; }
-			&#mid-arr          { top : 100px; left  : 47%;   }
-			&#bottom-right-arr { top : 449px; right : 280px; }
-			&#bottom-mid-arr   { top : 430px; left  : 375px; }
-			&#bottom-horiz-arr { top : 466px; right : 75px;  }
-			&#bottom-left-arr  { top : 449px; left  : 285px; }
-		}
-		div {
+
 			&.arr {
 				top : 168px;
 				&#left-arr  { left  : 15px; }
@@ -169,12 +162,36 @@ body {
 			}
 			&#restore-one {
 				bottom : 20px;
-				right  : 100px;
+				right  : 50px;
 			}
 			&#restore-all {
 				bottom : 70px;
 				left   : 25%;
 			}
+		}
+		svg {
+			&.arr {
+				height   : 100px;
+				width    : 50px;
+				position : absolute;
+				top      : 195px;
+				path {
+					stroke       : $e;
+					stroke-width : 3;
+				}
+				circle {
+					fill         : $e;
+					stroke-width : 0;
+				}
+			}
+			&#left-arr         {              left  : 40px;  }
+			&#right-arr        {              right : 40px;  }
+			&#right-arr-2      { top : 77px;  right : 125px; }
+			&#mid-arr          { top : 100px; left  : 47%;   }
+			&#bottom-right-arr { top : 449px; right : 280px; }
+			&#bottom-mid-arr   { top : 410px; left  : 375px; }
+			&#bottom-horiz-arr { top : 466px; right : 25px;  }
+			&#bottom-left-arr  { top : 449px; left  : 285px; }
 		}
 		#dummy-card {
 			position : absolute;
@@ -210,6 +227,7 @@ body {
 		-moz-perspective : 800px; /* Mozilla, what were you thinking??? */
 		&.blurred {
 			opacity : 0.5;
+			z-index: -1;
 
 			-webkit-filter : blur(2px);
 			   -moz-filter : blur(2px);
@@ -699,8 +717,6 @@ body {
 			}
 		}
 		.arrow {
-			height           : 80px;
-			width            : 80px;
 			border-radius    : 100%;
 			top              : 50%;
 			position         : absolute;
@@ -708,6 +724,7 @@ body {
 			color            : rgba(0,0,0,0.4);
 			font-size        : 80px;
 			z-index          : 10;
+			padding			 : 0;
 
 			-webkit-transform : scale(0);
 			   -moz-transform : scale(0);

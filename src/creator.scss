@@ -137,8 +137,13 @@ body {
 		perspective-origin : 50% 100%;
 		li {
 			margin : 0 0 15px 0;
-			height : 200px;
-	  		transform-style : preserve-3d;
+			height: 200px;
+			transform-style : preserve-3d;
+
+			&.tall {
+				height: 230px;
+			}
+
 			&.titles {
 				height : 60px;
 				margin : 0;
@@ -188,8 +193,6 @@ body {
 				.face {
 					position   : absolute;
 					width      : 400px;
-					height     : inherit;
-					background : #FFF;
 					overflow-y : auto;
 					overflow-x : hidden;
 					&:nth-child(3) { right : 0; }
@@ -202,6 +205,12 @@ body {
 						text-align : center;
 						&.title {
 							height : 25px;
+						}
+						&#alt-text-input {
+							width: 67%;
+							text-align: left;
+							padding: 0px 5px;
+							margin-left: 10px;
 						}
 					}
 					textarea { height : 130px; }
@@ -451,6 +460,9 @@ body {
 
 .center {
 	text-align: center;
+	position: relative;
+	background : #FFF;
+	max-height: inherit;
 }
 
 .hidden {
