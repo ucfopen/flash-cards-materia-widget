@@ -180,6 +180,11 @@ Namespace('Flashcards').Engine = do ->
 				computedBackFontSize = _computeFontSize _card.BackText
 				backStyleStr = 'style="font-size:'+computedBackFontSize+'px;'
 
+			_card.FrontAriaLabel = _card.FrontText + (if _card.FrontAlt then ". Media asset: " + _card.FrontAlt else "");
+			_card.BackAriaLabel  = _card.BackText + (if _card.BackAlt then ". Media asset: " + _card.BackAlt else "");
+
+			_card.node.setAttribute("aria-label", _card.FrontAriaLabel);
+
 			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'" '+frontStyleStr+' ">'+_card.FrontText+'</p>'
 			if _card.FrontURL isnt '-1'
 				if typeof data[i].assets[1] isnt 'object'
@@ -208,13 +213,17 @@ Namespace('Flashcards').Engine = do ->
 		if face is 'reverse'
 			rotation = '-rotated'
 			for i in [0...numCards]
-				if i is currentCardId     then Flashcards.Card[i].node.className = 'flashcard rotated'
+				if i is currentCardId
+					Flashcards.Card[i].node.className = 'flashcard rotated'
+					Flashcards.Card[i].node.setAttribute("aria-label", Flashcards.Card[i].FrontAriaLabel);
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left-rotated'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right-rotated'
 		else
 			rotation = ''
 			for i in [0...numCards]
-				if i is currentCardId     then Flashcards.Card[i].node.className = 'flashcard'
+				if i is currentCardId
+					Flashcards.Card[i].node.className = 'flashcard'
+					Flashcards.Card[i].node.setAttribute("aria-label", Flashcards.Card[i].BackAriaLabel);
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right'
 
@@ -342,6 +351,8 @@ Namespace('Flashcards').Engine = do ->
 			# Animate the new current card to the center.
 			Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
 			Flashcards.Card[currentCardId].node.setAttribute("aria-hidden", false);
+			console.log(rotation)
+			Flashcards.Card[currentCardId].node.setAttribute('aria-label', (if rotation is '' then Flashcards.Card[currentCardId].BackAriaLabel else Flashcards.Card[currentCardId].FrontAriaLabel));
 
 			_setArrowState()
 
@@ -357,13 +368,11 @@ Namespace('Flashcards').Engine = do ->
 			# The back is currently showing.
 			if Flashcards.Card[currentCardId].node.className is 'flashcard rotated'
 				Flashcards.Card[currentCardId].node.className = 'flashcard'
-				document.querySelector(".back").setAttribute("aria-hidden", false)
-				document.querySelector(".front").setAttribute("aria-hidden", true)
+				Flashcards.Card[currentCardId].node.setAttribute('aria-label', Flashcards.Card[currentCardId].BackAriaLabel);
 			# The front is currently showing.
 			else
-				document.querySelector(".back").setAttribute("aria-hidden", true)
-				document.querySelector(".front").setAttribute("aria-hidden", false)
 				Flashcards.Card[currentCardId].node.className = 'flashcard rotated'
+				Flashcards.Card[currentCardId].node.setAttribute('aria-label', Flashcards.Card[currentCardId].FrontAriaLabel);
 
 	_killAudioVideo = () ->
 		$('audio').each ->
@@ -511,10 +520,10 @@ Namespace('Flashcards').Engine = do ->
 					nodes.container.className = 'hidden'
 				else
 					if Flashcards.Card[currentCardId]?
-						Flashcards.Card[currentCardId].node.className = "flashcard hidden "+(if rotation is '' then '' else 'rotated')
+						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
 					else
 						currentCardId--
-						Flashcards.Card[currentCardId].node.className = "flashcard hidden "+(if rotation is '' then '' else 'rotated')
+						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
 
 				_setArrowState()
 

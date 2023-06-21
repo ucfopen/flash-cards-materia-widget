@@ -8,10 +8,21 @@
 	font-weight : normal;
 	font-style  : normal;
 }
+
+// Color palette.
+$a : #ADA4A4;
+$b : #1A1A1A;
+$c : #6B6263;
+$d : #543F3D;
+$e : #A45B5B;
+$f : #87735F;
+$g : #332a2a;
+
 #icon-help, #icon-shuffle,
 #icon-rotate, #icon-restore,
 #icon-finish, #icon-alert,
-#icon-left, #icon-right {
+#icon-left, #icon-right,
+#discard-front, #discard-back{
 	font-family            : 'icomoon';
 	font-style             : normal;
 	font-weight            : normal;
@@ -20,13 +31,10 @@
 	line-height            : 1;
 	-webkit-font-smoothing : antialiased;
 	border: none;
-	background: none;
+	background: rgba(0,0,0,0);
 
-	&:hover, &:focus {
-		color: rgb(54, 54, 54);
-	}
 }
-.icon {
+.icon, .arrow {
 	font-size     : 24px;
 	z-index       : 10;
 	position      : absolute;
@@ -35,7 +43,7 @@
 	border-radius : 100%;
 	height        : 24px;
 	width         : 24px;
-	color         : #222;
+	color         : $a;
 	padding       : 10px;
 
 	-webkit-transition : 100ms background-color, 500ms opacity;
@@ -43,7 +51,11 @@
 	    -ms-transition : 100ms background-color, 500ms opacity;
 	        transition : 100ms background-color, 500ms opacity;
 
-	&:hover, &.focused { background-color : rgba(255,255,255,0.6); }
+	&:hover, &:focus {
+		color: #FFF;
+		cursor: pointer;
+		outline: none;
+	}
 	&.faded-out    { opacity : 0; }
 	&.unselectable { opacity : 0.3; &:hover, &.focused {background-color : rgba(255,255,255,0) !important; }}
 	&#icon-restore { left : 40%; }
@@ -70,19 +82,11 @@
 #icon-right:before   { content : "\e000"; }
 #icon-alert          { content : "\e006"; }
 
-// Color palette.
-$a : #584B4B;
-$b : #44382A;
-$c : #6B6263;
-$d : #543F3D;
-$e : #A45B5B;
-$f : #87735F;
-
 
 body {
 	position         : absolute;
 	color            : #FFF;
-	background-color : $a !important;
+	background-color : $g !important;
 	padding          : 0;
 	margin           : 0;
 	width            : 800px;
@@ -100,11 +104,6 @@ body {
 	   -moz-user-select : none;
 	    -ms-user-select : none;
 			user-select : none;
-
-
-	*:focus {
-		outline: solid 2px #0093e7;
-	}
 
 	table { display: none; }
 	#game {
@@ -721,7 +720,6 @@ body {
 			top              : 50%;
 			position         : absolute;
 			margin-top       : -40px;
-			color            : rgba(0,0,0,0.4);
 			font-size        : 80px;
 			z-index          : 10;
 			padding			 : 0;
@@ -734,8 +732,8 @@ body {
 			   -moz-transition : 200ms all;
 			    -ms-transition : 200ms all;
 			        transition : 200ms all;
-			&#icon-left  { left  : 30px; }
-			&#icon-right { right : 30px; }
+			&#icon-left  { left  : 60px; }
+			&#icon-right { right : 90px; }
 			&.shown {
 				-webkit-transform : scale(1);
 				   -moz-transform : scale(1);
@@ -805,7 +803,7 @@ body {
 	right      : 0;
 	top        : 0;
 	bottom     : 0;
-	background : rgba(0,0,0,0.8);
+	background : $g;
 	display    : block;
 	color: #fff;
 	padding: 115px 50px;
@@ -888,9 +886,11 @@ body {
 		font-size: 20px;
 		cursor: pointer;
 		color: white;
+		border: none;
 
 		&:hover {
 			background: #73D15A;
+			cursor: pointer;
 		}
 	}
 }
