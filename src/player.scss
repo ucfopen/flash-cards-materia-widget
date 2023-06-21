@@ -22,7 +22,7 @@ $g : #332a2a;
 #icon-rotate, #icon-restore,
 #icon-finish, #icon-alert,
 #icon-left, #icon-right,
-#discard-front, #discard-back{
+.discard {
 	font-family            : 'icomoon';
 	font-style             : normal;
 	font-weight            : normal;
@@ -539,12 +539,16 @@ body {
 				}
 				.remove-button {
 					position    : absolute;
-					right       : 0;
-					top         : 0;
-					height      : 30px;
-					width       : 30px;
+					right       : -15px;
+					top         : -15px;
+					height      : 35px;
+					width       : 35px;
 					line-height : 30px;
 					font-size   : 20px;
+					z-index		: 20;
+					border-radius: 50%;
+					color 		: $g;
+					background-color: $a;
 
 					-webkit-transition : 200ms all;
 					   -moz-transition : 200ms all;
@@ -552,8 +556,8 @@ body {
 					        transition : 200ms all;
 
 					&:hover {
-						color            : #FFF;
-						background-color : rgba(0,0,0,0.8);
+						color : $e;
+						cursor: pointer;
 
 						-webkit-transition : 200ms all;
 						   -moz-transition : 200ms all;

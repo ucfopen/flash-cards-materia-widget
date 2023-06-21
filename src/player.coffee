@@ -106,8 +106,6 @@ Namespace('Flashcards').Engine = do ->
 		_tFlashcard = $($('#t-flashcard').html())
 		nodes.$container.append _tFlashcard.clone() for i in [0...length]
 
-		if (nodes.$container.length > 0) then document.getElementById("container").firstChild.setAttribute("aria-hidden", false);
-
 	# Compute font scaling based on character length / scale factor. Max is 25px, min is 16px. ScaleFactor determines how quickly the font size is reduced.
 	# Scaling is appended to the card's <p> tag as an inline style
 	_computeFontSize = (text) ->
@@ -216,6 +214,8 @@ Namespace('Flashcards').Engine = do ->
 				if i is currentCardId
 					Flashcards.Card[i].node.className = 'flashcard rotated'
 					Flashcards.Card[i].node.setAttribute("aria-label", Flashcards.Card[i].FrontAriaLabel);
+					Flashcards.Card[i].node.setAttribute("aria-hidden", false);
+					Flashcards.Card[currentCardId].node.children[2].setAttribute("tabindex", 0);
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left-rotated'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right-rotated'
 		else
@@ -224,6 +224,8 @@ Namespace('Flashcards').Engine = do ->
 				if i is currentCardId
 					Flashcards.Card[i].node.className = 'flashcard'
 					Flashcards.Card[i].node.setAttribute("aria-label", Flashcards.Card[i].BackAriaLabel);
+					Flashcards.Card[i].node.setAttribute("aria-hidden", false);
+					Flashcards.Card[currentCardId].node.children[2].setAttribute("tabindex", 0);
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right'
 
@@ -344,6 +346,8 @@ Namespace('Flashcards').Engine = do ->
 			# Move the current card in the specified direction.
 			Flashcards.Card[currentCardId].node.className = 'flashcard '+direction+rotation
 			Flashcards.Card[currentCardId].node.setAttribute("aria-hidden", true);
+			# Hide current card discard button
+			Flashcards.Card[currentCardId].node.children[2].setAttribute("tabindex", -1);
 
 			# Increment or decrement the current card ID.
 			currentCardId = if direction is 'left' then currentCardId+1 else currentCardId-1
@@ -351,8 +355,11 @@ Namespace('Flashcards').Engine = do ->
 			# Animate the new current card to the center.
 			Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
 			Flashcards.Card[currentCardId].node.setAttribute("aria-hidden", false);
-			console.log(rotation)
+
+			# Update aria-label based on card rotation
 			Flashcards.Card[currentCardId].node.setAttribute('aria-label', (if rotation is '' then Flashcards.Card[currentCardId].BackAriaLabel else Flashcards.Card[currentCardId].FrontAriaLabel));
+			# Make discard button visible
+			Flashcards.Card[currentCardId].node.children[2].setAttribute("tabindex", 0);
 
 			_setArrowState()
 

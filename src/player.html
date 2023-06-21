@@ -139,7 +139,6 @@
 
 				<button id="icon-right" class="arrow shown"  aria-label="Next card."></button>
 
-
 				<!-- Finish message -->
 				<section id="finished" class="hidden">
 					<p>No cards remaining.</p>
@@ -157,17 +156,16 @@
 
 <!-- Flashcard Template -->
 <script type="text/template" id="t-flashcard"><div aria-label="flashcard" class="flashcard" aria-hidden="true">
-		<section aria-label="back" class="back" aria-hidden="true">
-			<div class="content"></div>
-			<div class="asset"></div>
-			<button id="discard-front" aria-label="discard" class="remove-button" disabled="true" tabindex="-1">&#215;</button>
-		</section>
-		<section aria-label="front" class="front" aria-hidden="true">
-			<div class="content"></div>
-			<div class="asset"></div>
-			<button id="discard-back" aria-label="discard" class="remove-button" disabled="true" tabindex="-1">&#215;</button>
-		</section>
-	</div></script>
+	<section aria-label="back" class="back" aria-hidden="true">
+		<div class="content"></div>
+		<div class="asset"></div>
+	</section>
+	<section aria-label="front" class="front" aria-hidden="true">
+		<div class="content"></div>
+		<div class="asset"></div>
+	</section>
+	<button aria-label="discard" class="remove-button">&#215;</button>
+</div></script>
 
 <!-- Templates for atari mode -->
 <script type="text/template" id="t-arrow"><table border="0" cellpadding="0" cellspacing="0" class="arrow-table">
