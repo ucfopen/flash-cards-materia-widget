@@ -178,10 +178,12 @@ Namespace('Flashcards').Engine = do ->
 				computedBackFontSize = _computeFontSize _card.BackText
 				backStyleStr = 'style="font-size:'+computedBackFontSize+'px;'
 
-			_card.FrontAriaLabel = _card.FrontText + (if _card.FrontAlt then ". Media asset: " + _card.FrontAlt else "");
-			_card.BackAriaLabel  = _card.BackText + (if _card.BackAlt then ". Media asset: " + _card.BackAlt else "");
+			# Aria label for flashcards
+			# _card.FrontAriaLabel = _card.FrontText + (if _card.FrontAlt then ". Media asset: " + _card.FrontAlt else "");
+			# _card.BackAriaLabel  = _card.BackText + (if _card.BackAlt then ". Media asset: " + _card.BackAlt else "");
 
-			_card.node.setAttribute("aria-label", _card.FrontAriaLabel);
+			# _card.node.children[0].setAttribute("aria-label", _card.FrontAriaLabel);
+			# _card.node.children[1].setAttribute("aria-label", _card.BackAriaLabel);
 
 			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'" '+frontStyleStr+' ">'+_card.FrontText+'</p>'
 			if _card.FrontURL isnt '-1'
@@ -213,9 +215,6 @@ Namespace('Flashcards').Engine = do ->
 			for i in [0...numCards]
 				if i is currentCardId
 					Flashcards.Card[i].node.className = 'flashcard rotated'
-					Flashcards.Card[i].node.setAttribute("aria-label", Flashcards.Card[i].FrontAriaLabel);
-					Flashcards.Card[i].node.setAttribute("aria-hidden", false);
-					Flashcards.Card[currentCardId].node.children[2].setAttribute("tabindex", 0);
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left-rotated'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right-rotated'
 		else
@@ -223,11 +222,9 @@ Namespace('Flashcards').Engine = do ->
 			for i in [0...numCards]
 				if i is currentCardId
 					Flashcards.Card[i].node.className = 'flashcard'
-					Flashcards.Card[i].node.setAttribute("aria-label", Flashcards.Card[i].BackAriaLabel);
-					Flashcards.Card[i].node.setAttribute("aria-hidden", false);
-					Flashcards.Card[currentCardId].node.children[2].setAttribute("tabindex", 0);
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right'
+		_ariaShowCurrent()
 
 	_addEventListeners = () ->
 		# document.oncontextmenu = -> false                # Disables right click.
@@ -275,28 +272,50 @@ Namespace('Flashcards').Engine = do ->
 			$('#icon-left').on    'mouseup', ->
 				_leftSelected()
 				_killAudioVideo()
+			$('#icon-left').on    'click', ->
+				_leftSelected()
+				_killAudioVideo()
 			$('#icon-right').on   'mouseup', ->
 				_rightSelected()
 				_killAudioVideo()
+			$('#icon-right').on   'click', ->
+				_rightSelected()
+				_killAudioVideo()
 			$('#icon-help').on    'mouseup', _toggleOverlay
+			$('#icon-help').on    'click', _toggleOverlay
 			$('#icon-restore').on 'mouseup', ->
+				_killAudioVideo()
+				_unDiscardAll()
+			$('#icon-restore').on 'click', ->
 				_killAudioVideo()
 				_unDiscardAll()
 			$('#icon-finish').on  'mouseup', ->
 				_killAudioVideo()
 				_unDiscardAll()
+			$('#icon-finish').on  'click', ->
+				_killAudioVideo()
+				_unDiscardAll()
 			$('#icon-rotate').on  'mouseup', ->
 				_killAudioVideo()
 				_rotateCards(if rotation is '' then 'back')
+			$('#icon-rotate').on  'click', ->
+				_killAudioVideo()
+				_rotateCards(if rotation is '' then 'back')
 			$('#icon-shuffle').on 'mouseup', ->
+				_killAudioVideo()
+				_shuffleCards()
+			$('#icon-shuffle').on 'click', ->
 				_killAudioVideo()
 				_shuffleCards()
 
 			$('audio').on    'mouseup', (e)->
 				if _isDiscarded(this) then _unDiscard()
 				else e.stopPropagation()
+			$('audio').on    'click', (e)->
+				if _isDiscarded(this) then _unDiscard()
+				else e.stopPropagation()
 
-			$('.flashcard').on    'mouseup', ->
+			$('.flashcard').on    'click', ->
 				# Shuts off all audio players when card is flipped.
 				_killAudioVideo()
 				if _isDiscarded(this) then _unDiscard()
@@ -307,6 +326,16 @@ Namespace('Flashcards').Engine = do ->
 				_killAudioVideo()
 				_discard()
 				e.stopPropagation()
+			$('.remove-button').on 'click', (e) ->
+				# Shuts off all audio players when card is discarded.
+				_killAudioVideo()
+				_discard()
+				e.stopPropagation()
+
+			# Because screenreaders are able to move out of overlay tab loop,
+			# we should hide overlay if it goes out of focus
+			$('.flashcard').on 'focus', () ->
+				if overlay then _toggleOverlay()
 
 		# Key events for keyboardz.
 		window.addEventListener 'keydown', (e) ->
@@ -345,28 +374,35 @@ Namespace('Flashcards').Engine = do ->
 
 			# Move the current card in the specified direction.
 			Flashcards.Card[currentCardId].node.className = 'flashcard '+direction+rotation
-			Flashcards.Card[currentCardId].node.setAttribute("aria-hidden", true);
-			# Hide current card discard button
-			Flashcards.Card[currentCardId].node.children[2].setAttribute("tabindex", -1);
 
 			# Increment or decrement the current card ID.
 			currentCardId = if direction is 'left' then currentCardId+1 else currentCardId-1
 
 			# Animate the new current card to the center.
 			Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
-			Flashcards.Card[currentCardId].node.setAttribute("aria-hidden", false);
 
-			# Update aria-label based on card rotation
-			Flashcards.Card[currentCardId].node.setAttribute('aria-label', (if rotation is '' then Flashcards.Card[currentCardId].BackAriaLabel else Flashcards.Card[currentCardId].FrontAriaLabel));
-			# Make discard button visible
-			Flashcards.Card[currentCardId].node.children[2].setAttribute("tabindex", 0);
+			# Update aria based on card rotation
+			_ariaShowCurrent();
+
+			# Focus the new card
+			Flashcards.Card[currentCardId].node.focus();
 
 			_setArrowState()
 
 	# Shows or hides directional arrows depending on what cards are viewable.
 	_setArrowState = () ->
-			if _canMove 'right' then nodes.rightArrow.className = 'arrow shown' else nodes.rightArrow.className = 'arrow'
-			if _canMove 'left'  then nodes.leftArrow.className  = 'arrow shown' else nodes.leftArrow.className  = 'arrow'
+			if _canMove 'right'
+				nodes.rightArrow.className = 'arrow shown'
+				nodes.rightArrow.setAttribute("aria-hidden", false);
+			else
+				nodes.rightArrow.className = 'arrow'
+				nodes.rightArrow.setAttribute("aria-hidden", true);
+			if _canMove 'left'
+				nodes.leftArrow.className  = 'arrow shown'
+				nodes.leftArrow.setAttribute("aria-hidden", false);
+			else
+				nodes.leftArrow.className  = 'arrow'
+				nodes.leftArrow.setAttribute("aria-hidden", true);
 
 	# Rotates the current card 180 degrees.
 	_flipCard = () ->
@@ -375,11 +411,57 @@ Namespace('Flashcards').Engine = do ->
 			# The back is currently showing.
 			if Flashcards.Card[currentCardId].node.className is 'flashcard rotated'
 				Flashcards.Card[currentCardId].node.className = 'flashcard'
-				Flashcards.Card[currentCardId].node.setAttribute('aria-label', Flashcards.Card[currentCardId].BackAriaLabel);
 			# The front is currently showing.
 			else
 				Flashcards.Card[currentCardId].node.className = 'flashcard rotated'
-				Flashcards.Card[currentCardId].node.setAttribute('aria-label', Flashcards.Card[currentCardId].FrontAriaLabel);
+			# Update aria
+			_ariaShow(currentCardId, false)
+			# Focus card
+			Flashcards.Card[currentCardId].node.focus();
+
+	_ariaShowCurrent = () ->
+		for i in [0...Flashcards.Card.length]
+			if i is currentCardId
+				_ariaShow(i, false)
+			else
+				_ariaHide(i, false)
+		for i in [0...Flashcards.DiscardPile.length]
+			_ariaHide(i, true)
+
+		# Make last card on discard pile visible to keyboard users and screenreader
+		lastDiscard = document.querySelector('.discarded-pos-'+(Flashcards.DiscardPile.length-1));
+		if (lastDiscard)
+			lastDiscard.setAttribute("aria-label", "Undiscard last card");
+			lastDiscard.setAttribute("aria-hidden", "false");
+			lastDiscard.setAttribute("tabindex", "0");
+
+	_ariaShow = (id, isDiscardPile) ->
+		if (isDiscardPile)
+			face = if Flashcards.DiscardPile[currentCardId].node.className is 'flashcard rotated' then 'back' else 'front';
+			Flashcards.DiscardPile[id].node.setAttribute('aria-label', (if face is 'front' then "flashcard front" else "flashcard back"));
+			Flashcards.DiscardPile[id].node.setAttribute('tabindex', '0');
+			Flashcards.DiscardPile[id].node.setAttribute("aria-hidden", false);
+			Flashcards.DiscardPile[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", false);
+			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].setAttribute("aria-hidden", true);
+		else
+			# Get rotation
+			face = if Flashcards.Card[currentCardId].node.className is 'flashcard rotated' then 'back' else 'front';
+			# Set Flashcard parent aria label
+			Flashcards.Card[id].node.setAttribute('aria-label', (if face is 'front' then "flashcard front" else "flashcard back"));
+			# Make flashcard tabbable and visible to screenreader
+			Flashcards.Card[id].node.setAttribute('tabindex', '0');
+			Flashcards.Card[id].node.setAttribute("aria-hidden", false);
+			# Show face content depending on rotation
+			Flashcards.Card[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", false);
+			Flashcards.Card[id].node.children[if face is 'front' then 0 else 1].setAttribute("aria-hidden", true);
+
+	_ariaHide = (id, isDiscardPile) ->
+		if (isDiscardPile)
+			Flashcards.DiscardPile[id].node.setAttribute("aria-hidden", true);
+			Flashcards.DiscardPile[id].node.setAttribute('tabindex', '-1');
+		else
+			Flashcards.Card[id].node.setAttribute("aria-hidden", true);
+			Flashcards.Card[id].node.setAttribute('tabindex', '-1');
 
 	_killAudioVideo = () ->
 		$('audio').each ->
@@ -532,6 +614,11 @@ Namespace('Flashcards').Engine = do ->
 						currentCardId--
 						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
 
+				_ariaShowCurrent()
+				# Focus flashcard
+				Flashcards.Card[currentCardId].node.focus()
+
+				# Update arrows
 				_setArrowState()
 
 	# Takes a card from the first array and places it in the second.
@@ -574,6 +661,7 @@ Namespace('Flashcards').Engine = do ->
 					_shiftCards 'left' for i in [0.._dif]
 					_setArrowState()
 				, 20
+				_ariaShowCurrent()
 
 	_restoreTriggered = () ->
 		if atari then Flashcards.Atari.playIcon 'restore'
@@ -627,6 +715,7 @@ Namespace('Flashcards').Engine = do ->
 						nodes.icons[1].className = "icon unselectable"
 					, 1200
 				, 20
+				_ariaShowCurrent()
 
 	# Opens or closes the help overlay.
 	_toggleOverlay = () ->

@@ -15,6 +15,7 @@ $b : #1A1A1A;
 $c : #6B6263;
 $d : #543F3D;
 $e : #A45B5B;
+$e1 : #c47c7c;
 $f : #87735F;
 $g : #332a2a;
 
@@ -123,7 +124,12 @@ body {
 		-webkit-transition : 300ms all;
 		   -moz-transition : 300ms all;
 		    -ms-transition : 300ms all;
-		        transition : 300ms all;
+				transition : 300ms all;
+
+		h2 {
+			margin: 7.5px 0 0 50px;
+			color: $a;
+		}
 
 		&.shown { opacity : 1; }
 		.box {
@@ -131,6 +137,10 @@ body {
 			background-color : $e;
 			padding          : 5px 10px;
 			border-radius    : 5px;
+
+			&:focus {
+				background-color: $e1;
+			}
 
 			&.arr {
 				top : 168px;
@@ -145,8 +155,8 @@ body {
 				text-align  : center;
 			}
 			&#discard {
-				top   : 50px;
-				right : 100px;
+				bottom   : 175px;
+				right 	 : 130px;
 			}
 			&#rotate {
 				width       : 130px;
@@ -185,7 +195,7 @@ body {
 			}
 			&#left-arr         {              left  : 40px;  }
 			&#right-arr        {              right : 40px;  }
-			&#right-arr-2      { top : 77px;  right : 125px; }
+			&#right-arr-2      { bottom : 110px;  right : 80px; top: auto; }
 			&#mid-arr          { top : 100px; left  : 47%;   }
 			&#bottom-right-arr { top : 449px; right : 280px; }
 			&#bottom-mid-arr   { top : 410px; left  : 375px; }
@@ -271,6 +281,21 @@ body {
 						transition : all 700ms cubic-bezier(0.190, 1.000, 0.220, 1.000), color 100ms, z-index 0ms;
 
 				&.hidden { display: none; }
+
+				&:hover  { cursor: pointer; }
+				&:focus  .back, &:focus .front {
+					background-color: #fff;
+					outline: 1px solid blue;
+				}
+
+				&[class*="discarded"]:focus {
+					.front {
+						background-color: #fff;
+					}
+					.back {
+						background-color: #fff;
+					}
+				}
 
 				//////////////////////////////////////////
 				//           CARD STATES                //
@@ -537,41 +562,13 @@ body {
 					    -ms-transform : translate( 300%) rotateY(180deg);
 					        transform : translate( 300%) rotateY(180deg);
 				}
-				.remove-button {
-					position    : absolute;
-					right       : -15px;
-					top         : -15px;
-					height      : 35px;
-					width       : 35px;
-					line-height : 30px;
-					font-size   : 20px;
-					z-index		: 20;
-					border-radius: 50%;
-					color 		: $g;
-					background-color: $a;
-
-					-webkit-transition : 200ms all;
-					   -moz-transition : 200ms all;
-					    -ms-transition : 200ms all;
-					        transition : 200ms all;
-
-					&:hover {
-						color : $e;
-						cursor: pointer;
-
-						-webkit-transition : 200ms all;
-						   -moz-transition : 200ms all;
-						    -ms-transition : 200ms all;
-						        transition : 200ms all;
-					}
-				}
 				.front, .back {
 					position         : absolute;
 					top              : 0;
 					left             : 0;
 					height           : 100%;
 					width            : 100%;
-					background-color : #EEE;
+					background-color : $a;
 
 					-webkit-backface-visibility : hidden;
 					   -moz-backface-visibility : hidden;
@@ -669,6 +666,38 @@ body {
 					    -ms-transform : rotateY(-180deg);
 					        transform : rotateY(-180deg);
 				}
+			}
+		}
+
+		.remove-button {
+			position    : absolute;
+			right       : 50px;
+			top         : 65%;
+			height      : 50px;
+			width       : 50px;
+			line-height : 30px;
+			font-size   : 36px;
+			z-index		: 20;
+			border		: none;
+			border-radius: 50%;
+			color 		: $g;
+			background-color: $a;
+			padding		: 0px 0px 5px 0px;
+
+			-webkit-transition : 200ms all;
+			   -moz-transition : 200ms all;
+				-ms-transition : 200ms all;
+					transition : 200ms all;
+
+			&:hover, &:focus {
+				background-color : $e;
+				cursor: pointer;
+				outline: none;
+
+				-webkit-transition : 200ms all;
+				   -moz-transition : 200ms all;
+					-ms-transition : 200ms all;
+						transition : 200ms all;
 			}
 		}
 		#finished {

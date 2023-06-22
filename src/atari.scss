@@ -92,6 +92,7 @@
 	.icon {
 		background-color : rgba(0,0,0,0) !important;
 		border-radius    : 0 !important;
+		bottom: 50px;
 		&:before { content : "" !important; }
 		table {
 			z-index : -10;
