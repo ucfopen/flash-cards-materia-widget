@@ -26,6 +26,8 @@ Namespace("Flashcards").Atari =
 		$('#icon-restore').append($($('#t-icon').html()).clone().addClass('restore-table'))
 		$('#icon-rotate').append($($('#t-icon').html()).clone().addClass('rotate-table'))
 		$('#icon-shuffle').append($($('#t-icon').html()).clone().addClass('shuffle-table'))
+		$('#icon-remove')[0].innerText = ""
+		$('#icon-remove').append($($('#t-icon').html()).clone().addClass('discard-table'))
 
 	initializeSounds : ->
 		@Sound.saw0 = T("saw", {freq:110, mul:0.1})

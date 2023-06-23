@@ -261,11 +261,9 @@ Namespace('Flashcards').Engine = do ->
 					if _isDiscarded(this) then _unDiscard()
 					else _flipCard()
 
-			_removeNodes = document.getElementsByClassName('remove-button')
-			for i in [0..._removeNodes.length]
-				Hammer(_removeNodes[i]).on 'tap', (e) ->
-					_discard()
-					e.stopPropagation()
+			Hammer(document.getElementById('icon-remove')).on 'tap', (e) ->
+				_discard()
+				e.stopPropagation()
 		else
 			document.addEventListener upEventType, -> if overlay then _toggleOverlay()
 
@@ -321,12 +319,12 @@ Namespace('Flashcards').Engine = do ->
 				if _isDiscarded(this) then _unDiscard()
 				else _flipCard()
 
-			$('.remove-button').on 'mouseup', (e) ->
+			$('#icon-remove').on 'mouseup', (e) ->
 				# Shuts off all audio players when card is discarded.
 				_killAudioVideo()
 				_discard()
 				e.stopPropagation()
-			$('.remove-button').on 'click', (e) ->
+			$('#icon-remove').on 'click', (e) ->
 				# Shuts off all audio players when card is discarded.
 				_killAudioVideo()
 				_discard()
@@ -432,6 +430,7 @@ Namespace('Flashcards').Engine = do ->
 		lastDiscard = document.querySelector('.discarded-pos-'+(Flashcards.DiscardPile.length-1));
 		if (lastDiscard)
 			lastDiscard.setAttribute("aria-label", "Undiscard last card");
+			lastDiscard.setAttribute("title", "Undiscard last card");
 			lastDiscard.setAttribute("aria-hidden", "false");
 			lastDiscard.setAttribute("tabindex", "0");
 
@@ -614,8 +613,10 @@ Namespace('Flashcards').Engine = do ->
 						currentCardId--
 						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
 
+				# Hide discarded deck from ARIA, except for top card
+				# Reveal current flashcard to ARIA
 				_ariaShowCurrent()
-				# Focus flashcard
+				# Focus current flashcard
 				Flashcards.Card[currentCardId].node.focus()
 
 				# Update arrows
