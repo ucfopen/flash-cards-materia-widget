@@ -179,8 +179,8 @@ Namespace('Flashcards').Engine = do ->
 				backStyleStr = 'style="font-size:'+computedBackFontSize+'px;'
 
 			# Aria label for flashcards
-			# _card.FrontAriaLabel = _card.FrontText + (if _card.FrontAlt then ". Media asset: " + _card.FrontAlt else "");
-			# _card.BackAriaLabel  = _card.BackText + (if _card.BackAlt then ". Media asset: " + _card.BackAlt else "");
+			_card.FrontAriaLabel = _card.BackText + (if _card.FrontAlt then ". Media asset: " + _card.FrontAlt else "");
+			_card.BackAriaLabel  = _card.FrontText + (if _card.BackAlt then ". Media asset: " + _card.BackAlt else "");
 
 			# _card.node.children[0].setAttribute("aria-label", _card.FrontAriaLabel);
 			# _card.node.children[1].setAttribute("aria-label", _card.BackAriaLabel);
@@ -408,21 +408,22 @@ Namespace('Flashcards').Engine = do ->
 			face = if Flashcards.DiscardPile[id].node.className is 'flashcard rotated' then 'back' else 'front';
 			Flashcards.DiscardPile[id].node.setAttribute('tabindex', '0');
 			Flashcards.DiscardPile[id].node.setAttribute("aria-hidden", false);
-			Flashcards.DiscardPile[id].node.setAttribute("aria-label", "Undiscard last card. " + numDiscard + " card" + (if numDiscard > 1 then "s") + " in discard pile.");
+			Flashcards.DiscardPile[id].node.setAttribute("aria-label", "Undiscard last card. " + numDiscard + " card" + (if numDiscard > 1 then "s" else "") + " in discard pile.");
 			Flashcards.DiscardPile[id].node.setAttribute("title",  "Undiscard last card.");
 			Flashcards.DiscardPile[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", false);
 			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].setAttribute("aria-hidden", true);
 		else
 			# Get rotation
-			face = if Flashcards.Card[currentCardId].node.className is 'flashcard rotated' then 'back' else 'front';
+			face = if Flashcards.Card[id].node.className is 'flashcard rotated' then 'back' else 'front';
 			# Set Flashcard parent aria label
-			Flashcards.Card[id].node.setAttribute('aria-label', (if face is 'front' then "flashcard front" else "flashcard back"));
+			# Flashcards.Card[id].node.setAttribute('aria-label', (if face is 'front' then "flashcard front" else "flashcard back"));
+			Flashcards.Card[id].node.setAttribute('aria-label', if face is 'front' then Flashcards.Card[id].FrontAriaLabel else Flashcards.Card[id].BackAriaLabel)
 			Flashcards.Card[id].node.setAttribute("title", "Flip card");
 			# Make flashcard tabbable and visible to screenreader
 			Flashcards.Card[id].node.setAttribute('tabindex', '0');
 			Flashcards.Card[id].node.setAttribute("aria-hidden", false);
 			# Show face content depending on rotation
-			Flashcards.Card[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", false);
+			Flashcards.Card[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", true);
 			Flashcards.Card[id].node.children[if face is 'front' then 0 else 1].setAttribute("aria-hidden", true);
 
 	_ariaHide = (id, isDiscardPile) ->
