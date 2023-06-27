@@ -224,7 +224,7 @@ Namespace('Flashcards').Engine = do ->
 					Flashcards.Card[i].node.className = 'flashcard'
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right'
-		_ariaShowCurrent()
+		_ariaUpdate()
 
 	_addEventListeners = () ->
 		# document.oncontextmenu = -> false                # Disables right click.
@@ -380,7 +380,7 @@ Namespace('Flashcards').Engine = do ->
 			Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
 
 			# Update aria based on card rotation
-			_ariaShowCurrent();
+			_ariaUpdate();
 
 			# Focus the new card
 			Flashcards.Card[currentCardId].node.focus();
@@ -417,20 +417,26 @@ Namespace('Flashcards').Engine = do ->
 			# Focus card
 			Flashcards.Card[currentCardId].node.focus();
 
-	_ariaShowCurrent = () ->
+	_ariaUpdate = () ->
 		for i in [0...Flashcards.Card.length]
 			if i is currentCardId
 				_ariaShow(i, false)
 			else
 				_ariaHide(i, false)
 		for i in [0...Flashcards.DiscardPile.length]
-			_ariaHide(i, true)
+			if i is numDiscard - 1
+				_ariaShow(i, true)
+			else
+				_ariaHide(i, true)
 
 	_ariaShow = (id, isDiscardPile) ->
 		if (isDiscardPile)
-			face = if Flashcards.DiscardPile[currentCardId].node.className is 'flashcard rotated' then 'back' else 'front';
+			# Make last card on discard pile visible to keyboard users and screenreader
+			face = if Flashcards.DiscardPile[id].node.className is 'flashcard rotated' then 'back' else 'front';
 			Flashcards.DiscardPile[id].node.setAttribute('tabindex', '0');
 			Flashcards.DiscardPile[id].node.setAttribute("aria-hidden", false);
+			Flashcards.DiscardPile[id].node.setAttribute("aria-label", "Undiscard last card");
+			Flashcards.DiscardPile[id].node.setAttribute("title", "Undiscard last card");
 			Flashcards.DiscardPile[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", false);
 			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].setAttribute("aria-hidden", true);
 		else
@@ -605,26 +611,22 @@ Namespace('Flashcards').Engine = do ->
 						currentCardId--
 						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
 
-				# Hide discarded deck from ARIA, except for top card
-				# Reveal current flashcard to ARIA
-				_ariaShowCurrent()
+				# Update aria labels
+				_ariaUpdate()
 				# Focus current flashcard
 				Flashcards.Card[currentCardId]?.node.focus()
 
+				# Update arrows
+				_setArrowState()
+
 				# Move card DOM element to discard pile
-				lastDiscard = document.querySelector('.discarded-pos-'+(if _len > 3 then 3 else Flashcards.DiscardPile.length-1));
+				lastDiscard = Flashcards.DiscardPile[numDiscard - 1].node;
+				# Wait until discard animation has finished
 				setTimeout ->
 					lastDiscard.remove();
 					document.getElementById('discardpile').append(lastDiscard);
-					# Make last card on discard pile visible to keyboard users and screenreader
-					lastDiscard.setAttribute("aria-label", "Undiscard last card");
-					lastDiscard.setAttribute("title", "Undiscard last card");
-					lastDiscard.setAttribute("aria-hidden", "false");
-					lastDiscard.setAttribute("tabindex", "0");
 				, (if _len > 4 then 720 else 400)
 
-				# Update arrows
-				_setArrowState()
 
 	# Takes a card from the first array and places it in the second.
 	# @arr1  : The array we remove a card from.
@@ -666,20 +668,15 @@ Namespace('Flashcards').Engine = do ->
 					_shiftCards 'left' for i in [0.._dif]
 					_setArrowState()
 				, 20
-				# Update aria
-				_ariaShowCurrent()
 
-				# Update aria for last discard
-				lastDiscard = document.querySelector('.discarded-pos-'+(if _len > 2 then 3 else Flashcards.DiscardPile.length-1));
+				# Update aria
+				_ariaUpdate()
+
+				# Move card DOM element back to container
+				# Wait until discard animation has finished
 				setTimeout ->
-					# Move last discard to container
-					Flashcards.Card[Flashcards.Card.length-1].node.remove()
-					document.getElementById("container").append(Flashcards.Card[Flashcards.Card.length-1].node)
-					# Make new last card on discard pile visible to keyboard users and screenreader
-					lastDiscard.setAttribute("aria-label", "Undiscard last card");
-					lastDiscard.setAttribute("title", "Undiscard last card");
-					lastDiscard.setAttribute("aria-hidden", "false");
-					lastDiscard.setAttribute("tabindex", "0");
+					Flashcards.Card[currentCardId].node.remove();
+					document.getElementById('container').append(Flashcards.Card[currentCardId].node);
 				, 400
 
 	_restoreTriggered = () ->
@@ -734,7 +731,7 @@ Namespace('Flashcards').Engine = do ->
 						nodes.icons[1].className = "icon unselectable"
 					, 1200
 				, 20
-				_ariaShowCurrent()
+				_ariaUpdate()
 
 				# Move all cards to container
 				cards = document.querySelectorAll('.flashcard');
