@@ -727,7 +727,7 @@ Namespace('Flashcards').Engine = do ->
 			else
 				overlay = true
 				$('#overlay').show()
-				$('#left-arr').focus()
+				$('#icon-help').focus()
 
 			if nodes.helpOverlay.className is 'overlay shown'
 				_setArrowState()
