@@ -267,48 +267,26 @@ Namespace('Flashcards').Engine = do ->
 		else
 			document.addEventListener upEventType, -> if overlay then _toggleOverlay()
 
-			$('#icon-left').on    'mouseup', ->
-				_leftSelected()
-				_killAudioVideo()
 			$('#icon-left').on    'click', ->
 				_leftSelected()
-				_killAudioVideo()
-			$('#icon-right').on   'mouseup', ->
-				_rightSelected()
 				_killAudioVideo()
 			$('#icon-right').on   'click', ->
 				_rightSelected()
 				_killAudioVideo()
-			$('#icon-help').on    'mouseup', _toggleOverlay
 			$('#icon-help').on    'click', _toggleOverlay
-			$('#icon-restore').on 'mouseup', ->
-				_killAudioVideo()
-				_unDiscardAll()
 			$('#icon-restore').on 'click', ->
-				_killAudioVideo()
-				_unDiscardAll()
-			$('#icon-finish').on  'mouseup', ->
 				_killAudioVideo()
 				_unDiscardAll()
 			$('#icon-finish').on  'click', ->
 				_killAudioVideo()
 				_unDiscardAll()
-			$('#icon-rotate').on  'mouseup', ->
-				_killAudioVideo()
-				_rotateCards(if rotation is '' then 'back')
 			$('#icon-rotate').on  'click', ->
 				_killAudioVideo()
 				_rotateCards(if rotation is '' then 'back')
-			$('#icon-shuffle').on 'mouseup', ->
-				_killAudioVideo()
-				_shuffleCards()
 			$('#icon-shuffle').on 'click', ->
 				_killAudioVideo()
 				_shuffleCards()
 
-			$('audio').on    'mouseup', (e)->
-				if _isDiscarded(this) then _unDiscard()
-				else e.stopPropagation()
 			$('audio').on    'click', (e)->
 				if _isDiscarded(this) then _unDiscard()
 				else e.stopPropagation()
@@ -319,11 +297,6 @@ Namespace('Flashcards').Engine = do ->
 				if _isDiscarded(this) then _unDiscard()
 				else _flipCard()
 
-			$('#icon-remove').on 'mouseup', (e) ->
-				# Shuts off all audio players when card is discarded.
-				_killAudioVideo()
-				_discard()
-				e.stopPropagation()
 			$('#icon-remove').on 'click', (e) ->
 				# Shuts off all audio players when card is discarded.
 				_killAudioVideo()
