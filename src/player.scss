@@ -930,4 +930,8 @@ body {
 		}
 	}
 }
-
+.aria-live-region {
+	position: absolute;
+	z-index: -100;
+	opacity: 0;
+}

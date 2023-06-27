@@ -408,8 +408,8 @@ Namespace('Flashcards').Engine = do ->
 			face = if Flashcards.DiscardPile[id].node.className is 'flashcard rotated' then 'back' else 'front';
 			Flashcards.DiscardPile[id].node.setAttribute('tabindex', '0');
 			Flashcards.DiscardPile[id].node.setAttribute("aria-hidden", false);
-			Flashcards.DiscardPile[id].node.setAttribute("aria-label", "Undiscard last card");
-			Flashcards.DiscardPile[id].node.setAttribute("title", "Undiscard last card");
+			Flashcards.DiscardPile[id].node.setAttribute("aria-label", "Undiscard last card. " + numDiscard + " card" + (if numDiscard > 1 then "s") + " in discard pile.");
+			Flashcards.DiscardPile[id].node.setAttribute("title",  "Undiscard last card.");
 			Flashcards.DiscardPile[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", false);
 			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].setAttribute("aria-hidden", true);
 		else
@@ -433,6 +433,9 @@ Namespace('Flashcards').Engine = do ->
 			Flashcards.Card[id].node.setAttribute("aria-hidden", true);
 			Flashcards.Card[id].node.setAttribute('tabindex', '-1');
 
+	_ariaSetLiveRegion = (msg) ->
+		document.getElementById("aria-updates").innerText = msg
+
 	_killAudioVideo = () ->
 		$('audio').each ->
 			if !@paused
@@ -450,8 +453,10 @@ Namespace('Flashcards').Engine = do ->
 		if numCards > 1
 			if not animating
 				animating = true
+				_ariaSetLiveRegion("Shuffling cards.")
 				setTimeout ->
 					animating = false
+					_ariaSetLiveRegion("Cards are shuffled.")
 				, 1200
 
 				if atari then Flashcards.Atari.playIcon 'shuffle'
@@ -510,6 +515,8 @@ Namespace('Flashcards').Engine = do ->
 			if not animating
 				animating = true
 
+				_ariaSetLiveRegion("Rotating cards.")
+
 				if atari then Flashcards.Atari.playIcon 'rotate'
 
 				nodes.icons[2].className = 'icon focused' # Focus the rotate icon.
@@ -541,6 +548,8 @@ Namespace('Flashcards').Engine = do ->
 					_setCardPositions(if face is 'back' then 'reverse' else '')
 
 					nodes.icons[2].className = 'icon'
+
+					_ariaSetLiveRegion("Cards rotated.")
 				, 1400
 
 	# Decides if a flashcard node has any of the discard position classes.
@@ -598,6 +607,8 @@ Namespace('Flashcards').Engine = do ->
 				setTimeout ->
 					lastDiscard.remove();
 					document.getElementById('discardpile').append(lastDiscard);
+
+					_ariaSetLiveRegion("Discarded card.")
 				, (if _len > 4 then 720 else 400)
 
 
@@ -625,7 +636,7 @@ Namespace('Flashcards').Engine = do ->
 				numDiscard--
 				numCards++
 
-				if numDiscard is 0 then nodes.icons[1].className = "icon unselectable"
+				if numDiscard is 0 then document.getElementById("icon-finish").className = "icon unselectable"
 
 				# Move last discarded from discard to active pile.
 				_moveCardObject(Flashcards.DiscardPile, Flashcards.Card, Flashcards.DiscardPile.length-1)
@@ -650,6 +661,15 @@ Namespace('Flashcards').Engine = do ->
 				setTimeout ->
 					Flashcards.Card[currentCardId].node.remove();
 					document.getElementById('container').append(Flashcards.Card[currentCardId].node);
+
+					# If there are still cards in the discard pile
+					# then keep focus on last discard, otherwise focus flashcard
+					if (numDiscard > 0)
+						Flashcards.DiscardPile[numDiscard - 1].node.focus()
+						_ariaSetLiveRegion("Undiscarded card." + numDiscard + " left in discard pile.")
+					else
+						Flashcards.Card[currentCardId].node.focus()
+						_ariaSetLiveRegion("Undiscarded card. No cards left in discard pile.")
 				, 400
 
 	_restoreTriggered = () ->
@@ -670,6 +690,8 @@ Namespace('Flashcards').Engine = do ->
 			if numDiscard > 0
 
 				_restoreTriggered()
+
+				_ariaSetLiveRegion("Undiscarding all cards.")
 
 				# Move all cards from the discard pile into the active pile.
 				for i in [0...Flashcards.DiscardPile.length]
@@ -701,7 +723,8 @@ Namespace('Flashcards').Engine = do ->
 					, 800
 
 					setTimeout ->
-						nodes.icons[1].className = "icon unselectable"
+						document.getElementById("icon-finish").className = "icon unselectable"
+						_ariaSetLiveRegion("All cards have been un-discarded.")
 					, 1200
 				, 20
 				_ariaUpdate()
