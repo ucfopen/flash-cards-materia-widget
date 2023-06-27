@@ -726,30 +726,8 @@ body {
 				left     : auto;
 				bottom   : auto;
 				margin   : auto;
-				color    : #FFF;
-				&:hover { color : #222; }
-			}
-			.restart {
-				position      : absolute;
-				left          : 50%;
-				margin-left   : -21px;
-				fill          : #FFF;
-				stroke        : #FFF;
-				width         : 31px;
-				height        : 31px;
-				padding       : 5px;
-				border-radius : 100%;
-
-				-webkit-transition : 300ms all;
-				   -moz-transition : 300ms all;
-				    -ms-transition : 300ms all;
-				        transition : 300ms all;
-
-				&:hover {
-					background-color : rgba(255,255,255,0.6);
-					fill             : #222;
-					stroke           : #222;
-				}
+				color    : $a;
+				&:hover, &:focus { color : #fff; }
 			}
 		}
 		.arrow {
