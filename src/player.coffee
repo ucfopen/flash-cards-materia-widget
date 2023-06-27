@@ -586,6 +586,7 @@ Namespace('Flashcards').Engine = do ->
 					_hideIcons()
 					_showElement nodes.finishMssg, true
 					nodes.container.className = 'hidden'
+					document.getElementById("icon-finish").focus()
 				else
 					if Flashcards.Card[currentCardId]?
 						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
@@ -784,7 +785,7 @@ Namespace('Flashcards').Engine = do ->
 	_hideIcons = () ->
 		for i in [1...nodes.icons.length]
 			if (nodes.icons[i]).id != 'icon-finish'
-				nodes.icons[i].className = 'icon faded-out'
+				nodes.icons[i].className = 'icon hidden'
 
 	_showIcons = () ->
 		for i in [1...nodes.icons.length]

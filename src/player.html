@@ -44,7 +44,7 @@
 						<li>Shuffle the deck or flip all the cards and try to guess the other side.</li>
 					</ul>
 				</figure>
-				<button id="gotit" class="gotit" tabindex="0" onclick="Namespace('Flashcards').Engine.hideInstructions()">Got it!</button>
+				<button id="gotit" class="gotit" tabindex="0" onclick="Namespace('Flashcards').Engine.hideInstructions()" title="Click to continue">Got it!</button>
 			</div>
 		</section>
 
@@ -148,8 +148,8 @@
 
 				<!-- Finish message -->
 				<section id="finished" class="hidden">
-					<p>No cards remaining.</p>
-					<button id="icon-finish" class="icon"></button>
+					<p id="finishedMssg">No cards remaining. Click to restore all cards.</p>
+					<button id="icon-finish" class="icon" aria-label="Restore cards." aria-describedby="finishedMssg" title="Restore cards"></button>
 				</section>
 
 				<!-- Options for all flashcards -->
