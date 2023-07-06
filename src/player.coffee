@@ -66,6 +66,7 @@ Namespace('Flashcards').Engine = do ->
 	_hideInstructions = () ->
 		$('.instructions').hide()
 		$('#game').show()
+		$('#icon-help').focus()
 
 	_easterEggStart = () ->
 		yepnope(
@@ -296,6 +297,11 @@ Namespace('Flashcards').Engine = do ->
 				_killAudioVideo()
 				if _isDiscarded(this) then _unDiscard()
 				else _flipCard()
+			$('.flashcard').on    'keydown', (e) ->
+				if e.key is ' ' or e.key is 'Enter'
+					_killAudioVideo()
+					if _isDiscarded(this) then _unDiscard()
+					else _flipCard()
 
 			$('#icon-remove').on 'click', (e) ->
 				# Shuts off all audio players when card is discarded.
@@ -365,15 +371,19 @@ Namespace('Flashcards').Engine = do ->
 			if _canMove 'right'
 				nodes.rightArrow.className = 'arrow shown'
 				nodes.rightArrow.setAttribute("aria-hidden", false);
+				nodes.rightArrow.setAttribute("tabindex", "0");
 			else
 				nodes.rightArrow.className = 'arrow'
 				nodes.rightArrow.setAttribute("aria-hidden", true);
+				nodes.rightArrow.setAttribute("tabindex", "-1");
 			if _canMove 'left'
 				nodes.leftArrow.className  = 'arrow shown'
 				nodes.leftArrow.setAttribute("aria-hidden", false);
+				nodes.leftArrow.setAttribute("tabindex", "0");
 			else
 				nodes.leftArrow.className  = 'arrow'
 				nodes.leftArrow.setAttribute("aria-hidden", true);
+				nodes.leftArrow.setAttribute("tabindex", "-1");
 
 	# Rotates the current card 180 degrees.
 	_flipCard = () ->
@@ -408,8 +418,8 @@ Namespace('Flashcards').Engine = do ->
 			face = if Flashcards.DiscardPile[id].node.className is 'flashcard rotated' then 'back' else 'front';
 			Flashcards.DiscardPile[id].node.setAttribute('tabindex', '0');
 			Flashcards.DiscardPile[id].node.setAttribute("aria-hidden", false);
-			Flashcards.DiscardPile[id].node.setAttribute("aria-label", "Undiscard last card. " + numDiscard + " card" + (if numDiscard > 1 then "s" else "") + " in discard pile.");
-			Flashcards.DiscardPile[id].node.setAttribute("title",  "Undiscard last card.");
+			Flashcards.DiscardPile[id].node.setAttribute("aria-label", "Restore last card. " + numDiscard + " card" + (if numDiscard > 1 then "s" else "") + " in discard pile.");
+			Flashcards.DiscardPile[id].node.setAttribute("title",  "Restore last card.");
 			Flashcards.DiscardPile[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", false);
 			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].setAttribute("aria-hidden", true);
 		else
@@ -550,7 +560,7 @@ Namespace('Flashcards').Engine = do ->
 
 					nodes.icons[2].className = 'icon'
 
-					_ariaSetLiveRegion("Cards rotated.")
+					_ariaSetLiveRegion("Cards flipped.")
 				, 1400
 
 	# Decides if a flashcard node has any of the discard position classes.
@@ -668,10 +678,10 @@ Namespace('Flashcards').Engine = do ->
 					# then keep focus on last discard, otherwise focus flashcard
 					if (numDiscard > 0)
 						Flashcards.DiscardPile[numDiscard - 1].node.focus()
-						_ariaSetLiveRegion("Undiscarded card." + numDiscard + " left in discard pile.")
+						_ariaSetLiveRegion("Restored card." + numDiscard + " left in discard pile.")
 					else
 						Flashcards.Card[currentCardId].node.focus()
-						_ariaSetLiveRegion("Undiscarded card. No cards left in discard pile.")
+						_ariaSetLiveRegion("Restored card. No cards left in discard pile.")
 				, 400
 
 	_restoreTriggered = () ->
@@ -693,7 +703,7 @@ Namespace('Flashcards').Engine = do ->
 
 				_restoreTriggered()
 
-				_ariaSetLiveRegion("Undiscarding all cards.")
+				_ariaSetLiveRegion("Restoring all cards.")
 
 				# Move all cards from the discard pile into the active pile.
 				for i in [0...Flashcards.DiscardPile.length]
@@ -726,7 +736,7 @@ Namespace('Flashcards').Engine = do ->
 
 					setTimeout ->
 						document.getElementById("icon-finish").className = "icon unselectable"
-						_ariaSetLiveRegion("All cards have been un-discarded.")
+						_ariaSetLiveRegion("All cards have been restored.")
 					, 1200
 				, 20
 				_ariaUpdate()
