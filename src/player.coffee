@@ -614,7 +614,7 @@ Namespace('Flashcards').Engine = do ->
 				# Update aria labels
 				_ariaUpdate()
 				# Focus current flashcard
-				Flashcards.Card[currentCardId]?.node.focus()
+				# Flashcards.Card[currentCardId]?.node.focus()
 
 				# Update arrows
 				_setArrowState()
@@ -625,8 +625,13 @@ Namespace('Flashcards').Engine = do ->
 				setTimeout ->
 					lastDiscard.remove();
 					document.getElementById('discardpile').append(lastDiscard);
-
-					_ariaSetLiveRegion("Discarded card.")
+					setTimeout ->
+						if numCards > 0
+							if Flashcards.Card[currentCardId].className = "flashcard rotated"
+								_ariaSetLiveRegion("Discarded card. Next card: " + Flashcards.Card[currentCardId].FrontAriaLabel)
+							else
+								_ariaSetLiveRegion("Discarded card. Next card: " + Flashcards.Card[currentCardId].BackAriaLabel)
+					, (600)
 				, (if _len > 4 then 720 else 400)
 
 
