@@ -75,7 +75,8 @@
 				<p id="aria-updates"></p>
 			</section>
 
-			<button id="icon-help" class="icon" aria-label="Press H for help" title="Help"></button>
+			<button id="icon-help" class="icon" aria-label="Press H to open Keyboard Controls" title="Help"></button>
+			<button id="icon-close" class="icon" aria-label="Close Keyboard Controls" title="Help">x</button>
 
 			<section id="overlay" class="overlay">
 				<h2>Keyboard Controls</h2>
@@ -127,6 +128,8 @@
 					<circle cx="35" cy="25" r="7"></circle>
 				</svg>
 			</section>
+
+			<div onfocus="Namespace('Flashcards').Engine.hideOverlay(); document.querySelector('.flashcard').focus();" tabindex="0" id="hidden-tab-index"></div>
 
 			<main id="board">
 

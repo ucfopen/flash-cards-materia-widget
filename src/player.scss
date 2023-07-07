@@ -22,7 +22,7 @@ $g : #332a2a;
 #icon-help, #icon-shuffle,
 #icon-rotate, #icon-restore,
 #icon-finish, #icon-alert,
-#icon-left, #icon-right,
+#icon-left, #icon-right, #icon-close
 .discard {
 	font-family            : 'icomoon';
 	font-style             : normal;
@@ -62,7 +62,7 @@ $g : #332a2a;
 	&.hidden	   { display: none; }
 	&#icon-restore { left : 40%; }
 	&#icon-rotate  { left : 50%; }
-	&#icon-help    { left : 35px; top : 10px; }
+	&#icon-help, &#icon-close    { left : 35px; top : 10px; }
 	&#icon-shuffle { left : 60%; }
 }
 
@@ -84,6 +84,30 @@ $g : #332a2a;
 #icon-right:before   { content : "\e000"; }
 #icon-alert          { content : "\e006"; }
 
+#icon-close {
+	line-height : 15px;
+	font-size   : 18px;
+	z-index		: 20;
+	border		: none;
+	color 		: $g;
+	padding		: 0 0 3px 0;
+
+	-webkit-transition : 200ms all;
+	-moz-transition : 200ms all;
+		-ms-transition : 200ms all;
+			transition : 200ms all;
+
+	&:hover, &:focus, &:active {
+		background-color : $a;
+		cursor: pointer;
+		outline: none;
+
+		-webkit-transition : 200ms all;
+		-moz-transition : 200ms all;
+			-ms-transition : 200ms all;
+				transition : 200ms all;
+	}
+}
 
 body {
 	position         : absolute;
@@ -115,6 +139,7 @@ body {
 	#fake-loading-screen {
 		display : none;
 	}
+
 	.overlay {
 		opacity  : 0;
 		position : absolute;
@@ -686,7 +711,6 @@ body {
 			border-radius: 50%;
 			color 		: $g;
 			background-color: $a;
-			padding		: 0px 0px 5px 0px;
 
 			-webkit-transition : 200ms all;
 			   -moz-transition : 200ms all;

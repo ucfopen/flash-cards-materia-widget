@@ -14,6 +14,7 @@ Namespace('Flashcards').Engine = do ->
 	rotation      = ''      # Specifies the current default rotation for all cards.
 	timer         = null    # A setInterval timer for regular interval events.
 	atari         = false   # Triggered by KONAMI CODE
+	prevFocusNode = null
 
 	# Environmental conditions.
 	isMobile = navigator.userAgent.match /(iPhone|iPod|iPad|Android|BlackBerry)/
@@ -46,6 +47,9 @@ Namespace('Flashcards').Engine = do ->
 		_setCardPositions()
 		_addEventListeners()
 		_setArrowState()
+
+		$('#hidden-tab-index').hide()
+		$('#icon-close').hide()
 
 		if isIE then yepnope(load:['css/IE.css'], complete : () -> document.getElementById('main').className+="IE")
 
@@ -251,6 +255,7 @@ Namespace('Flashcards').Engine = do ->
 			Hammer(document.getElementById('icon-right')).on 'tap', -> if _canMove 'right' then _shiftCards 'left'
 
 			Hammer(document.getElementById('icon-help')).on    'tap', _toggleOverlay
+			Hammer(document.getElementById('icon-close')).on    'tap', _toggleOverlay
 			Hammer(document.getElementById('icon-restore')).on 'tap', _unDiscardAll
 			Hammer(document.getElementById('icon-finish')).on  'tap', _unDiscardAll
 			Hammer(document.getElementById('icon-rotate')).on  'tap', -> _rotateCards(if rotation is '' then 'back')
@@ -275,6 +280,7 @@ Namespace('Flashcards').Engine = do ->
 				_rightSelected()
 				_killAudioVideo()
 			$('#icon-help').on    'click', _toggleOverlay
+			$('#icon-close').on    'click', _toggleOverlay
 			$('#icon-restore').on 'click', ->
 				_killAudioVideo()
 				_unDiscardAll()
@@ -392,13 +398,16 @@ Namespace('Flashcards').Engine = do ->
 			# The back is currently showing.
 			if Flashcards.Card[currentCardId].node.className is 'flashcard rotated'
 				Flashcards.Card[currentCardId].node.className = 'flashcard'
+				_ariaSetLiveRegion(Flashcards.Card[currentCardId].FrontAriaLabel)
 			# The front is currently showing.
 			else
 				Flashcards.Card[currentCardId].node.className = 'flashcard rotated'
+				_ariaSetLiveRegion(Flashcards.Card[currentCardId].BackAriaLabel)
 			# Update aria
 			_ariaShow(currentCardId, false)
 			# Focus card
 			Flashcards.Card[currentCardId].node.focus();
+
 
 	_ariaUpdate = () ->
 		for i in [0...Flashcards.Card.length]
@@ -464,7 +473,6 @@ Namespace('Flashcards').Engine = do ->
 		if numCards > 1
 			if not animating
 				animating = true
-				_ariaSetLiveRegion("Shuffling cards.")
 				setTimeout ->
 					animating = false
 					_ariaSetLiveRegion("Cards are shuffled.")
@@ -525,8 +533,6 @@ Namespace('Flashcards').Engine = do ->
 		if numCards > 0
 			if not animating
 				animating = true
-
-				_ariaSetLiveRegion("Rotating cards.")
 
 				if atari then Flashcards.Atari.playIcon 'rotate'
 
@@ -703,8 +709,6 @@ Namespace('Flashcards').Engine = do ->
 
 				_restoreTriggered()
 
-				_ariaSetLiveRegion("Restoring all cards.")
-
 				# Move all cards from the discard pile into the active pile.
 				for i in [0...Flashcards.DiscardPile.length]
 					_moveCardObject(Flashcards.DiscardPile, Flashcards.Card, Flashcards.DiscardPile.length-1)
@@ -747,6 +751,8 @@ Namespace('Flashcards').Engine = do ->
 				for card in cards
 					card.remove();
 					container.append(card);
+			else
+				_ariaSetLiveRegion("There are no cards to restore.")
 
 	# Opens or closes the help overlay.
 	_toggleOverlay = () ->
@@ -757,24 +763,41 @@ Namespace('Flashcards').Engine = do ->
 			, 300
 
 			if overlay is true
-				overlay = false
-				$('#overlay').hide()
+				_hideOverlay()
 			else
-				overlay = true
-				$('#overlay').show()
-				$('#icon-help').focus()
+				_showOverlay()
 
-			if nodes.helpOverlay.className is 'overlay shown'
-				_setArrowState()
-				nodes.icons[4].className    = 'icon'
-				nodes.gameboard.className   = ''
-				nodes.helpOverlay.className = 'overlay'
-			else
-				nodes.rightArrow.className  = 'arrow shown'
-				nodes.leftArrow.className   = 'arrow shown'
-				nodes.icons[4].className    = 'icon focused'
-				nodes.gameboard.className   = 'blurred'
-				nodes.helpOverlay.className = 'overlay shown'
+	_showOverlay = () ->
+		# Save currently focused object
+		prevFocusNode = $(document.activeElement)
+		overlay = true
+		$('#overlay').show()
+		$('#icon-close').show()
+		$('#icon-close').focus()
+		$('#icon-help').hide()
+		$('#hidden-tab-index').show()
+		nodes.rightArrow.className  = 'arrow shown'
+		nodes.leftArrow.className   = 'arrow shown'
+		nodes.icons[4].className    = 'icon focused'
+		nodes.gameboard.className   = 'blurred'
+		nodes.helpOverlay.className = 'overlay shown'
+
+	_hideOverlay = () ->
+		overlay = false
+		$('#overlay').hide()
+		$('#hidden-tab-index').hide()
+		$('#icon-close').hide()
+		$('#icon-help').show()
+		_setArrowState()
+		nodes.icons[4].className    = 'icon'
+		nodes.gameboard.className   = ''
+		nodes.helpOverlay.className = 'overlay'
+		# If previously focused on something, focus that
+		if prevFocusNode
+			prevFocusNode.focus()
+		else
+			# Else, focus the current flashcard
+			Flashcards.Card[currentCardId].node.focus()
 
 	# Adds a shown class to an element and optionally fades it in.
 	_showElement = (elem, fadeIn = false) ->
@@ -807,3 +830,4 @@ Namespace('Flashcards').Engine = do ->
 	nodes : nodes
 	hideInstructions : _hideInstructions
 	toggleOverlay : _toggleOverlay
+	hideOverlay : _hideOverlay
