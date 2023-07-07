@@ -475,7 +475,7 @@ Namespace('Flashcards').Engine = do ->
 				animating = true
 				setTimeout ->
 					animating = false
-					_ariaSetLiveRegion("Cards are shuffled.")
+					_ariaSetLiveRegion("All cards have been shuffled.")
 				, 1200
 
 				if atari then Flashcards.Atari.playIcon 'shuffle'
@@ -566,7 +566,7 @@ Namespace('Flashcards').Engine = do ->
 
 					nodes.icons[2].className = 'icon'
 
-					_ariaSetLiveRegion("Cards flipped.")
+					_ariaSetLiveRegion("All cards have been flipped")
 				, 1400
 
 	# Decides if a flashcard node has any of the discard position classes.
@@ -631,6 +631,8 @@ Namespace('Flashcards').Engine = do ->
 								_ariaSetLiveRegion("Discarded card. Next card: " + Flashcards.Card[currentCardId].FrontAriaLabel)
 							else
 								_ariaSetLiveRegion("Discarded card. Next card: " + Flashcards.Card[currentCardId].BackAriaLabel)
+						else
+							_ariaSetLiveRegion("Discarded card. There are no more cards. Press U to restore all cards.")
 					, (600)
 				, (if _len > 4 then 720 else 400)
 
@@ -745,7 +747,10 @@ Namespace('Flashcards').Engine = do ->
 
 					setTimeout ->
 						document.getElementById("icon-finish").className = "icon unselectable"
-						_ariaSetLiveRegion("All cards have been restored.")
+						if (Flashcards.Card[currentCardId].node.className = "flashcard rotated")
+							_ariaSetLiveRegion("All cards have been restored. Next card: " + Flashcards.Card[currentCardId].BackAriaLabel)
+						else
+							_ariaSetLiveRegion("All cards have been restored. Next card: " + Flashcards.Card[currentCardId].FrontAriaLabel)
 					, 1200
 				, 20
 				_ariaUpdate()
