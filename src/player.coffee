@@ -128,6 +128,8 @@ Namespace('Flashcards').Engine = do ->
 
 	# Stores card data.
 	# @data : Card information pulled from the qset.
+	# Front of card: 	answer
+	# Back of card: 	question
 	_storeCards = (data) ->
 		numCards   = data.length
 		_cardNodes = document.getElementsByClassName 'flashcard'
@@ -135,36 +137,38 @@ Namespace('Flashcards').Engine = do ->
 		for i in [0...numCards]
 			Flashcards.Card.push {}
 			_card = Flashcards.Card[i]
+			console.log("Data: ")
+			console.log(data[i])
 
 			# Single flashcard specific data.
 			_card.node      = _cardNodes[i]
-			_card.FrontText = data[i].answers[0].text.replace(/\&\#10\;/g, '<br>')
-			_card.BackText  = data[i].questions[0].text.replace(/\&\#10\;/g, '<br>')
+			_card.BackText = data[i].answers[0].text.replace(/\&\#10\;/g, '<br>')
+			_card.FrontText  = data[i].questions[0].text.replace(/\&\#10\;/g, '<br>')
 
 			# Strings that contain inline font scaling style (if applicable)
 			frontStyleStr = ""
 			backStyleStr = ""
 
-			if data[i].assets?[1]
-				# Handle former QSet asset format
-				if typeof data[i].assets[1] isnt 'object' and data[i].assets[1] isnt '-1'
-					_card.FrontURL = Materia.Engine.getImageAssetUrl data[i].assets[1]
-				# Handle new QSet asset format
-				else if typeof data[i].assets[1] is 'object'
-					_card.FrontURL = data[i].assets[1].url
-				# Assign alt text
-				_card.FrontAlt  = data[i].assets[1].alt;
-			else _card.FrontURL = '-1'
-
 			if data[i].assets?[0]
 				# Handle former QSet asset format
 				if typeof data[i].assets[0] isnt 'object' and data[i].assets[0] isnt '-1'
-					_card.BackURL = Materia.Engine.getImageAssetUrl data[i].assets[0]
+					_card.FrontURL = Materia.Engine.getImageAssetUrl data[i].assets[0]
 				# Handle new QSet asset format
 				else if typeof data[i].assets[0] is 'object'
-					_card.BackURL = data[i].assets[0].url
+					_card.FrontURL = data[i].assets[0].url
 				# Assign alt text
-				_card.BackAlt  = data[i].assets[0].alt;
+				_card.FrontAlt  = data[i].assets[0].alt;
+			else _card.FrontURL = '-1'
+
+			if data[i].assets?[1]
+				# Handle former QSet asset format
+				if typeof data[i].assets[1] isnt 'object' and data[i].assets[1] isnt '-1'
+					_card.BackURL = Materia.Engine.getImageAssetUrl data[i].assets[1]
+				# Handle new QSet asset format
+				else if typeof data[i].assets[1] is 'object'
+					_card.BackURL = data[i].assets[1].url
+				# Assign alt text
+				_card.BackAlt  = data[i].assets[1].alt;
 			else _card.BackURL = '-1'
 
 			if _card.FrontURL? && _card.FrontURL != '-1'
@@ -183,34 +187,47 @@ Namespace('Flashcards').Engine = do ->
 				computedBackFontSize = _computeFontSize _card.BackText
 				backStyleStr = 'style="font-size:'+computedBackFontSize+'px;'
 
-			# Aria label for flashcards
-			_card.FrontAriaLabel = _card.BackText + (if _card.FrontAlt then ". Media asset: " + _card.FrontAlt else "");
-			_card.BackAriaLabel  = _card.FrontText + (if _card.BackAlt then ". Media asset: " + _card.BackAlt else "");
-
-			# _card.node.children[0].setAttribute("aria-label", _card.FrontAriaLabel);
-			# _card.node.children[1].setAttribute("aria-label", _card.BackAriaLabel);
-
-			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'" '+frontStyleStr+' ">'+_card.FrontText+'</p>'
+			_card.node.children[1].children[0].innerHTML = '<p class="'+_frontClass+'" '+frontStyleStr+' ">'+_card.FrontText+'</p>'
 			if _card.FrontURL isnt '-1'
-				if typeof data[i].assets[1] isnt 'object'
-					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'" alt="'+_card.FrontAlt+'">'
-				else if data[i].assets[1].type == 'jpg' or data[i].assets[1].type == 'jpeg' or data[i].assets[1].type == 'png' or data[i].assets[1].type == 'gif'
-					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'" alt="'+_card.FrontAlt+'">'
-				else if data[i].assets[1].type == 'mp3' || data[i].assets[1].type == 'wav' || data[i].assets[1].type == 'aif'
-					_card.node.children[0].children[1].innerHTML = '<audio controls class="'+_frontClass+'" src="'+_card.FrontURL+'">'
-				else if data[i].assets[1].type == 'link'
-					_card.node.children[0].children[1].innerHTML = '<iframe class="'+_frontClass+'" src="' + _card.FrontURL + '" frameborder="0" allowfullscreen></iframe>'
-
-			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'" '+backStyleStr+' ">'+_card.BackText+'</p>'
-			if _card.BackURL isnt '-1'
 				if typeof data[i].assets[0] isnt 'object'
-					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'" alt="'+_card.BackAlt+'">'
+					_card.node.children[1].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'" alt="'+_card.FrontAlt+'">'
+					_card.frontAssetType = "Image"
 				else if data[i].assets[0].type == 'jpg' or data[i].assets[0].type == 'jpeg' or data[i].assets[0].type == 'png' or data[i].assets[0].type == 'gif'
-					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'" alt="'+_card.BackAlt+'">'
+					_card.node.children[1].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'" alt="'+_card.FrontAlt+'">'
+					_card.frontAssetType = "Image"
 				else if data[i].assets[0].type == 'mp3' || data[i].assets[0].type == 'wav' || data[i].assets[0].type == 'aif'
-					_card.node.children[1].children[1].innerHTML = '<audio controls class="'+_backClass+'" src="'+_card.BackURL+'">'
-				else if data[i].assets[0].type == 'link'
-					_card.node.children[1].children[1].innerHTML = '<iframe class="'+_backClass+'" src="' + _card.BackURL + '" frameborder="0" allowfullscreen></iframe>'
+					_card.node.children[1].children[1].innerHTML = '<audio controls class="'+_frontClass+'" src="'+_card.FrontURL+'">'
+					_card.frontAssetType = "Audio"
+				else if data[i].assets[0].type == 'link' or data[i].assets[0].type == 'youtube' or data[i].assets[0].type == 'vimeo'
+					_card.node.children[1].children[1].innerHTML = '<iframe class="'+_frontClass+'" src="' + _card.FrontURL + '" frameborder="0" allowfullscreen></iframe>'
+					_card.frontAssetType="Video"
+				else if data[i].assets[0].type == 'mp4'
+					_card.node.children[1].children[1].innerHTML = '<video class="'+_frontClass+'"><source src="' + _card.FrontURL + '">Your browser does not support the video tag</video>'
+					_card.frontAssetType="Video"
+
+			_card.node.children[0].children[0].innerHTML  = '<p class="'+_backClass+'" '+backStyleStr+' ">'+_card.BackText+'</p>'
+			if _card.BackURL isnt '-1'
+				if typeof data[i].assets[1] isnt 'object'
+					_card.node.children[0].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'" alt="'+_card.BackAlt+'">'
+					_card.backAssetType = "Image"
+				else if data[i].assets[1].type == 'jpg' or data[i].assets[1].type == 'jpeg' or data[i].assets[1].type == 'png' or data[i].assets[1].type == 'gif'
+					_card.node.children[0].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'" alt="'+_card.BackAlt+'">'
+					_card.backAssetType = "Image"
+				else if data[i].assets[1].type == 'mp3' or data[i].assets[1].type == 'wav' or data[i].assets[1].type == 'aif'
+					_card.node.children[0].children[1].innerHTML = '<audio controls class="'+_backClass+'" src="'+_card.BackURL+'">'
+					_card.backAssetType="Audio"
+				else if data[i].assets[1].type == 'link' or data[i].assets[1].type == 'youtube' or data[i].assets[1].type == 'vimeo'
+					_card.node.children[0].children[1].innerHTML = '<iframe class="'+_backClass+'" src="' + _card.BackURL + '" frameborder="0" allowfullscreen></iframe>'
+					_card.backAssetType="Video"
+				else if data[i].assets[1].type == 'mp4'
+					_card.node.children[0].children[1].innerHTML = '<video class="'+_backClass+'"><source src="' + _card.BackURL + '">Your browser does not support the video tag</video>'
+					_card.backAssetType="Video"
+
+			# Aria label for flashcards
+			_card.FrontAriaLabel = (if _card.FrontText then _card.FrontText + ", " else "") + (if _card.FrontURL isnt '-1' then _card.frontAssetType + " asset: " + (_card.FrontAlt or "Undescribed.") else "");
+			_card.BackAriaLabel  = (if _card.BackText then _card.BackText + ", " else "") + (if _card.BackURL isnt '-1' then _card.backAssetType + " asset: " + (_card.BackAlt or "Undescribed.") else "");
+			console.log("Card: ")
+			console.log(_card)
 
 	# Places cards in their correct positions within the gameboard and gives them a specific rotation.
 	# @face : Specifies whether or not to rotate the card when placing them in their positions.
@@ -442,8 +459,16 @@ Namespace('Flashcards').Engine = do ->
 			Flashcards.Card[id].node.setAttribute('tabindex', '0');
 			Flashcards.Card[id].node.setAttribute("aria-hidden", false);
 			# Show face content depending on rotation
-			Flashcards.Card[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", true);
-			Flashcards.Card[id].node.children[if face is 'front' then 0 else 1].setAttribute("aria-hidden", true);
+			if face is 'front'
+				# Front of card. Show contents if there is video or audio asset
+				Flashcards.Card[id].node.children[1].setAttribute("aria-hidden", (if Flashcards.Card[id].FrontURL isnt "-1" and Flashcards.Card[id].frontAssetType != "Image" then false else true));
+				# Always hide back of card
+				Flashcards.Card[id].node.children[0].setAttribute("aria-hidden", true);
+			else
+				# Back of card
+				Flashcards.Card[id].node.children[0].setAttribute("aria-hidden", (if Flashcards.Card[id].BackURL isnt "-1" and Flashcards.Card[id].backAssetType != "Image" then false else true));
+				# Always hide front of card
+				Flashcards.Card[id].node.children[1].setAttribute("aria-hidden", true);
 
 	_ariaHide = (id, isDiscardPile) ->
 		if (isDiscardPile)
@@ -475,7 +500,6 @@ Namespace('Flashcards').Engine = do ->
 				animating = true
 				setTimeout ->
 					animating = false
-					_ariaSetLiveRegion("All cards have been shuffled.")
 				, 1200
 
 				if atari then Flashcards.Atari.playIcon 'shuffle'
@@ -506,6 +530,7 @@ Namespace('Flashcards').Engine = do ->
 					Flashcards.Card = _shuffle(Flashcards.Card)
 					_setCardPositions(if rotation is '' then null else 'reverse')
 					nodes.icons[3].className = 'icon'
+					_ariaSetLiveRegion("All cards have been shuffled. Current card: " + (if Flashcards.Card[currentCardId].node.className is "flashcard rotated" then Flashcards.Card[currentCardId].BackAriaLabel else Flashcards.Card[currentCardId].FrontAriaLabel))
 				, 1500
 
 	_stageShufflePt1 = (card, i) ->
@@ -566,7 +591,7 @@ Namespace('Flashcards').Engine = do ->
 
 					nodes.icons[2].className = 'icon'
 
-					_ariaSetLiveRegion("All cards have been flipped")
+					_ariaSetLiveRegion("All cards have been flipped. Current card: " + (if Flashcards.Card[currentCardId].node.className is "flashcard rotated" then Flashcards.Card[currentCardId].BackAriaLabel else Flashcards.Card[currentCardId].FrontAriaLabel))
 				, 1400
 
 	# Decides if a flashcard node has any of the discard position classes.
