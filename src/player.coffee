@@ -447,7 +447,10 @@ Namespace('Flashcards').Engine = do ->
 			Flashcards.DiscardPile[id].node.setAttribute("aria-label", "Restore last card. " + numDiscard + " card" + (if numDiscard > 1 then "s" else "") + " in discard pile.");
 			Flashcards.DiscardPile[id].node.setAttribute("title",  "Restore last card.");
 			Flashcards.DiscardPile[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", false);
+			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].removeAttribute("inert");
 			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].setAttribute("aria-hidden", true);
+			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].setAttribute("inert", true);
+			Flashcards.DiscardPile[id].node.removeAttribute('inert');
 		else
 			# Get rotation
 			face = if Flashcards.Card[id].node.className is 'flashcard rotated' then 'back' else 'front';
@@ -458,25 +461,36 @@ Namespace('Flashcards').Engine = do ->
 			# Make flashcard tabbable and visible to screenreader
 			Flashcards.Card[id].node.setAttribute('tabindex', '0');
 			Flashcards.Card[id].node.setAttribute("aria-hidden", false);
+			Flashcards.Card[id].node.removeAttribute('inert');
 			# Show face content depending on rotation
 			if face is 'front'
 				# Front of card. Show contents if there is video or audio asset
 				Flashcards.Card[id].node.children[1].setAttribute("aria-hidden", (if Flashcards.Card[id].FrontURL isnt "-1" and Flashcards.Card[id].frontAssetType != "Image" then false else true));
+				Flashcards.Card[id].node.children[1].removeAttribute("inert");
 				# Always hide back of card
 				Flashcards.Card[id].node.children[0].setAttribute("aria-hidden", true);
+				Flashcards.Card[id].node.children[0].setAttribute("inert", true);
 			else
 				# Back of card
 				Flashcards.Card[id].node.children[0].setAttribute("aria-hidden", (if Flashcards.Card[id].BackURL isnt "-1" and Flashcards.Card[id].backAssetType != "Image" then false else true));
+				Flashcards.Card[id].node.children[0].removeAttribute("inert");
 				# Always hide front of card
 				Flashcards.Card[id].node.children[1].setAttribute("aria-hidden", true);
+				Flashcards.Card[id].node.children[1].setAttribute("inert", true);
 
 	_ariaHide = (id, isDiscardPile) ->
 		if (isDiscardPile)
 			Flashcards.DiscardPile[id].node.setAttribute("aria-hidden", true);
 			Flashcards.DiscardPile[id].node.setAttribute('tabindex', '-1');
+			Flashcards.DiscardPile[id].node.setAttribute('inert', true);
+			Flashcards.DiscardPile[id].node.children[0].setAttribute("aria-hidden", true);
+			Flashcards.DiscardPile[id].node.children[1].setAttribute("aria-hidden", true);
 		else
 			Flashcards.Card[id].node.setAttribute("aria-hidden", true);
 			Flashcards.Card[id].node.setAttribute('tabindex', '-1');
+			Flashcards.Card[id].node.setAttribute('inert', true);
+			Flashcards.Card[id].node.children[0].setAttribute("aria-hidden", true);
+			Flashcards.Card[id].node.children[1].setAttribute("aria-hidden", true);
 
 	_ariaSetLiveRegion = (msg) ->
 		document.getElementById("aria-updates").innerText = msg
