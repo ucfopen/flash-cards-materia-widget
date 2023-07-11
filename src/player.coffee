@@ -157,7 +157,7 @@ Namespace('Flashcards').Engine = do ->
 				else if typeof data[i].assets[0] is 'object'
 					_card.FrontURL = data[i].assets[0].url
 				# Assign alt text
-				_card.FrontAlt  = data[i].assets[0].alt;
+				_card.FrontAlt  = data[i].assets[0].alt or "Undescribed";
 			else _card.FrontURL = '-1'
 
 			if data[i].assets?[1]
@@ -168,7 +168,7 @@ Namespace('Flashcards').Engine = do ->
 				else if typeof data[i].assets[1] is 'object'
 					_card.BackURL = data[i].assets[1].url
 				# Assign alt text
-				_card.BackAlt  = data[i].assets[1].alt;
+				_card.BackAlt  = data[i].assets[1].alt or "Undescribed";
 			else _card.BackURL = '-1'
 
 			if _card.FrontURL? && _card.FrontURL != '-1'
