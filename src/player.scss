@@ -8,20 +8,34 @@
 	font-weight : normal;
 	font-style  : normal;
 }
+
+// Color palette.
+$a : #ADA4A4;
+$b : #1A1A1A;
+$c : #6B6263;
+$d : #543F3D;
+$e : #A45B5B;
+$e1 : #c47c7c;
+$f : #87735F;
+$g : #332a2a;
+
 #icon-help, #icon-shuffle,
 #icon-rotate, #icon-restore,
 #icon-finish, #icon-alert,
-#icon-left, #icon-right {
+#icon-left, #icon-right, #icon-close
+.discard {
 	font-family            : 'icomoon';
-	speak                  : none;
 	font-style             : normal;
 	font-weight            : normal;
 	font-variant           : normal;
 	text-transform         : none;
 	line-height            : 1;
 	-webkit-font-smoothing : antialiased;
+	border: none;
+	background: rgba(0,0,0,0);
+
 }
-.icon {
+.icon, .arrow {
 	font-size     : 24px;
 	z-index       : 10;
 	position      : absolute;
@@ -30,7 +44,7 @@
 	border-radius : 100%;
 	height        : 24px;
 	width         : 24px;
-	color         : #222;
+	color         : $a;
 	padding       : 10px;
 
 	-webkit-transition : 100ms background-color, 500ms opacity;
@@ -38,16 +52,28 @@
 	    -ms-transition : 100ms background-color, 500ms opacity;
 	        transition : 100ms background-color, 500ms opacity;
 
-	&:hover, &.focused { background-color : rgba(255,255,255,0.6); }
+	&:hover, &:focus {
+		color: #FFF;
+		cursor: pointer;
+		outline: none;
+	}
 	&.faded-out    { opacity : 0; }
 	&.unselectable { opacity : 0.3; &:hover, &.focused {background-color : rgba(255,255,255,0) !important; }}
+	&.hidden	   { display: none; }
 	&#icon-restore { left : 40%; }
 	&#icon-rotate  { left : 50%; }
-	&#icon-help    { left : 35px; top : 10px; }
+	&#icon-help, &#icon-close    { left : 35px; top : 10px; }
 	&#icon-shuffle { left : 60%; }
 }
 
 .icon.unselectable:hover {background-color : rgba(255,255,255,0) !important;}
+
+.icon:before {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+}
 
 #icon-help:before    { content : "\e005"; }
 #icon-shuffle:before { content : "\e004"; }
@@ -58,18 +84,35 @@
 #icon-right:before   { content : "\e000"; }
 #icon-alert          { content : "\e006"; }
 
-// Color palette.
-$a : #584B4B;
-$b : #44382A;
-$c : #6B6263;
-$d : #543F3D;
-$e : #A45B5B;
-$f : #87735F;
+#icon-close {
+	line-height : 15px;
+	font-size   : 18px;
+	z-index		: 20;
+	border		: none;
+	color 		: $g;
+	padding		: 0 0 3px 0;
+
+	-webkit-transition : 200ms all;
+	-moz-transition : 200ms all;
+		-ms-transition : 200ms all;
+			transition : 200ms all;
+
+	&:hover, &:focus, &:active {
+		background-color : $a;
+		cursor: pointer;
+		outline: none;
+
+		-webkit-transition : 200ms all;
+		-moz-transition : 200ms all;
+			-ms-transition : 200ms all;
+				transition : 200ms all;
+	}
+}
 
 body {
 	position         : absolute;
 	color            : #FFF;
-	background-color : $a !important;
+	background-color : $g !important;
 	padding          : 0;
 	margin           : 0;
 	width            : 800px;
@@ -86,7 +129,7 @@ body {
 	-webkit-user-select : none;
 	   -moz-user-select : none;
 	    -ms-user-select : none;
-	        user-select : none;
+			user-select : none;
 
 	table { display: none; }
 	#game {
@@ -96,6 +139,7 @@ body {
 	#fake-loading-screen {
 		display : none;
 	}
+
 	.overlay {
 		opacity  : 0;
 		position : absolute;
@@ -106,7 +150,12 @@ body {
 		-webkit-transition : 300ms all;
 		   -moz-transition : 300ms all;
 		    -ms-transition : 300ms all;
-		        transition : 300ms all;
+				transition : 300ms all;
+
+		h2 {
+			margin: 7.5px 0 0 50px;
+			color: $a;
+		}
 
 		&.shown { opacity : 1; }
 		.box {
@@ -114,6 +163,46 @@ body {
 			background-color : $e;
 			padding          : 5px 10px;
 			border-radius    : 5px;
+
+			&:focus {
+				background-color: $e1;
+			}
+
+			&.arr {
+				top : 168px;
+				&#left-arr  { left  : 15px; }
+				&#right-arr { right : 32px; }
+			}
+			&#flip {
+				top         : 14%;
+				left        : 50%;
+				width       : 100px;
+				margin-left : -45px;
+				text-align  : center;
+			}
+			&#discard {
+				bottom   : 175px;
+				right 	 : 130px;
+			}
+			&#rotate {
+				width       : 130px;
+				bottom      : 110px;
+				left        : 50%;
+				margin-left : -60px;
+				text-align  : center;
+			}
+			&#shuffle {
+				bottom : 70px;
+				left   : 60%;
+			}
+			&#restore-one {
+				bottom : 20px;
+				right  : 50px;
+			}
+			&#restore-all {
+				bottom : 70px;
+				left   : 25%;
+			}
 		}
 		svg {
 			&.arr {
@@ -132,49 +221,12 @@ body {
 			}
 			&#left-arr         {              left  : 40px;  }
 			&#right-arr        {              right : 40px;  }
-			&#right-arr-2      { top : 77px;  right : 125px; }
+			&#right-arr-2      { bottom : 110px;  right : 80px; top: auto; }
 			&#mid-arr          { top : 100px; left  : 47%;   }
 			&#bottom-right-arr { top : 449px; right : 280px; }
-			&#bottom-mid-arr   { top : 430px; left  : 375px; }
-			&#bottom-horiz-arr { top : 466px; right : 75px;  }
+			&#bottom-mid-arr   { top : 410px; left  : 375px; }
+			&#bottom-horiz-arr { top : 466px; right : 25px;  }
 			&#bottom-left-arr  { top : 449px; left  : 285px; }
-		}
-		div {
-			&.arr {
-				top : 168px;
-				&#left-arr  { left  : 15px; }
-				&#right-arr { right : 32px; }
-			}
-			&#flip {
-				top         : 14%;
-				left        : 50%;
-				width       : 70px;
-				margin-left : -45px;
-				text-align  : center;
-			}
-			&#discard {
-				top   : 50px;
-				right : 100px;
-			}
-			&#rotate {
-				width       : 100px;
-				bottom      : 75px;
-				left        : 50%;
-				margin-left : -60px;
-				text-align  : center;
-			}
-			&#shuffle {
-				bottom : 70px;
-				left   : 60%;
-			}
-			&#restore-one {
-				bottom : 20px;
-				right  : 120px;
-			}
-			&#restore-all {
-				bottom : 70px;
-				left   : 25%;
-			}
 		}
 		#dummy-card {
 			position : absolute;
@@ -210,6 +262,7 @@ body {
 		-moz-perspective : 800px; /* Mozilla, what were you thinking??? */
 		&.blurred {
 			opacity : 0.5;
+			z-index: -1;
 
 			-webkit-filter : blur(2px);
 			   -moz-filter : blur(2px);
@@ -220,14 +273,14 @@ body {
 			margin-top : 3%;
 			font-size  : 35px;
 		}
-		#container {
+		#container, #discardpile {
 			position : absolute;
 			height   : 300px;
 			width    : 500px;
 			top      : 50%;
 			left     : 50%;
 			margin   : -150px 0 0 -250px;
-			z-index  : 1;
+			z-index  : 2;
 			-moz-transform-style : preserve-3d; /* NOOOOO */
 			&.hidden { z-index: -1; }
 			#restore-single {
@@ -254,6 +307,21 @@ body {
 						transition : all 700ms cubic-bezier(0.190, 1.000, 0.220, 1.000), color 100ms, z-index 0ms;
 
 				&.hidden { display: none; }
+
+				&:hover  { cursor: pointer; }
+				&:focus  .back, &:focus .front {
+					background-color: #fff;
+					outline: 1px solid blue;
+				}
+
+				&[class*="discarded"]:focus {
+					.front {
+						background-color: #fff;
+					}
+					.back {
+						background-color: #fff;
+					}
+				}
 
 				//////////////////////////////////////////
 				//           CARD STATES                //
@@ -520,37 +588,18 @@ body {
 					    -ms-transform : translate( 300%) rotateY(180deg);
 					        transform : translate( 300%) rotateY(180deg);
 				}
-				.remove-button {
-					position    : absolute;
-					right       : 0;
-					top         : 0;
-					height      : 30px;
-					width       : 30px;
-					line-height : 30px;
-					font-size   : 20px;
-
-					-webkit-transition : 200ms all;
-					   -moz-transition : 200ms all;
-					    -ms-transition : 200ms all;
-					        transition : 200ms all;
-
-					&:hover {
-						color            : #FFF;
-						background-color : rgba(0,0,0,0.8);
-
-						-webkit-transition : 200ms all;
-						   -moz-transition : 200ms all;
-						    -ms-transition : 200ms all;
-						        transition : 200ms all;
-					}
-				}
 				.front, .back {
 					position         : absolute;
 					top              : 0;
 					left             : 0;
 					height           : 100%;
 					width            : 100%;
-					background-color : #EEE;
+					background-color : $a;
+
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					gap: 10px;
 
 					-webkit-backface-visibility : hidden;
 					   -moz-backface-visibility : hidden;
@@ -563,8 +612,8 @@ body {
 					        transition : all 700ms cubic-bezier(0.190, 1.000, 0.220, 1.000);
 
 					.content {
-						height : inherit;
-						width  : inherit;
+						// height : inherit;
+						// width  : inherit;
 						overflow-y : auto;
 
 						-webkit-transform-style: preserve-3d;
@@ -596,7 +645,7 @@ body {
 						}
 					}
 					.asset {
-						margin-top : -280px;
+						// margin-top : -280px;
 
 						audio {
 							max-width : 100%;
@@ -618,7 +667,7 @@ body {
 								max-height : 200px;
 							}
 							&.mixed {
-								margin-top : 10%;
+								// margin-top : 10%;
 								max-height: 200px;
 							}
 						}
@@ -649,6 +698,40 @@ body {
 					        transform : rotateY(-180deg);
 				}
 			}
+			&#discardpile {
+				z-index: 1;
+			}
+		}
+
+		#icon-remove {
+			position    : absolute;
+			right       : 50px;
+			top         : 65%;
+			height      : 50px;
+			width       : 50px;
+			line-height : 30px;
+			font-size   : 36px;
+			z-index		: 20;
+			border		: none;
+			border-radius: 50%;
+			color 		: $g;
+			background-color: $a;
+
+			-webkit-transition : 200ms all;
+			   -moz-transition : 200ms all;
+				-ms-transition : 200ms all;
+					transition : 200ms all;
+
+			&:hover, &:focus {
+				background-color : $e;
+				cursor: pointer;
+				outline: none;
+
+				-webkit-transition : 200ms all;
+				   -moz-transition : 200ms all;
+					-ms-transition : 200ms all;
+						transition : 200ms all;
+			}
 		}
 		#finished {
 			display    : none;
@@ -672,42 +755,18 @@ body {
 				left     : auto;
 				bottom   : auto;
 				margin   : auto;
-				color    : #FFF;
-				&:hover { color : #222; }
-			}
-			.restart {
-				position      : absolute;
-				left          : 50%;
-				margin-left   : -21px;
-				fill          : #FFF;
-				stroke        : #FFF;
-				width         : 31px;
-				height        : 31px;
-				padding       : 5px;
-				border-radius : 100%;
-
-				-webkit-transition : 300ms all;
-				   -moz-transition : 300ms all;
-				    -ms-transition : 300ms all;
-				        transition : 300ms all;
-
-				&:hover {
-					background-color : rgba(255,255,255,0.6);
-					fill             : #222;
-					stroke           : #222;
-				}
+				color    : $a;
+				&:hover, &:focus { color : #fff; }
 			}
 		}
 		.arrow {
-			height           : 80px;
-			width            : 80px;
 			border-radius    : 100%;
 			top              : 50%;
 			position         : absolute;
 			margin-top       : -40px;
-			color            : rgba(0,0,0,0.4);
 			font-size        : 80px;
 			z-index          : 10;
+			padding			 : 0;
 
 			-webkit-transform : scale(0);
 			   -moz-transform : scale(0);
@@ -717,8 +776,8 @@ body {
 			   -moz-transition : 200ms all;
 			    -ms-transition : 200ms all;
 			        transition : 200ms all;
-			&#icon-left  { left  : 30px; }
-			&#icon-right { right : 30px; }
+			&#icon-left  { left  : 60px; }
+			&#icon-right { right : 90px; }
 			&.shown {
 				-webkit-transform : scale(1);
 				   -moz-transform : scale(1);
@@ -788,7 +847,7 @@ body {
 	right      : 0;
 	top        : 0;
 	bottom     : 0;
-	background : rgba(0,0,0,0.8);
+	background : $g;
 	display    : block;
 	color: #fff;
 	padding: 115px 50px;
@@ -871,10 +930,16 @@ body {
 		font-size: 20px;
 		cursor: pointer;
 		color: white;
+		border: none;
 
 		&:hover {
 			background: #73D15A;
+			cursor: pointer;
 		}
 	}
 }
-
+.aria-live-region {
+	position: absolute;
+	z-index: -100;
+	opacity: 0;
+}

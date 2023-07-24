@@ -33,7 +33,7 @@
 			<li class="titles" aria-hidden="true" ng-class='{hidden:cards.length <= 0}'>
 				<h3>Front</h3><h3>Back</h3>
 			</li>
-			<li class="card" role="flashcard" ng-repeat="card in cards" ng-init="cardIndex = $index; startingTabIndex = cardIndex * 5 + 1;" id="card-{{cardIndex}}">
+			<li class="card" role="flashcard" ng-repeat="card in cards" ng-init="cardIndex = $index; startingTabIndex = cardIndex * 5 + 1;" id="card-{{cardIndex}}" ng-class="{'tall': card['front'].asset || card['back'].asset}">
 				<span class="num" ng-class="{large:cardIndex+1 >= 100}">{{cardIndex+1}}</span>
 				<span class="face" ng-repeat="face in ['front', 'back']" ng-init="cardFace = card[face]; faceText = cardFace.text" ng-attr-aria-label="Card {{face}}.">
 					<div class="center">
@@ -58,6 +58,17 @@
 							media-import="mediaImport"
 							asset="cardFace.asset"
 							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></div>
+					</div>
+					<div id="alt-text-container"
+					ng-show="cardFace.asset">
+						<label for="alt-text-input">Media Alt Text </label>
+						<input
+						type="text"
+						placeholder="Enter your alt text for the media here."
+						value="{{cardFace.asset.alt}}"
+						ng-model="cardFace.asset.alt"
+						id="alt-text-input"
+					/>
 					</div>
 					<div
 						class="alert"

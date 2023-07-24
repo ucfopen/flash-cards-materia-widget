@@ -1,3 +1,5 @@
+$a : #FFF;
+
 .atari {
 	#fake-loading-screen {
 		display          : block;
@@ -62,16 +64,16 @@
 			}
 			&.left {
 				tr {
-					&.tr1, &.tr5 { td:nth-child(3) { background-color : #FFF; } }
-					&.tr2, &.tr4 { td:nth-child(2) { background-color : #FFF; } }
-					&.tr3        { td              { background-color : #FFF; } }
+					&.tr1, &.tr5 { td:nth-child(3) { background-color : $a; } }
+					&.tr2, &.tr4 { td:nth-child(2) { background-color : $a; } }
+					&.tr3        { td              { background-color : $a; } }
 				}
 			}
 			&.right {
 				tr {
-					&.tr1, &.tr5 { td:nth-child(3) { background-color : #FFF; } }
-					&.tr2, &.tr4 { td:nth-child(4) { background-color : #FFF; } }
-					&.tr3        { td              { background-color : #FFF; } }
+					&.tr1, &.tr5 { td:nth-child(3) { background-color : $a; } }
+					&.tr2, &.tr4 { td:nth-child(4) { background-color : $a; } }
+					&.tr3        { td              { background-color : $a; } }
 				}
 			}
 		}
@@ -87,11 +89,11 @@
 			        transition-timing-function : steps(8, end) !important;
 			transition-duration : 500ms !important;
 		}
-		.remove-button { transition : none !important; }
 	}
 	.icon {
 		background-color : rgba(0,0,0,0) !important;
 		border-radius    : 0 !important;
+		bottom: 50px;
 		&:before { content : "" !important; }
 		table {
 			z-index : -10;
@@ -105,35 +107,48 @@
 			}
 		}
 		.restore-table {
+			position: absolute;
+			top: 0;
+			left: 0;
+
 			tr {
-				&.tr1 { td:nth-child(3), td:nth-child(4), td:nth-child(5) { background-color : #FFF; } }
-				&.tr2 { td:nth-child(2), td:nth-child(3), td:nth-child(6) { background-color : #FFF; } }
-				&.tr3 { td:nth-child(0), td:nth-child(1), td:nth-child(0), td:nth-child(5), td:nth-child(6), td:nth-child(7) { background-color : #FFF; } }
-				&.tr4 { td:nth-child(1), td:nth-child(6) { background-color : #FFF; } }
-				&.tr5 { td:nth-child(1) { background-color : #FFF; } }
-				&.tr6 { td:nth-child(2), td:nth-child(7) { background-color : #FFF; } }
-				&.tr7 { td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) { background-color : #FFF; } }
+				&.tr1 { td:nth-child(3), td:nth-child(4), td:nth-child(5) { background-color : $a; } }
+				&.tr2 { td:nth-child(2), td:nth-child(3), td:nth-child(6) { background-color : $a; } }
+				&.tr3 { td:nth-child(0), td:nth-child(1), td:nth-child(0), td:nth-child(5), td:nth-child(6), td:nth-child(7) { background-color : $a; } }
+				&.tr4 { td:nth-child(1), td:nth-child(6) { background-color : $a; } }
+				&.tr5 { td:nth-child(1) { background-color : $a; } }
+				&.tr6 { td:nth-child(2), td:nth-child(7) { background-color : $a; } }
+				&.tr7 { td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) { background-color : $a; } }
 			}
 		}
 		.rotate-table {
 			tr {
-				&.tr1 { td:nth-child(4), td:nth-child(5), td:nth-child(6) { background-color: #FFF; } }
-				&.tr2 { td:nth-child(3), td:nth-child(7) { background-color : #FFF; } }
-				&.tr3 { td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4) { background-color : #FFF; } }
-				&.tr4 { td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(6), td:nth-child(7) { background-color : #FFF; } }
-				&.tr5 { td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(6), td:nth-child(7) { background-color : #FFF; } }
+				&.tr1 { td:nth-child(4), td:nth-child(5), td:nth-child(6) { background-color: $a; } }
+				&.tr2 { td:nth-child(3), td:nth-child(7) { background-color : $a; } }
+				&.tr3 { td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4) { background-color : $a; } }
+				&.tr4 { td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(6), td:nth-child(7) { background-color : $a; } }
+				&.tr5 { td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(6), td:nth-child(7) { background-color : $a; } }
 			}
 		}
 		.shuffle-table {
 			tr {
-				&.tr1 { td:nth-child(6) { background-color : #FFF; } }
-				&.tr2 { td:nth-child(1), td:nth-child(2), td:nth-child(6), td:nth-child(7) { background-color : #FFF; } }
-				&.tr3 { td:nth-child(3), td:nth-child(5), td:nth-child(6) { background-color : #FFF; } }
-				&.tr4 { td:nth-child(4) { background-color: #FFF; } }
-				&.tr5 { td:nth-child(3), td:nth-child(5), td:nth-child(6) { background-color : #FFF; } }
-				&.tr6 { td:nth-child(1), td:nth-child(2), td:nth-child(6), td:nth-child(7) { background-color : #FFF; } }
-				&.tr6 { td:nth-child(7) { background-color : #FFF; } }
-				&.tr7 { td:nth-child(6) { background-color : #FFF; } }
+				&.tr1 { td:nth-child(6) { background-color : $a; } }
+				&.tr2 { td:nth-child(1), td:nth-child(2), td:nth-child(6), td:nth-child(7) { background-color : $a; } }
+				&.tr3 { td:nth-child(3), td:nth-child(5), td:nth-child(6) { background-color : $a; } }
+				&.tr4 { td:nth-child(4) { background-color: $a; } }
+				&.tr5 { td:nth-child(3), td:nth-child(5), td:nth-child(6) { background-color : $a; } }
+				&.tr6 { td:nth-child(1), td:nth-child(2), td:nth-child(6), td:nth-child(7) { background-color : $a; } }
+				&.tr6 { td:nth-child(7) { background-color : $a; } }
+				&.tr7 { td:nth-child(6) { background-color : $a; } }
+			}
+		}
+		.discard-table {
+			tr {
+				&.tr2 { td:nth-child(2), td:nth-child(6) { background-color : $a; } }
+				&.tr3 { td:nth-child(3), td:nth-child(5) { background-color : $a; } }
+				&.tr4 { td:nth-child(4) { background-color: $a; } }
+				&.tr5 { td:nth-child(3), td:nth-child(5) { background-color : $a; } }
+				&.tr6 { td:nth-child(2), td:nth-child(6) { background-color : $a; } }
 			}
 		}
 	}

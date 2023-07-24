@@ -14,6 +14,7 @@ Namespace('Flashcards').Engine = do ->
 	rotation      = ''      # Specifies the current default rotation for all cards.
 	timer         = null    # A setInterval timer for regular interval events.
 	atari         = false   # Triggered by KONAMI CODE
+	prevFocusNode = null
 
 	# Environmental conditions.
 	isMobile = navigator.userAgent.match /(iPhone|iPod|iPad|Android|BlackBerry)/
@@ -28,12 +29,13 @@ Namespace('Flashcards').Engine = do ->
 
 	# Called by Materia.Engine when widget Engine should start the UI.
 	start = (instance, qset, version = '1') ->
+
+		$('#game').hide()
+		$('#overlay').hide()
+
 		if not _browserSupportsSvg()
 			$('.error-notice-container').show()
 			return
-
-		Hammer(document.getElementById('gotit')).on 'tap', ->
-			$('.instructions').hide()
 
 		if instance.name is undefined or null
 			instance.name = "Widget Title Goes Here"
@@ -45,6 +47,9 @@ Namespace('Flashcards').Engine = do ->
 		_setCardPositions()
 		_addEventListeners()
 		_setArrowState()
+
+		$('#hidden-tab-index').hide()
+		$('#icon-close').hide()
 
 		if isIE then yepnope(load:['css/IE.css'], complete : () -> document.getElementById('main').className+="IE")
 
@@ -61,6 +66,11 @@ Namespace('Flashcards').Engine = do ->
 
 	_browserSupportsSvg = ->
 		typeof SVGRect != "undefined"
+
+	_hideInstructions = () ->
+		$('.instructions').hide()
+		$('#game').show()
+		$('#icon-help').focus()
 
 	_easterEggStart = () ->
 		yepnope(
@@ -118,6 +128,8 @@ Namespace('Flashcards').Engine = do ->
 
 	# Stores card data.
 	# @data : Card information pulled from the qset.
+	# Front of card: 	answer
+	# Back of card: 	question
 	_storeCards = (data) ->
 		numCards   = data.length
 		_cardNodes = document.getElementsByClassName 'flashcard'
@@ -125,32 +137,38 @@ Namespace('Flashcards').Engine = do ->
 		for i in [0...numCards]
 			Flashcards.Card.push {}
 			_card = Flashcards.Card[i]
+			console.log("Data: ")
+			console.log(data[i])
 
 			# Single flashcard specific data.
 			_card.node      = _cardNodes[i]
-			_card.FrontText = data[i].answers[0].text.replace(/\&\#10\;/g, '<br>')
-			_card.BackText  = data[i].questions[0].text.replace(/\&\#10\;/g, '<br>')
+			_card.BackText = data[i].answers[0].text.replace(/\&\#10\;/g, '<br>')
+			_card.FrontText  = data[i].questions[0].text.replace(/\&\#10\;/g, '<br>')
 
 			# Strings that contain inline font scaling style (if applicable)
 			frontStyleStr = ""
 			backStyleStr = ""
 
-			if data[i].assets?[1]
-				# Handle former QSet asset format
-				if typeof data[i].assets[1] isnt 'object' and data[i].assets[1] isnt '-1'
-					_card.FrontURL = Materia.Engine.getImageAssetUrl data[i].assets[1]
-				# Handle new QSet asset format
-				else if typeof data[i].assets[1] is 'object'
-					_card.FrontURL = data[i].assets[1].url
-			else _card.FrontURL = '-1'
-
 			if data[i].assets?[0]
 				# Handle former QSet asset format
 				if typeof data[i].assets[0] isnt 'object' and data[i].assets[0] isnt '-1'
-					_card.BackURL = Materia.Engine.getImageAssetUrl data[i].assets[0]
+					_card.FrontURL = Materia.Engine.getImageAssetUrl data[i].assets[0]
 				# Handle new QSet asset format
 				else if typeof data[i].assets[0] is 'object'
-					_card.BackURL = data[i].assets[0].url
+					_card.FrontURL = data[i].assets[0].url
+				# Assign alt text
+				_card.FrontAlt  = data[i].assets[0].alt or "Undescribed";
+			else _card.FrontURL = '-1'
+
+			if data[i].assets?[1]
+				# Handle former QSet asset format
+				if typeof data[i].assets[1] isnt 'object' and data[i].assets[1] isnt '-1'
+					_card.BackURL = Materia.Engine.getImageAssetUrl data[i].assets[1]
+				# Handle new QSet asset format
+				else if typeof data[i].assets[1] is 'object'
+					_card.BackURL = data[i].assets[1].url
+				# Assign alt text
+				_card.BackAlt  = data[i].assets[1].alt or "Undescribed";
 			else _card.BackURL = '-1'
 
 			if _card.FrontURL? && _card.FrontURL != '-1'
@@ -169,27 +187,47 @@ Namespace('Flashcards').Engine = do ->
 				computedBackFontSize = _computeFontSize _card.BackText
 				backStyleStr = 'style="font-size:'+computedBackFontSize+'px;'
 
-			_card.node.children[0].children[0].innerHTML = '<p class="'+_frontClass+'" '+frontStyleStr+' ">'+_card.FrontText+'</p>'
+			_card.node.children[1].children[0].innerHTML = '<p class="'+_frontClass+'" '+frontStyleStr+' ">'+_card.FrontText+'</p>'
 			if _card.FrontURL isnt '-1'
-				if typeof data[i].assets[1] isnt 'object'
-					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
-				else if data[i].assets[1].type == 'jpg' or data[i].assets[1].type == 'jpeg' or data[i].assets[1].type == 'png' or data[i].assets[1].type == 'gif'
-					_card.node.children[0].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'">'
-				else if data[i].assets[1].type == 'mp3' || data[i].assets[1].type == 'wav' || data[i].assets[1].type == 'aif'
-					_card.node.children[0].children[1].innerHTML = '<audio controls class="'+_frontClass+'" src="'+_card.FrontURL+'">'
-				else if data[i].assets[1].type == 'link'
-					_card.node.children[0].children[1].innerHTML = '<iframe class="'+_frontClass+'" src="' + _card.FrontURL + '" frameborder="0" allowfullscreen></iframe>'
-
-			_card.node.children[1].children[0].innerHTML  = '<p class="'+_backClass+'" '+backStyleStr+' ">'+_card.BackText+'</p>'
-			if _card.BackURL isnt '-1'
 				if typeof data[i].assets[0] isnt 'object'
-					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
+					_card.node.children[1].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'" alt="'+_card.FrontAlt+'">'
+					_card.frontAssetType = "Image"
 				else if data[i].assets[0].type == 'jpg' or data[i].assets[0].type == 'jpeg' or data[i].assets[0].type == 'png' or data[i].assets[0].type == 'gif'
-					_card.node.children[1].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'">'
+					_card.node.children[1].children[1].innerHTML = '<img class="'+_frontClass+'" src="'+_card.FrontURL+'" alt="'+_card.FrontAlt+'">'
+					_card.frontAssetType = "Image"
 				else if data[i].assets[0].type == 'mp3' || data[i].assets[0].type == 'wav' || data[i].assets[0].type == 'aif'
-					_card.node.children[1].children[1].innerHTML = '<audio controls class="'+_backClass+'" src="'+_card.BackURL+'">'
-				else if data[i].assets[0].type == 'link'
-					_card.node.children[1].children[1].innerHTML = '<iframe class="'+_backClass+'" src="' + _card.BackURL + '" frameborder="0" allowfullscreen></iframe>'
+					_card.node.children[1].children[1].innerHTML = '<audio controls class="'+_frontClass+'" src="'+_card.FrontURL+'">'
+					_card.frontAssetType = "Audio"
+				else if data[i].assets[0].type == 'link' or data[i].assets[0].type == 'youtube' or data[i].assets[0].type == 'vimeo'
+					_card.node.children[1].children[1].innerHTML = '<iframe class="'+_frontClass+'" src="' + _card.FrontURL + '" frameborder="0" allowfullscreen></iframe>'
+					_card.frontAssetType="Video"
+				else if data[i].assets[0].type == 'mp4'
+					_card.node.children[1].children[1].innerHTML = '<video class="'+_frontClass+'"><source src="' + _card.FrontURL + '">Your browser does not support the video tag</video>'
+					_card.frontAssetType="Video"
+
+			_card.node.children[0].children[0].innerHTML  = '<p class="'+_backClass+'" '+backStyleStr+' ">'+_card.BackText+'</p>'
+			if _card.BackURL isnt '-1'
+				if typeof data[i].assets[1] isnt 'object'
+					_card.node.children[0].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'" alt="'+_card.BackAlt+'">'
+					_card.backAssetType = "Image"
+				else if data[i].assets[1].type == 'jpg' or data[i].assets[1].type == 'jpeg' or data[i].assets[1].type == 'png' or data[i].assets[1].type == 'gif'
+					_card.node.children[0].children[1].innerHTML = '<img class="'+_backClass+'" src="'+_card.BackURL+'" alt="'+_card.BackAlt+'">'
+					_card.backAssetType = "Image"
+				else if data[i].assets[1].type == 'mp3' or data[i].assets[1].type == 'wav' or data[i].assets[1].type == 'aif'
+					_card.node.children[0].children[1].innerHTML = '<audio controls class="'+_backClass+'" src="'+_card.BackURL+'">'
+					_card.backAssetType="Audio"
+				else if data[i].assets[1].type == 'link' or data[i].assets[1].type == 'youtube' or data[i].assets[1].type == 'vimeo'
+					_card.node.children[0].children[1].innerHTML = '<iframe class="'+_backClass+'" src="' + _card.BackURL + '" frameborder="0" allowfullscreen></iframe>'
+					_card.backAssetType="Video"
+				else if data[i].assets[1].type == 'mp4'
+					_card.node.children[0].children[1].innerHTML = '<video class="'+_backClass+'"><source src="' + _card.BackURL + '">Your browser does not support the video tag</video>'
+					_card.backAssetType="Video"
+
+			# Aria label for flashcards
+			_card.FrontAriaLabel = (if _card.FrontText then _card.FrontText + ", " else "") + (if _card.FrontURL isnt '-1' then _card.frontAssetType + " asset: " + (_card.FrontAlt or "Undescribed.") else "");
+			_card.BackAriaLabel  = (if _card.BackText then _card.BackText + ", " else "") + (if _card.BackURL isnt '-1' then _card.backAssetType + " asset: " + (_card.BackAlt or "Undescribed.") else "");
+			console.log("Card: ")
+			console.log(_card)
 
 	# Places cards in their correct positions within the gameboard and gives them a specific rotation.
 	# @face : Specifies whether or not to rotate the card when placing them in their positions.
@@ -197,15 +235,18 @@ Namespace('Flashcards').Engine = do ->
 		if face is 'reverse'
 			rotation = '-rotated'
 			for i in [0...numCards]
-				if i is currentCardId     then Flashcards.Card[i].node.className = 'flashcard rotated'
+				if i is currentCardId
+					Flashcards.Card[i].node.className = 'flashcard rotated'
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left-rotated'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right-rotated'
 		else
 			rotation = ''
 			for i in [0...numCards]
-				if i is currentCardId     then Flashcards.Card[i].node.className = 'flashcard'
+				if i is currentCardId
+					Flashcards.Card[i].node.className = 'flashcard'
 				else if i < currentCardId then Flashcards.Card[i].node.className = 'flashcard left'
 				else if i > currentCardId then Flashcards.Card[i].node.className = 'flashcard right'
+		_ariaUpdate()
 
 	_addEventListeners = () ->
 		# document.oncontextmenu = -> false                # Disables right click.
@@ -231,6 +272,7 @@ Namespace('Flashcards').Engine = do ->
 			Hammer(document.getElementById('icon-right')).on 'tap', -> if _canMove 'right' then _shiftCards 'left'
 
 			Hammer(document.getElementById('icon-help')).on    'tap', _toggleOverlay
+			Hammer(document.getElementById('icon-close')).on    'tap', _toggleOverlay
 			Hammer(document.getElementById('icon-restore')).on 'tap', _unDiscardAll
 			Hammer(document.getElementById('icon-finish')).on  'tap', _unDiscardAll
 			Hammer(document.getElementById('icon-rotate')).on  'tap', -> _rotateCards(if rotation is '' then 'back')
@@ -242,65 +284,75 @@ Namespace('Flashcards').Engine = do ->
 					if _isDiscarded(this) then _unDiscard()
 					else _flipCard()
 
-			_removeNodes = document.getElementsByClassName('remove-button')
-			for i in [0..._removeNodes.length]
-				Hammer(_removeNodes[i]).on 'tap', (e) ->
-					_discard()
-					e.stopPropagation()
+			Hammer(document.getElementById('icon-remove')).on 'tap', (e) ->
+				_discard()
+				e.stopPropagation()
 		else
 			document.addEventListener upEventType, -> if overlay then _toggleOverlay()
 
-			$('#icon-left').on    'mouseup', ->
+			$('#icon-left').on    'click', ->
 				_leftSelected()
 				_killAudioVideo()
-			$('#icon-right').on   'mouseup', ->
+			$('#icon-right').on   'click', ->
 				_rightSelected()
 				_killAudioVideo()
-			$('#icon-help').on    'mouseup', _toggleOverlay
-			$('#icon-restore').on 'mouseup', ->
+			$('#icon-help').on    'click', _toggleOverlay
+			$('#icon-close').on    'click', _toggleOverlay
+			$('#icon-restore').on 'click', ->
 				_killAudioVideo()
 				_unDiscardAll()
-			$('#icon-finish').on  'mouseup', ->
+			$('#icon-finish').on  'click', ->
 				_killAudioVideo()
 				_unDiscardAll()
-			$('#icon-rotate').on  'mouseup', ->
+			$('#icon-rotate').on  'click', ->
 				_killAudioVideo()
 				_rotateCards(if rotation is '' then 'back')
-			$('#icon-shuffle').on 'mouseup', ->
+			$('#icon-shuffle').on 'click', ->
 				_killAudioVideo()
 				_shuffleCards()
 
-			$('audio').on    'mouseup', (e)->
+			$('audio').on    'click', (e)->
 				if _isDiscarded(this) then _unDiscard()
 				else e.stopPropagation()
 
-			$('.flashcard').on    'mouseup', ->
+			$('.flashcard').on    'click', ->
 				# Shuts off all audio players when card is flipped.
 				_killAudioVideo()
 				if _isDiscarded(this) then _unDiscard()
 				else _flipCard()
+			$('.flashcard').on    'keydown', (e) ->
+				if e.key is ' ' or e.key is 'Enter'
+					_killAudioVideo()
+					if _isDiscarded(this) then _unDiscard()
+					else _flipCard()
 
-			$('.remove-button').on 'mouseup', (e) ->
+			$('#icon-remove').on 'click', (e) ->
 				# Shuts off all audio players when card is discarded.
 				_killAudioVideo()
 				_discard()
 				e.stopPropagation()
 
+			# Because screenreaders are able to move out of overlay tab loop,
+			# we should hide overlay if it goes out of focus
+			$('.flashcard').on 'focus', () ->
+				if overlay then _toggleOverlay()
+
 		# Key events for keyboardz.
 		window.addEventListener 'keydown', (e) ->
-			switch e.keyCode
-				when 37     then _leftSelected()                             # Left arrow key.
-				when 38     then _unDiscard()                                # Up arrow key.
-				when 39     then _rightSelected()                            # Right arrow key.
-				when 40     then _discard()                                  # Down arrow key.
-				when 32, 70 then _flipCard()                                 # F key and space bar.
-				when 72     then _toggleOverlay()                            # H key.
-				when 82     then _rotateCards(if rotation is '' then 'back') # R key.
-				when 83     then _shuffleCards()                             # S key.
-				when 85     then _unDiscardAll()                             # U key.
+			switch e.key
+				when 'ArrowLeft', 'a'   	then _leftSelected()
+				when 'ArrowUp', 'w'     	then _unDiscard()
+				when 'ArrowRight', 'd'     	then _rightSelected()
+				when 'd'     				then _rightSelected()
+				when 'ArrowDown', 'x'     	then _discard()
+				when 'f' 					then _flipCard()
+				when 'h'     				then _toggleOverlay()
+				when 'r'     				then _rotateCards(if rotation is '' then 'back')
+				when 's'     				then _shuffleCards()
+				when 'u'     				then _unDiscardAll()
+				# when 27		then
 
 			_killAudioVideo()
-			e.preventDefault()
 
 	_leftSelected = ()  -> if _canMove 'left'  then _shiftCards 'right'
 	_rightSelected = () -> if _canMove 'right' then _shiftCards 'left'
@@ -329,12 +381,32 @@ Namespace('Flashcards').Engine = do ->
 			# Animate the new current card to the center.
 			Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
 
+			# Update aria based on card rotation
+			_ariaUpdate();
+
+			# Focus the new card
+			Flashcards.Card[currentCardId].node.focus();
+
 			_setArrowState()
 
 	# Shows or hides directional arrows depending on what cards are viewable.
 	_setArrowState = () ->
-			if _canMove 'right' then nodes.rightArrow.className = 'arrow shown' else nodes.rightArrow.className = 'arrow'
-			if _canMove 'left'  then nodes.leftArrow.className  = 'arrow shown' else nodes.leftArrow.className  = 'arrow'
+			if _canMove 'right'
+				nodes.rightArrow.className = 'arrow shown'
+				nodes.rightArrow.setAttribute("aria-hidden", false);
+				nodes.rightArrow.setAttribute("tabindex", "0");
+			else
+				nodes.rightArrow.className = 'arrow'
+				nodes.rightArrow.setAttribute("aria-hidden", true);
+				nodes.rightArrow.setAttribute("tabindex", "-1");
+			if _canMove 'left'
+				nodes.leftArrow.className  = 'arrow shown'
+				nodes.leftArrow.setAttribute("aria-hidden", false);
+				nodes.leftArrow.setAttribute("tabindex", "0");
+			else
+				nodes.leftArrow.className  = 'arrow'
+				nodes.leftArrow.setAttribute("aria-hidden", true);
+				nodes.leftArrow.setAttribute("tabindex", "-1");
 
 	# Rotates the current card 180 degrees.
 	_flipCard = () ->
@@ -343,9 +415,85 @@ Namespace('Flashcards').Engine = do ->
 			# The back is currently showing.
 			if Flashcards.Card[currentCardId].node.className is 'flashcard rotated'
 				Flashcards.Card[currentCardId].node.className = 'flashcard'
+				_ariaSetLiveRegion(Flashcards.Card[currentCardId].FrontAriaLabel)
 			# The front is currently showing.
 			else
 				Flashcards.Card[currentCardId].node.className = 'flashcard rotated'
+				_ariaSetLiveRegion(Flashcards.Card[currentCardId].BackAriaLabel)
+			# Update aria
+			_ariaShow(currentCardId, false)
+			# Focus card
+			Flashcards.Card[currentCardId].node.focus();
+
+
+	_ariaUpdate = () ->
+		for i in [0...Flashcards.Card.length]
+			if i is currentCardId
+				_ariaShow(i, false)
+			else
+				_ariaHide(i, false)
+		for i in [0...Flashcards.DiscardPile.length]
+			if i is numDiscard - 1
+				_ariaShow(i, true)
+			else
+				_ariaHide(i, true)
+
+	_ariaShow = (id, isDiscardPile) ->
+		if (isDiscardPile)
+			# Make last card on discard pile visible to keyboard users and screenreader
+			face = if Flashcards.DiscardPile[id].node.className is 'flashcard rotated' then 'back' else 'front';
+			Flashcards.DiscardPile[id].node.setAttribute('tabindex', '0');
+			Flashcards.DiscardPile[id].node.setAttribute("aria-hidden", false);
+			Flashcards.DiscardPile[id].node.setAttribute("aria-label", "Restore last card. " + numDiscard + " card" + (if numDiscard > 1 then "s" else "") + " in discard pile.");
+			Flashcards.DiscardPile[id].node.setAttribute("title",  "Restore last card.");
+			Flashcards.DiscardPile[id].node.children[if face is 'front' then 1 else 0].setAttribute("aria-hidden", false);
+			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].removeAttribute("inert");
+			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].setAttribute("aria-hidden", true);
+			Flashcards.DiscardPile[id].node.children[if face is 'front' then 0 else 1].setAttribute("inert", true);
+			Flashcards.DiscardPile[id].node.removeAttribute('inert');
+		else
+			# Get rotation
+			face = if Flashcards.Card[id].node.className is 'flashcard rotated' then 'back' else 'front';
+			# Set Flashcard parent aria label
+			# Flashcards.Card[id].node.setAttribute('aria-label', (if face is 'front' then "flashcard front" else "flashcard back"));
+			Flashcards.Card[id].node.setAttribute('aria-label', if face is 'front' then Flashcards.Card[id].FrontAriaLabel else Flashcards.Card[id].BackAriaLabel)
+			Flashcards.Card[id].node.setAttribute("title", "Flip card");
+			# Make flashcard tabbable and visible to screenreader
+			Flashcards.Card[id].node.setAttribute('tabindex', '0');
+			Flashcards.Card[id].node.setAttribute("aria-hidden", false);
+			Flashcards.Card[id].node.removeAttribute('inert');
+			# Show face content depending on rotation
+			if face is 'front'
+				# Front of card. Show contents if there is video or audio asset
+				Flashcards.Card[id].node.children[1].setAttribute("aria-hidden", (if Flashcards.Card[id].FrontURL isnt "-1" and Flashcards.Card[id].frontAssetType != "Image" then false else true));
+				Flashcards.Card[id].node.children[1].removeAttribute("inert");
+				# Always hide back of card
+				Flashcards.Card[id].node.children[0].setAttribute("aria-hidden", true);
+				Flashcards.Card[id].node.children[0].setAttribute("inert", true);
+			else
+				# Back of card
+				Flashcards.Card[id].node.children[0].setAttribute("aria-hidden", (if Flashcards.Card[id].BackURL isnt "-1" and Flashcards.Card[id].backAssetType != "Image" then false else true));
+				Flashcards.Card[id].node.children[0].removeAttribute("inert");
+				# Always hide front of card
+				Flashcards.Card[id].node.children[1].setAttribute("aria-hidden", true);
+				Flashcards.Card[id].node.children[1].setAttribute("inert", true);
+
+	_ariaHide = (id, isDiscardPile) ->
+		if (isDiscardPile)
+			Flashcards.DiscardPile[id].node.setAttribute("aria-hidden", true);
+			Flashcards.DiscardPile[id].node.setAttribute('tabindex', '-1');
+			Flashcards.DiscardPile[id].node.setAttribute('inert', true);
+			Flashcards.DiscardPile[id].node.children[0].setAttribute("aria-hidden", true);
+			Flashcards.DiscardPile[id].node.children[1].setAttribute("aria-hidden", true);
+		else
+			Flashcards.Card[id].node.setAttribute("aria-hidden", true);
+			Flashcards.Card[id].node.setAttribute('tabindex', '-1');
+			Flashcards.Card[id].node.setAttribute('inert', true);
+			Flashcards.Card[id].node.children[0].setAttribute("aria-hidden", true);
+			Flashcards.Card[id].node.children[1].setAttribute("aria-hidden", true);
+
+	_ariaSetLiveRegion = (msg) ->
+		document.getElementById("aria-updates").innerText = msg
 
 	_killAudioVideo = () ->
 		$('audio').each ->
@@ -396,6 +544,7 @@ Namespace('Flashcards').Engine = do ->
 					Flashcards.Card = _shuffle(Flashcards.Card)
 					_setCardPositions(if rotation is '' then null else 'reverse')
 					nodes.icons[3].className = 'icon'
+					_ariaSetLiveRegion("All cards have been shuffled. Current card: " + (if Flashcards.Card[currentCardId].node.className is "flashcard rotated" then Flashcards.Card[currentCardId].BackAriaLabel else Flashcards.Card[currentCardId].FrontAriaLabel))
 				, 1500
 
 	_stageShufflePt1 = (card, i) ->
@@ -455,6 +604,8 @@ Namespace('Flashcards').Engine = do ->
 					_setCardPositions(if face is 'back' then 'reverse' else '')
 
 					nodes.icons[2].className = 'icon'
+
+					_ariaSetLiveRegion("All cards have been flipped. Current card: " + (if Flashcards.Card[currentCardId].node.className is "flashcard rotated" then Flashcards.Card[currentCardId].BackAriaLabel else Flashcards.Card[currentCardId].FrontAriaLabel))
 				, 1400
 
 	# Decides if a flashcard node has any of the discard position classes.
@@ -491,6 +642,7 @@ Namespace('Flashcards').Engine = do ->
 					_hideIcons()
 					_showElement nodes.finishMssg, true
 					nodes.container.className = 'hidden'
+					document.getElementById("icon-finish").focus()
 				else
 					if Flashcards.Card[currentCardId]?
 						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
@@ -498,7 +650,31 @@ Namespace('Flashcards').Engine = do ->
 						currentCardId--
 						Flashcards.Card[currentCardId].node.className = "flashcard "+(if rotation is '' then '' else 'rotated')
 
+				# Update aria labels
+				_ariaUpdate()
+				# Focus current flashcard
+				# Flashcards.Card[currentCardId]?.node.focus()
+
+				# Update arrows
 				_setArrowState()
+
+				# Move card DOM element to discard pile
+				lastDiscard = Flashcards.DiscardPile[numDiscard - 1].node;
+				# Wait until discard animation has finished
+				setTimeout ->
+					lastDiscard.remove();
+					document.getElementById('discardpile').append(lastDiscard);
+					setTimeout ->
+						if numCards > 0
+							if Flashcards.Card[currentCardId].className = "flashcard rotated"
+								_ariaSetLiveRegion("Discarded card. Next card: " + Flashcards.Card[currentCardId].FrontAriaLabel)
+							else
+								_ariaSetLiveRegion("Discarded card. Next card: " + Flashcards.Card[currentCardId].BackAriaLabel)
+						else
+							_ariaSetLiveRegion("Discarded card. There are no more cards. Press U to restore all cards.")
+					, (600)
+				, (if _len > 4 then 720 else 400)
+
 
 	# Takes a card from the first array and places it in the second.
 	# @arr1  : The array we remove a card from.
@@ -524,7 +700,7 @@ Namespace('Flashcards').Engine = do ->
 				numDiscard--
 				numCards++
 
-				if numDiscard is 0 then nodes.icons[1].className = "icon unselectable"
+				if numDiscard is 0 then document.getElementById("icon-finish").className = "icon unselectable"
 
 				# Move last discarded from discard to active pile.
 				_moveCardObject(Flashcards.DiscardPile, Flashcards.Card, Flashcards.DiscardPile.length-1)
@@ -540,6 +716,25 @@ Namespace('Flashcards').Engine = do ->
 					_shiftCards 'left' for i in [0.._dif]
 					_setArrowState()
 				, 20
+
+				# Update aria
+				_ariaUpdate()
+
+				# Move card DOM element back to container
+				# Wait until discard animation has finished
+				setTimeout ->
+					Flashcards.Card[currentCardId].node.remove();
+					document.getElementById('container').append(Flashcards.Card[currentCardId].node);
+
+					# If there are still cards in the discard pile
+					# then keep focus on last discard, otherwise focus flashcard
+					if (numDiscard > 0)
+						Flashcards.DiscardPile[numDiscard - 1].node.focus()
+						_ariaSetLiveRegion("Restored card." + numDiscard + " left in discard pile.")
+					else
+						Flashcards.Card[currentCardId].node.focus()
+						_ariaSetLiveRegion("Restored card. No cards left in discard pile.")
+				, 400
 
 	_restoreTriggered = () ->
 		if atari then Flashcards.Atari.playIcon 'restore'
@@ -590,9 +785,23 @@ Namespace('Flashcards').Engine = do ->
 					, 800
 
 					setTimeout ->
-						nodes.icons[1].className = "icon unselectable"
+						document.getElementById("icon-finish").className = "icon unselectable"
+						if (Flashcards.Card[currentCardId].node.className = "flashcard rotated")
+							_ariaSetLiveRegion("All cards have been restored. Next card: " + Flashcards.Card[currentCardId].BackAriaLabel)
+						else
+							_ariaSetLiveRegion("All cards have been restored. Next card: " + Flashcards.Card[currentCardId].FrontAriaLabel)
 					, 1200
 				, 20
+				_ariaUpdate()
+
+				# Move all cards to container
+				cards = document.querySelectorAll('.flashcard');
+				container = document.getElementById('container');
+				for card in cards
+					card.remove();
+					container.append(card);
+			else
+				_ariaSetLiveRegion("There are no cards to restore.")
 
 	# Opens or closes the help overlay.
 	_toggleOverlay = () ->
@@ -602,19 +811,42 @@ Namespace('Flashcards').Engine = do ->
 				animating = false
 			, 300
 
-			if overlay is true then overlay = false else overlay = true
-
-			if nodes.helpOverlay.className is 'overlay shown'
-				_setArrowState()
-				nodes.icons[4].className    = 'icon'
-				nodes.gameboard.className   = ''
-				nodes.helpOverlay.className = 'overlay'
+			if overlay is true
+				_hideOverlay()
 			else
-				nodes.rightArrow.className  = 'arrow shown'
-				nodes.leftArrow.className   = 'arrow shown'
-				nodes.icons[4].className    = 'icon focused'
-				nodes.gameboard.className   = 'blurred'
-				nodes.helpOverlay.className = 'overlay shown'
+				_showOverlay()
+
+	_showOverlay = () ->
+		# Save currently focused object
+		prevFocusNode = $(document.activeElement)
+		overlay = true
+		$('#overlay').show()
+		$('#icon-close').show()
+		$('#icon-close').focus()
+		$('#icon-help').hide()
+		$('#hidden-tab-index').show()
+		nodes.rightArrow.className  = 'arrow shown'
+		nodes.leftArrow.className   = 'arrow shown'
+		nodes.icons[4].className    = 'icon focused'
+		nodes.gameboard.className   = 'blurred'
+		nodes.helpOverlay.className = 'overlay shown'
+
+	_hideOverlay = () ->
+		overlay = false
+		$('#overlay').hide()
+		$('#hidden-tab-index').hide()
+		$('#icon-close').hide()
+		$('#icon-help').show()
+		_setArrowState()
+		nodes.icons[4].className    = 'icon'
+		nodes.gameboard.className   = ''
+		nodes.helpOverlay.className = 'overlay'
+		# If previously focused on something, focus that
+		if prevFocusNode
+			prevFocusNode.focus()
+		else
+			# Else, focus the current flashcard
+			Flashcards.Card[currentCardId].node.focus()
 
 	# Adds a shown class to an element and optionally fades it in.
 	_showElement = (elem, fadeIn = false) ->
@@ -635,7 +867,8 @@ Namespace('Flashcards').Engine = do ->
 
 	_hideIcons = () ->
 		for i in [1...nodes.icons.length]
-			nodes.icons[i].className = 'icon faded-out'
+			if (nodes.icons[i]).id != 'icon-finish'
+				nodes.icons[i].className = 'icon hidden'
 
 	_showIcons = () ->
 		for i in [1...nodes.icons.length]
@@ -644,3 +877,6 @@ Namespace('Flashcards').Engine = do ->
 	# Public.
 	start : start
 	nodes : nodes
+	hideInstructions : _hideInstructions
+	toggleOverlay : _toggleOverlay
+	hideOverlay : _hideOverlay
