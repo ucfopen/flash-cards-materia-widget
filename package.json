@@ -14,7 +14,7 @@
   "dependencies": {
     "hammerjs": "2.0.6",
     "konami": "^1.6.2",
-    "materia-widget-development-kit": "^2.5.0",
+    "materia-widget-development-kit": "2.5.2",
     "modernizr-webpack-plugin": "^1.0.7"
   },
   "license": "AGPL-3.0",
