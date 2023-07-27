@@ -39,6 +39,8 @@ Namespace('Flashcards').Engine = do ->
 
 		if instance.name is undefined or null
 			instance.name = "Widget Title Goes Here"
+		else
+			_ariaSetLiveRegion("Title of Flash Cards:" + instance.name)
 
 		_qset = qset
 		_cacheNodes()
@@ -137,8 +139,6 @@ Namespace('Flashcards').Engine = do ->
 		for i in [0...numCards]
 			Flashcards.Card.push {}
 			_card = Flashcards.Card[i]
-			console.log("Data: ")
-			console.log(data[i])
 
 			# Single flashcard specific data.
 			_card.node      = _cardNodes[i]
@@ -226,8 +226,6 @@ Namespace('Flashcards').Engine = do ->
 			# Aria label for flashcards
 			_card.FrontAriaLabel = (if _card.FrontText then _card.FrontText + ", " else "") + (if _card.FrontURL isnt '-1' then _card.frontAssetType + " asset: " + (_card.FrontAlt or "Undescribed.") else "");
 			_card.BackAriaLabel  = (if _card.BackText then _card.BackText + ", " else "") + (if _card.BackURL isnt '-1' then _card.backAssetType + " asset: " + (_card.BackAlt or "Undescribed.") else "");
-			console.log("Card: ")
-			console.log(_card)
 
 	# Places cards in their correct positions within the gameboard and gives them a specific rotation.
 	# @face : Specifies whether or not to rotate the card when placing them in their positions.
@@ -633,7 +631,7 @@ Namespace('Flashcards').Engine = do ->
 				if _len > 3 then Flashcards.DiscardPile[_len-1].node.className = 'flashcard discarded-pos-3'
 				else Flashcards.DiscardPile[_len-1].node.className = 'flashcard discarded-pos-'+(_len-1)
 
-				if _len > 4 then setTimeout ->
+				if numCards == 0 then setTimeout ->
 					Flashcards.DiscardPile[_len-1].node.className = 'flashcard hidden'
 				, 710
 
