@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.13.0, 18.x]
+        node-version: [18.13.0]
 
     steps:
     - name: Checkout code
@@ -13,6 +13,12 @@ jobs:
       
     - name: Run tests with Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
+      
+    - name: Setup GIT user
+      uses: fregante/setup-git-user@v1
+
+    - name: Run tests with Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install -g yarn

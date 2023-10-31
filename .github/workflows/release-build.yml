@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [18.13.0]
 
     steps:
     - name: Checkout code
@@ -22,6 +22,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
+    - name: Setup GIT user
+      uses: fregante/setup-git-user@v1
+
     - run: yarn install --frozen-lockfile
     - run: yarn build
 
@@ -31,5 +34,5 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/_output/*
         tag: ${{ github.ref }}
-        overwrite: false
+        overwrite: true
         file_glob: true
