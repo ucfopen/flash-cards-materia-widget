@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const outputPath = path.join(process.cwd(), 'build')
+const srcPath = path.join(__dirname, 'src') + path.sep
 
 const widgetWebpack = require('materia-widget-development-kit/webpack-widget')
 const copy = widgetWebpack.getDefaultCopyList()
@@ -23,37 +24,17 @@ const customCopy = copy.concat([
 ])
 
 const entries = {
-	'creator.js': [
-		path.join(__dirname, 'src', 'creator.coffee')
+	'creator': [
+		path.join(srcPath, 'creator.html'),
+		path.join(srcPath, 'creator.coffee'),
+		path.join(srcPath, 'creator.scss'),
 	],
-	'player.js': [
-		path.join(__dirname, 'src', 'player.coffee')
-	],
-	'creator.css': [
-		path.join(__dirname, 'src', 'creator.html'),
-		path.join(__dirname, 'src', 'creator.scss')
-	],
-	'player.css': [
-		path.join(__dirname, 'src', 'player.html'),
-		path.join(__dirname, 'src', 'player.scss')
-	],
-	'assets/js/atari.js': [
-		path.join(__dirname, 'src', 'atari.coffee')
-	],
-	'assets/css/atari.css': [
-		path.join(__dirname, 'src', 'atari.scss')
-	],
-	'assets/css/IE.css': [
-		path.join(__dirname, 'src', 'IE.scss')
-	],
-	'guides/guideStyles.css': [
-		path.join(__dirname, 'src', '_guides', 'guideStyles.scss')
-	],
-	'guides/player.temp.html': [
-		path.join(__dirname, 'src', '_guides', 'player.md')
-	],
-	'guides/creator.temp.html': [
-		path.join(__dirname, 'src', '_guides', 'creator.md')
+	'player': [
+		path.join(srcPath, 'player.html'),
+		path.join(srcPath, 'player.coffee'),
+		path.join(srcPath, 'atari.coffee'),
+		path.join(srcPath, 'player.scss'),
+		path.join(srcPath, 'atari.scss')
 	]
 }
 
