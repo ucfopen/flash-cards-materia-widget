@@ -16,7 +16,6 @@
 		<script src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.9/angular.min.js'></script>
 		<script src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.9/angular-animate.min.js'></script>
 		<script src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.9/angular-sanitize.min.js'></script>
-		<script src="assets/js/modernizr.js"></script>
 
 		<!-- MAIN CREATOR SCRIPT -->
 		<script src="creator.js"></script>
@@ -52,6 +51,7 @@
 							focus-me="face == 'front' && lastAction == ACTION_CREATE_NEW_CARD"
 							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></textarea>
 						<div
+							class="asset-container"
 							import-asset
 							card-face="cardFace"
 							request-media-import="requestMediaImport"
@@ -59,9 +59,9 @@
 							asset="cardFace.asset"
 							ng-attr-tabindex='{{startingTabIndex + (face == "front" ? 0 : 2)}}'></div>
 					</div>
-					<div id="alt-text-container"
+					<div class="alt-text-container"
 					ng-show="cardFace.asset">
-						<label for="alt-text-input">Media Alt Text </label>
+						<label for="alt-text-input">Media Alt Text: </label>
 						<input
 						type="text"
 						placeholder="Enter your alt text for the media here."
@@ -74,7 +74,7 @@
 						class="alert"
 						ng-class="{hide : cardFace.text.length < 51 || !cardFace.asset }">
 						<span class="icon-alert"></span>
-						Reduce your text to fit the card.
+						You may need to reduce your text to fit the card.
 					</div>
 				</span>
 
