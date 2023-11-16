@@ -58,7 +58,9 @@ button {
 	padding          : 8px;
 	width            : 120px;
 	border           : none;
-	&:hover .descript { opacity: 1; }
+	&:hover .descript {
+		opacity: 1;
+	}
 	.descript {
 		position   : absolute;
 		font-size  : 13px;
@@ -82,7 +84,7 @@ button {
 
 	.logo {
 		display: block;
-		background: url(assets/materialogo.png) no-repeat;
+		background: url(assets/materia-logo.svg) no-repeat;
 		width: 60px;
 		height: 50px;
 		float: left;
@@ -137,12 +139,8 @@ body {
 		perspective-origin : 50% 100%;
 		li {
 			margin : 0 0 15px 0;
-			height: 200px;
 			transform-style : preserve-3d;
 
-			&.tall {
-				height: 230px;
-			}
 
 			&.titles {
 				height : 60px;
@@ -159,6 +157,9 @@ body {
 				height: auto;
 			}
 			&.card {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
 				&.ng-enter,
 				&.ng-leave {
 					transition : .5s cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
@@ -191,10 +192,12 @@ body {
 					}
 				}
 				.face {
-					position   : absolute;
+					display: block;
+					min-height: 200px;
 					width      : 400px;
 					overflow-y : auto;
 					overflow-x : hidden;
+					background : #fff;
 					&:nth-child(3) { right : 0; }
 					textarea, input {
 						font-family: 'verdana';
@@ -208,34 +211,70 @@ body {
 						}
 						&#alt-text-input {
 							width: 67%;
-							text-align: left;
+							margin: 5px 10px;
 							padding: 0px 5px;
-							margin-left: 10px;
+
+							text-align: left;
+							font-size: 0.8em;
 						}
 					}
-					textarea { height : 130px; }
-					input { height : 25px; }
+					.alt-text-container {
+						padding: 5px 10px;
+						color: #000;
+						font-size: 0.8em;
+					}
+
+					.center {
+						position: relative;
+						margin-bottom: 10px;
+						text-align: center;
+					}
+
+					.asset-container {
+						position: relative;
+
+						.del-asset {
+							margin: 0;
+							padding: 5px;
+						}
+					}
+
+					textarea {
+						height : 130px;
+					}
+					input {
+						height : 25px;
+						margin-bottom: 10px;
+					}
 					audio {
 						max-width  : 400px;
 						max-height : 110px;
 						margin-top: 50px;
 					}
 					button {
-						bottom     : 6px;
+						top        : 0px;
 						right      : 10px;
 						background : none;
 						color      : rgba(0,0,0,0.7);
 						font-size  : 22px;
 						width      : 30px;
 						transition : all 200ms;
+						cursor     : pointer;
 						&:hover {
 							color : #47303C;
 							.descript { color : #47303C; }
 						}
 						.descript {
 							top : 10px;
-							&.add { left : -125px; }
-							&.del { left : -105px; }
+							&.add {
+								right: 0;
+							}
+							&.del {
+								width: auto;
+								top: 30px;
+								right: 0;
+								text-align: right;
+							}
 						}
 					}
 					img {
@@ -243,14 +282,15 @@ body {
 						max-height : 110px;
 					}
 					.alert {
-						position  : absolute;
-						color     : rgba(0,0,0,0.7);
+						display   : block;
 						font-size : 13px;
-						bottom    : 17px;
-						left      : 17px;
-						opacity   : 1;
+						margin: 5px 0 10px 0;
+						padding: 0 15px;
+						color: #000;
 						transition : all 200ms;
-						&.hide { opacity : 0; }
+						&.hide { 
+							display: none;
+						}
 						span {
 							padding   : 0 2px 0 0;
 							font-size : 15px;
@@ -264,8 +304,10 @@ body {
 					margin-top : 13px;
 					cursor: pointer;
 					.descript {
-						top   : 7px;
-						left  : 40px;
+						top   : 40px;
+						left  : 0px;
+						width : auto;
+						text-align: left;
 						color : rgba(255,255,255,0.6);
 					}
 
@@ -456,13 +498,6 @@ body {
 	100% {
 		margin-left: 150px;
 	}
-}
-
-.center {
-	text-align: center;
-	position: relative;
-	background : #FFF;
-	max-height: inherit;
 }
 
 .hidden {
