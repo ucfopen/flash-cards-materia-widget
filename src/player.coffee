@@ -128,6 +128,12 @@ Namespace('Flashcards').Engine = do ->
 
 		return computedFontSize
 
+	# converts potentially encoded string characters by assigning them to the innerHTML property of a dummy element
+	_decodeEntities = (str) ->
+		tempElement = document.createElement('textarea')
+		tempElement.innerHTML = str
+		return tempElement.value
+
 	# Stores card data.
 	# @data : Card information pulled from the qset.
 	# Front of card: 	answer
@@ -142,8 +148,8 @@ Namespace('Flashcards').Engine = do ->
 
 			# Single flashcard specific data.
 			_card.node      = _cardNodes[i]
-			_card.BackText = data[i].answers[0].text.replace(/\&\#10\;/g, '<br>')
-			_card.FrontText  = data[i].questions[0].text.replace(/\&\#10\;/g, '<br>')
+			_card.BackText = _decodeEntities data[i].answers[0].text
+			_card.FrontText  = _decodeEntities data[i].questions[0].text
 
 			# Strings that contain inline font scaling style (if applicable)
 			frontStyleStr = ""
