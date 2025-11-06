@@ -38,4 +38,6 @@ meta_data:
     or images or audio or embedded video links.
   excerpt: >
     A study tool featuring a deck of flashcards.
+  update_method: github
+  repo: ucfopen/flash-cards-materia-widget
 
